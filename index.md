@@ -2,20 +2,17 @@
 layout: default
 title: Irish Politics Analytics
 ---
-
 # Irish Politics Analytics
 
-Portfolio + documentation for my Irish Politics Analytics work.
+Short, neutral, 1–2 sentence summary of what this project does.
 
-## Navigation
-- [Projects](/projects/)
-- Articles below
+## Sections
+- **[Projects](/projects/)** — documentation and build notes  
+- **[Articles](/articles/)** — outputs, findings, and updates
 
----
-
-## Articles
+## Latest articles
 <ul>
-  {% for post in site.posts %}
+  {% for post in site.posts limit:5 %}
     <li>
       <a href="{{ post.url }}">{{ post.date | date: "%Y-%m-%d" }} — {{ post.title }}</a>
     </li>
