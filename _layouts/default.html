@@ -3,23 +3,51 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: 'en' }}">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ page.title | default: site.title }}</title>
-    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link
+      rel="stylesheet"
+      href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}"
+    />
+    <style>
+      /* Header nav styling override for Cayman */
+      .top-nav {
+        margin-top: 1rem;
+        font-size: 1.08rem;
+        line-height: 1.6;
+      }
+      .top-nav a,
+      .top-nav a:visited {
+        color: #ffffff !important;
+        text-decoration: none !important;
+        font-weight: 600;
+      }
+      .top-nav a:hover,
+      .top-nav a:focus {
+        text-decoration: underline !important;
+      }
+      .top-nav .sep {
+        margin: 0 0.6rem;
+        opacity: 0.9;
+        color: #ffffff;
+      }
+    </style>
   </head>
+
   <body>
     <header class="page-header" role="banner">
       <h1 class="project-name">{{ site.title }}</h1>
 
-      <nav style="margin-top: 1rem; font-size: 1.05rem;">
-        <a style="color:#fff; text-decoration: underline;" href="{{ my_page.url | relative_url }}">{{ my_page.title }}</a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="{{ '/' | relative_url }}">Home</a>
+
         {% if site.header_pages %}
           {% for path in site.header_pages %}
             {% assign my_page = site.pages | where: "path", path | first %}
             {% if my_page %}
-              &nbsp;|&nbsp;
+              <span class="sep">|</span>
               <a href="{{ my_page.url | relative_url }}">{{ my_page.title }}</a>
             {% endif %}
           {% endfor %}
@@ -29,6 +57,7 @@
 
     <main id="content" class="main-content" role="main">
       {{ content }}
+
       <footer class="site-footer">
         <span class="site-footer-owner">
           <a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a>
