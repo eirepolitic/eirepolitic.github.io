@@ -23,3 +23,13 @@
 - [ ] Add embeds under “Outputs” section
 - [ ] If adding files, create `assets/YYYY-MM-DD-short-title/`
 - [ ] Preview by opening the live Articles page after publish
+
+## New Article Workflow
+1. Copy `_templates/post-template.md`
+2. Save in `_posts/` as:
+   `YYYY-MM-DD-short-title.md`
+3. If assets are needed:
+   create folder in:
+   `assets/articles/YYYY-MM-DD-short-title/`
+4. Add embeds or asset links
+5. Commit and push to publish
