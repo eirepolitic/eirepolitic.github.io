@@ -1,2 +1,5 @@
 title: Irish Politics Analytics
 theme: minima
+
+header_pages:
+  - projects/index.md
