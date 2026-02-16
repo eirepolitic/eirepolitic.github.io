@@ -38,7 +38,11 @@
 
   <body>
     <header class="page-header" role="banner">
-      <h1 class="project-name">{{ site.title }}</h1>
+      <h1 class="project-name">
+        <a style="color:#fff; text-decoration:none;" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      </h1>
+      <p class="project-tagline">{{ site.description }}</p>
+
 
       <nav class="top-nav" aria-label="Primary">
         <a href="{{ '/' | relative_url }}">Home</a>
