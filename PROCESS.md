@@ -16,3 +16,10 @@
 ## Outputs
 - Prefer embeds when possible
 - Store local files in `assets/` when needed
+
+### Checklist
+- [ ] Filename is `YYYY-MM-DD-short-title.md`
+- [ ] Frontmatter includes `layout: post` and `title:`
+- [ ] Add embeds under “Outputs” section
+- [ ] If adding files, create `assets/YYYY-MM-DD-short-title/`
+- [ ] Preview by opening the live Articles page after publish
