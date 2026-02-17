@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Projects
+title: Documentation
 permalink: /projects/
 ---
 - [Irish Politics Analytics — Overview](/projects/ipa-overview/)
