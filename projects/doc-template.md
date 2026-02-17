@@ -4,8 +4,6 @@ title: Documentation Template
 permalink: /projects/doc-template/
 ---
 
-# Documentation Template (Preview)
-
 > This page is a living template used to document pipelines/components.
 
 ## Overview
