@@ -7,7 +7,7 @@ title: Irish Politics Analytics
 Short, neutral, 1–2 sentence summary of what this project does.
 
 ## Sections
-- **[Projects](/projects/)** — documentation and build notes  
+- **[Documentation](/projects/)** — documentation and build notes  
 - **[Articles](/articles/)** — outputs, findings, and updates
 
 ## Latest articles
