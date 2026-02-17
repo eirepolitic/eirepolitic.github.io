@@ -5,15 +5,11 @@ permalink: /projects/
 ---
 **DEBUG MARKER: projects/index.md is rendering**
 
-
 ## Pipelines
-
 <ul>
-{% for page in site.pages %}
-  {% if page.path contains "projects/pipelines/" and page.title %}
-    <li>
-      <a href="{{ page.url }}">{{ page.title }}</a>
-    </li>
+{% for p in site.pages %}
+  {% if p.path contains "projects/pipelines/" and p.title %}
+    <li><a href="{{ p.url }}">{{ p.title }}</a></li>
   {% endif %}
 {% endfor %}
 </ul>
@@ -21,12 +17,10 @@ permalink: /projects/
 ---
 
 ## Schemas
-
 <ul>
-{% for page in site.pages %}
-  {% if page.path contains "projects/schemas/" and page.title %}
-    <li>
-      <a href="{{ page.url }}">{{ page.title }}</a>
-    </li>
-  {% endfor %}
+{% for p in site.pages %}
+  {% if p.path contains "projects/schemas/" and p.title %}
+    <li><a href="{{ p.url }}">{{ p.title }}</a></li>
+  {% endif %}
+{% endfor %}
 </ul>
