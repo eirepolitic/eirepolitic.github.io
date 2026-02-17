@@ -33,3 +33,15 @@
    `assets/articles/YYYY-MM-DD-short-title/`
 4. Add embeds or asset links
 5. Commit and push to publish
+
+## New Project Workflow
+1. Create file in `projects/`:
+   `project-slug.md`
+2. Add frontmatter:
+   - layout: page
+   - title:
+   - permalink: /projects/project-slug/
+3. Add link to `projects/index.md`
+4. If assets needed:
+   create folder in `assets/projects/project-slug/`
+5. Commit and publish
