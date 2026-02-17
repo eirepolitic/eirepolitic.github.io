@@ -3,7 +3,6 @@ layout: page
 title: Documentation
 permalink: /projects/
 ---
-**DEBUG MARKER: projects/index.md is rendering**
 
 ## Pipelines
 <ul>
