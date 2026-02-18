@@ -2,9 +2,10 @@
 layout: default
 title: Irish Politics Analytics
 ---
-# Irish Politics Analytics
+# Overview
 
-Short, neutral, 1–2 sentence summary of what this project does.
+Eire Politic is a project looking at Irish political data with the aims of creating insightful & informative
+content while developing my analytics & pipeline building skills. 
 
 ## Sections
 - **[Documentation](/projects/)** — documentation and build notes  
