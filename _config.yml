@@ -5,4 +5,4 @@ description: Data pipelines, classification, and dashboards for Irish politics
 header_pages:
   - projects/index.md
   - articles.md
-
+  - content.md
