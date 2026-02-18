@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Member Summaries Parquets Pipeline Documentation
-permalink: /projects/member-summaries-parquets-pipeline/
+permalink: /projects/pipelines/member-summaries-parquets-pipeline/
 ---
 
 # members_summaries_parquets Pipeline
