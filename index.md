@@ -2,7 +2,7 @@
 layout: default
 title: Irish Politics Analytics
 ---
-# Overview
+## Overview
 
 Eire Politic is a project looking at Irish political data with the aims of creating insightful & informative
 content while developing my analytics & pipeline building skills. 
