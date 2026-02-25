@@ -6,8 +6,20 @@ sitemap: false
 ---
 
 <style>
+  /* ============================
+     TUNABLE VARIABLES (edit here)
+     ============================ */
+  :root {
+    --autodoc-page-max-width: 1400px; /* try: 1200px, 1400px, 1600px */
+    --autodoc-iframe-height: 92vh;    /* try: 78vh, 85vh, 92vh */
+    --autodoc-iframe-min-height: 960px; /* try: 720px, 840px, 960px */
+  }
+
   /* Page-scoped "hacker" styling (only affects this page content) */
   .autodoc-shell {
+    max-width: var(--autodoc-page-max-width);
+    margin: 0 auto;
+
     background: #050b07;
     border: 1px solid rgba(0, 255, 120, 0.25);
     border-radius: 12px;
@@ -79,22 +91,23 @@ sitemap: false
     background: #000;
   }
 
-  /* Responsive embed: fixed height that adapts a bit on larger screens */
   .autodoc-embed {
     width: 100%;
-    height: 78vh;
-    min-height: 720px;
+    height: var(--autodoc-iframe-height);
+    min-height: var(--autodoc-iframe-min-height);
     border: 0;
     display: block;
   }
 
   @media (max-width: 768px) {
     .autodoc-shell { padding: 1rem; }
-    .autodoc-embed {
-      height: 85vh;
-      min-height: 640px;
-    }
     .autodoc-header { flex-direction: column; align-items: flex-start; }
+
+    /* Keep mobile sane while still using your variables */
+    .autodoc-embed {
+      height: min(90vh, var(--autodoc-iframe-height));
+      min-height: 760px;
+    }
   }
 </style>
 
@@ -105,7 +118,7 @@ sitemap: false
   </div>
 
   <p class="autodoc-note">
-    Use the embedded AutoDoc app below. If it doesn’t load, check browser tracking protection and third-party cookies.
+    Embedded Appsmith app below. If it fails to load, check browser tracking protection / third-party cookies.
   </p>
 
   <div class="autodoc-wrap">
