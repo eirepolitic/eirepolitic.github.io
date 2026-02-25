@@ -14,7 +14,7 @@
     <style>
       /* Make Cayman header shorter */
       .page-header {
-        padding: 1.25rem 1rem !important; /* reduce green area height */
+        padding: 1.25rem 1rem !important;
       }
       .project-tagline {
         margin-top: 0.5rem !important;
@@ -23,7 +23,7 @@
 
       /* Header nav styling override for Cayman */
       .top-nav {
-        margin-top: 0.5rem; /* was 1rem */
+        margin-top: 0.5rem;
         font-size: 1.08rem;
         line-height: 1.6;
       }
@@ -43,9 +43,11 @@
         color: #ffffff;
       }
 
-      /* Opt-in wide pages (set `wide: true` in page front matter) */
-      main.main-content.wide {
+      /* Opt-in wide pages (set `wide: true` in page front matter)
+         Use higher specificity to beat Cayman defaults. */
+      body > main.main-content.wide {
         max-width: none !important;
+        width: 100% !important;
       }
     </style>
   </head>
@@ -83,7 +85,7 @@
       </nav>
     </header>
 
-    <main id="content" class="main-content{% if page.wide %} wide{% endif %}" role="main">
+    <main id="content" class="main-content{% if page.wide == true %} wide{% endif %}" role="main">
       {{ content }}
 
       <footer class="site-footer">
