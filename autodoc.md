@@ -3,6 +3,7 @@ layout: page
 title: AutoDoc
 permalink: /autodoc/
 sitemap: false
+wide: true
 ---
 
 <style>
