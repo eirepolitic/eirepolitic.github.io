@@ -11,9 +11,9 @@ wide: true
      TUNABLE VARIABLES (edit here)
      ============================ */
   :root {
-    --autodoc-page-max-width: 1800px; /* try: 1200px, 1400px, 1600px */
-    --autodoc-iframe-height: 92vh;    /* try: 78vh, 85vh, 92vh */
-    --autodoc-iframe-min-height: 960px; /* try: 720px, 840px, 960px */
+    --autodoc-page-max-width: 1400px; /* try: 1200px, 1400px, 1600px */
+    --autodoc-iframe-height: 110vh;    /* try: 78vh, 85vh, 92vh */
+    --autodoc-iframe-min-height: 1100px; /* try: 720px, 840px, 960px */
   }
 
   /* Page-scoped "hacker" styling (only affects this page content) */
