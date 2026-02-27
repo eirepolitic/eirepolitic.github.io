@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "POST TITLE"
+title: "ARTICLE TITLE"
 date: YYYY-MM-DD
-categories: [content]   # optional: e.g. content, dashboard, update
-tags: []                # optional
+categories: []
+tags: []
 ---
 
 ## Overview
