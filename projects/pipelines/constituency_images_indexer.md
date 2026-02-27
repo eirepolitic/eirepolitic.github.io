@@ -1,5 +1,5 @@
 ---
-title: "AutoDoc Creation Pipeline"
+title: "Constituency Images Indexer"
 layout: default
 ---
 
@@ -7,84 +7,93 @@ layout: default
 
 **Project:** eirepolitic  
 **Type:** pipeline  
-**Last generated:** 2026-02-26T02:14:25.244325Z
+**Last generated:** 2026-02-27T20:41:06.827932Z
 
 ---
 
 ## Overview
 
 ### Purpose
-The Constituency Images Indexer pipeline creates an Athena table of constituency image URLs. Images are manually generated in Inkscape and uploaded to the public S3 bucket "eirepolitic-data."
+The Constituency Images Indexer pipeline creates an Athena table containing URLs of constituency images by indexing publicly available images in an S3 bucket for efficient querying.
 
 ### Scope
-The pipeline lists public images in the specified S3 prefix, filtering by typical image extensions. It generates an index table (`filename`, `s3_key`, `url`), sorted by filename, and writes it as CSV and Parquet to S3. Implemented in Python (boto3, pandas, pyarrow), it runs via a manual GitHub Actions workflow.
+The pipeline lists images at `s3://eirepolitic-data/processed/constituencies/images/`, filtering by common image formats. It generates and sorts an index table with filename, S3 key, and URL, output as CSV and Parquet files to specified S3 locations. The pipeline configures via environment variables, uses boto3 and pandas with pyarrow for data handling, and encodes S3 keys for safe URLs. The process is manually triggered via GitHub Actions, following a standardized architecture using S3, Glue Crawlers, and Athena.
 
 ## Assets
 
-Images are uploaded to the public S3 bucket `eirepolitic-data` under the prefix `processed/constituencies/images/`. The pipeline lists images with the extensions: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`, `.tif`, `.tiff`, `.svg`.
+Images are stored in S3 bucket `eirepolitic-data` under `processed/constituencies/images/`, created in Inkscape from a base SVG.
 
-The pipeline creates an index table with columns `filename`, `s3_key`, and `url`, sorted by filename:
+Supported formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`, `.tif`, `.tiff`, `.svg`. The pipeline creates an index table with `filename`, `s3_key`, and public `url`.
+
+Outputs:
 
 - CSV: `s3://eirepolitic-data/processed/constituencies/constituency_images.csv`
-- Parquet: `s3://eirepolitic-data/processed/constituencies/parquets/constituency_images.parquet`
+- Parquet: `s3://eirepolitic-data/processed/constituencies/parquets/constituency_images.parquet` (Snappy compression via PyArrow)
 
-Public URLs follow:
+Public URLs pattern:
 
 ```
 https://{bucket}.s3.{region}.amazonaws.com/{encoded_key}
 ```
 
-Environment variables configure the pipeline:
+The Python script `process/constituency_images_indexer.py` is executed manually via the GitHub Actions workflow "Build Constituency Image Index (Manual)" on `ubuntu-latest` with Python 3.11, installing required dependencies.
 
-- `AWS_REGION` (default: `ca-central-1`)
-- `S3_BUCKET` (default: `eirepolitic-data`)
-- `SOURCE_PREFIX` (default: `processed/constituencies/images/`)
-- `OUTPUT_CSV_KEY` (default: `processed/constituencies/constituency_images.csv`)
-- `OUTPUT_PARQUET_KEY` (default: `processed/constituencies/parquets/constituency_images.parquet`)
+Outputs are designed for Athena compatibility and use a standardized S3 layout. Idempotency is maintained by overwriting outputs in place.
 
-Uses `boto3` (S3), `pandas` (data), and `pyarrow` (Parquet, Snappy). CSV aids inspection; Parquet is for analytics with Athena.
+Schema management relies on AWS Glue Crawlers, run manually if schema changes.
 
-The architecture: S3 (storage), Glue Crawler (schema inference), Athena (query). Athena tables point to S3 prefixes for flexible dataset expansion. Glue Crawler runs only when schema changes occur.
+Key environment variables:
 
-Script: `process/constituency_images_indexer.py`. The "Build Constituency Image Index (Manual)" GitHub Actions workflow runs the pipeline manually, sets up Python and dependencies, and configures environment variables.
-
-Validation: Confirm S3 outputs exist and verify with simple Athena queries (e.g., `SELECT COUNT(*)`). Pipelines are idempotent, overwriting or updating output datasets in place; schema remains consistent unless changed.
+- `AWS_REGION`
+- `S3_BUCKET`
+- `SOURCE_PREFIX`
+- CSV and Parquet output keys
 
 ## Inputs and Outputs
 
 ### Inputs
-- S3 bucket: `eirepolitic-data`
-- Source prefix: `processed/constituencies/images/`
-- Environment variables:
-  - `AWS_REGION` (default: `ca-central-1`)
-  - `S3_BUCKET` (default: `eirepolitic-data`)
-  - `SOURCE_PREFIX` (default: `processed/constituencies/images/`)
-  - `OUTPUT_CSV_KEY` (default: `processed/constituencies/constituency_images.csv`)
-  - `OUTPUT_PARQUET_KEY` (default: `processed/constituencies/parquets/constituency_images.parquet`)
-- Image file extensions: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`, `.tif`, `.tiff`, `.svg`
+- Public images in `eirepolitic-data/processed/constituencies/images/`
+- File types: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`, `.tif`, `.tiff`, `.svg`
+- Images are recolored SVGs created in Inkscape
+- Environment variables (defaults):
+  - `AWS_REGION`: `ca-central-1`
+  - `S3_BUCKET`: `eirepolitic-data`
+  - `SOURCE_PREFIX`: `processed/constituencies/images/`
 
 ### Outputs
-- CSV: `s3://eirepolitic-data/processed/constituencies/constituency_images.csv`
-- Parquet: `s3://eirepolitic-data/processed/constituencies/parquets/constituency_images.parquet`
-- Both with columns: `filename`, `s3_key`, `url` (public S3 URL)
+- Index table with: `filename`, `s3_key`, `url`
+- Formats:
+  - CSV: `s3://eirepolitic-data/processed/constituencies/constituency_images.csv`
+  - Parquet: `s3://eirepolitic-data/processed/constituencies/parquets/constituency_images.parquet` (Snappy)
+- Configurable output keys:
+  - `OUTPUT_CSV_KEY`
+  - `OUTPUT_PARQUET_KEY`
+- Athena-compatible; overwritten in place unless schema changes
 
 ## How it works
 
-The pipeline lists images from S3 `processed/constituencies/images/`, filters by image extensions, and builds a table (`filename`, `s3_key`, `url`). Public URLs use:
+The pipeline lists and filters images in the configured S3 location by extension, then creates an index table with filename, S3 key, and a constructed public URL.
 
-```
-https://{bucket}.s3.{region}.amazonaws.com/{encoded_key}
-```
+Outputs:
+- CSV written with UTF-8 BOM for inspection/debugging
+- Parquet written with PyArrow and Snappy compression, optimized for Athena
 
-Configured by environment variables, it writes sorted output as both CSV and Parquet to S3. It uses Python (`boto3`, `pandas`, `pyarrow`) and is triggered manually by the "Build Constituency Image Index (Manual)" workflow, which sets up the environment and runs the script.
+Configuration uses environment variables with sensible defaults.
+
+Manual execution is via GitHub Actions with Python 3.11. The job installs dependencies, then runs the script.
+
+Outputs are routinely overwritten for idempotency. Parquet outputs are structured for Athena external tables, supporting future expansion.
+
+Schema and metadata updates are handled separately by running AWS Glue Crawlers if schema changes; routine refreshes do not require it.
 
 ## How to run
 
-Run `constituency_images_indexer.py` to index images in `s3://eirepolitic-data/processed/constituencies/images/` and output indexed CSV and Parquet files to the same bucket.
+Run `constituency_images_indexer.py` to index S3 images at `s3://eirepolitic-data/processed/constituencies/images/`. Output locations:
 
-### Environment variables
+- CSV: `s3://eirepolitic-data/processed/constituencies/constituency_images.csv`
+- Parquet: `s3://eirepolitic-data/processed/constituencies/parquets/constituency_images.parquet`
 
-Defaults:
+### Environment Variables (defaults):
 
 - `AWS_REGION`: `ca-central-1`
 - `S3_BUCKET`: `eirepolitic-data`
@@ -92,87 +101,103 @@ Defaults:
 - `OUTPUT_CSV_KEY`: `processed/constituencies/constituency_images.csv`
 - `OUTPUT_PARQUET_KEY`: `processed/constituencies/parquets/constituency_images.parquet`
 
-### Processing
+### Image Filtering
 
-- List S3 keys, filter by image extensions.
-- Construct public URLs.
-- Build DataFrame (`filename`, `s3_key`, `url`), sorted by filename.
-- Write as CSV and Parquet (Snappy compressed).
+Indexed extensions: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`, `.tif`, `.tiff`, `.svg`
 
-### Running
+### Implementation
 
-Execute manually via **Build Constituency Image Index (Manual)** workflow:
+- Uses boto3 to interact with S3
+- CSVs are UTF-8 BOM
+- Parquet uses Snappy (Athena-compatible)
+- Overwrites outputs to maintain idempotency
 
-1. Checkout code.
-2. Setup Python 3.11.
-3. Install dependencies.
-4. Run:  
-   `python process/constituency_images_indexer.py`
+### Manual Execution
 
-Workflow sets AWS credentials and environment variables.
+Trigger GitHub Actions workflow `constituency_images_index.yml` with `workflow_dispatch`. The workflow runs on `ubuntu-latest`, sets up Python 3.11, installs required packages, and runs:
 
-### Requirements & Output
-
-- AWS credentials for S3 access required.
-- Script outputs progress messages and a "Done" on completion.
+```bash
+python process/constituency_images_indexer.py
+```
 
 ## Data quality and validation
 
-All data is stored in a single S3 bucket, organized as `raw/` and `processed/`. Outputs are valid CSV and Parquet (PyArrow Snappy), maintaining schema unless changed. CSV is for inspection; Parquet is optimized for analytics.
+Validation consists of confirming output file existence in S3 and running simple Athena queries such as `SELECT COUNT(*)` to verify readability and accessibility.
 
-Athena external tables reference S3 folder prefixes. Parquet SerDe allows Athena to read datasets directly. Glue Crawlers are run manually only for schema changes.
+Schema consistency is maintained unless intentionally changed. Run a Glue Crawler only if schema changes (e.g., columns/data types/dataset location). For routine data updates with no schema changes, no Crawler run is needed.
 
-Pipeline scripts overwrite outputs idempotently and maintain Athena compatibility. Validate by confirming S3 outputs and querying Athena (e.g., `SELECT COUNT(*)`).
+Pipelines overwrite or update data safely in place. Adding/replacing data rows and overwriting Parquet files with the same schema are safe changes not requiring a crawler.
 
-Typical issues: schema mismatches, missed crawler runs, or S3 permission errors. Schema-stable row-level updates don't require a crawler; changes to columns/types or S3 location do.
+Be aware of S3 permission issues and missing crawler runs as potential failure points.
 
 ## Maintenance
 
-The pipeline script indexes public images in S3 (`processed/constituencies/images/`) and produces indexed CSV/Parquet output. It filters typical image types and constructs public URLs. Triggered manually by the GitHub Actions workflow `constituency_images_index.yml` on `ubuntu-latest`, which installs Python and dependencies, sets AWS credentials and environment, and runs the script.
+The pipeline overwrites output datasets in place to ensure idempotency and schema consistency. Athena tables remain stable except when schema is modified.
 
-The architecture organizes S3 into `raw/` and `processed/`. CSV is for inspection; Parquet (Snappy) for analytics. Athena tables reference S3 prefixes, allowing multiple Parquet files without table changes.
+### Verification
 
-Glue Crawlers are required only for schema changes. Pipelines must always write valid outputs with stable schema (unless changed intentionally). Glue Crawlers manage schema and metadata as needed.
+Check S3 output files and run Athena queries, such as:
 
-Validate by confirming S3 outputs and running Athena queries (e.g., `SELECT COUNT(*)`). Common failure causes are schema mismatches, missing crawler runs, or S3 permissions. Row-level updates with unchanged schema don't require a crawler, but structural/schema changes do.
-
-Architecture:
-
+```sql
+SELECT COUNT(*) FROM your_table;
 ```
-S3 (storage) → Glue Crawler (schema inference) → Athena (query layer)
-```
+
+### Schema Changes and Glue Crawlers
+
+Manually run Glue Crawlers if:
+
+- Columns are added/removed/modified
+- Data types are changed
+- Dataset S3 location changes
+
+If not run, Athena queries may fail due to schema issues.
+
+### Routine Updates
+
+Routine data refreshes that don’t alter the schema don’t require a crawler run.
+
+### Permissions
+
+S3 permissions must allow required operations for listing and querying.
+
+### Summary
+
+- Pipeline provides stable CSV and Parquet outputs.
+- Run Glue Crawlers only for structural/schema changes.
+- Data refreshes with same schema do not require Glue Crawlers.
+- Validate by checking S3 and Athena access.
+- Ensure correct S3 permissions.
 
 ## Orchestration
 
-The pipeline runs via the manual GitHub Actions workflow **Build Constituency Image Index (Manual)**. This workflow (triggered by `workflow_dispatch`) executes on `ubuntu-latest`, sets environment variables, installs dependencies, and runs `process/constituency_images_indexer.py`.
+The pipeline builds an Athena-compatible index of image URLs using images stored at `eirepolitic-data/processed/constituencies/images/`, manually created and uploaded.
 
-It lists and indexes public images in `eirepolitic-data`, filtered by image extensions, generating public URLs:
+The Python script lists public images via boto3, filters by file extension, and generates an index table (filename, S3 key, public URL), outputting to CSV and (Snappy-compressed, Athena-compatible) Parquet.
 
-```
-https://{bucket}.s3.{region}.amazonaws.com/{encoded_key}
-```
+Execution is manual via GitHub Actions (`workflow_dispatch`), on `ubuntu-latest` and Python 3.11. Steps include checking out the code, installing dependencies, and running the script.
 
-Outputs are saved to S3 as:
+The architecture applies a standard pattern: S3 for storage, logical folders like `raw/` and `processed/`, CSV for inspection, Parquet for analytics. Athena tables point to Parquet prefixes. Glue Crawlers manage schema and are run only for schema changes.
 
-- CSV: `s3://eirepolitic-data/processed/constituencies/constituency_images.csv`
-- Parquet: `s3://eirepolitic-data/processed/constituencies/parquets/constituency_images.parquet`
+Athena tables query S3 Parquet data using the Parquet SerDe. The pipeline maintains schema consistency and idempotent outputs.
 
-The data lake uses a single S3 bucket, logical zones (`raw/`, `processed/`); Athena tables reference prefixes for multiple Parquet files. Glue Crawlers handle schema inference and updates with Athena as the query layer.
+Validation steps: Confirm S3 outputs, run Athena queries such as `SELECT COUNT(*)`.
 
-Glue Crawlers are run only for schema changes. Athena queries S3 directly using Parquet SerDe. The pipeline is idempotent, overwriting or updating outputs with a consistent schema. Validation includes confirming S3 outputs and running Athena queries.
+Safe changes without a Glue Crawler: add/replace rows, overwrite Parquet with same schema. Crawler is needed for structural or type changes or S3 location moves.
 
-Typical issues: schema mismatches, missing crawler runs, or S3 permissions. Row-level updates are safe without a crawler; schema changes require one.
-
-Architecture:
-
-```
-S3 (storage) → Glue Crawler (schema inference) → Athena (query layer)
-```
+Overall pattern: S3 → Glue Crawler (schema) → Athena (query).
 
 ## Lineage
 
-The pipeline creates an Athena table referencing URLs of constituency images, manually produced in Inkscape and stored publicly in the S3 prefix `processed/constituencies/images/`.
+The pipeline indexes public images at `eirepolitic-data/processed/constituencies/images/`, recolored SVGs created in Inkscape.
 
-It lists S3 images filtered by relevant extensions, encodes S3 keys, and creates a table with `filename`, `s3_key`, `url`, sorted by filename. Outputs are written with UTF-8 BOM as CSV and with Snappy-compressed Parquet.
+It filters by standard image extensions, builds an index table (filename, S3 key, public URL), sorts it, and outputs to:
 
-Pipeline configuration uses environment variables and runs via the manual GitHub Actions workflow "Build Constituency Image Index (Manual)", which sets environment, installs dependencies, and executes `process/constituency_images_indexer.py`.
+- CSV: `s3://eirepolitic-data/processed/constituencies/constituency_images.csv`
+- Parquet: `s3://eirepolitic-data/processed/constituencies/parquets/constituency_images.parquet` (Snappy-compressed with PyArrow)
+
+Configuration relies on environment variables, with sensible defaults.
+
+Execution is via the GitHub Actions workflow "Build Constituency Image Index (Manual)" (`workflow_dispatch`) running Python 3.11.
+
+The architecture: datasets in S3, schema managed by Glue Crawlers, and querying with Athena. Glue Crawlers are only needed for schema changes; routine refreshes do not require them.
+
