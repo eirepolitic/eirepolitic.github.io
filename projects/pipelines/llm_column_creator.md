@@ -1,154 +1,228 @@
-<hr>
-<p>title: "AutoDoc Creation Pipeline"</p>
-<h2 id="layoutdoc">layout: default</h2>
-<h1 id="llmcolumncreator">LLM Column Creator</h1>
-<p><strong>Project:</strong> eirepolitic<br><strong>Type:</strong> pipeline<br><strong>Last generated:</strong> 2026-02-26T04:12:34.160412Z</p>
-<hr>
-<h2 id="overview">Overview</h2>
-<h3 id="purpose">Purpose</h3>
-<p>The "LLM Column Creator" pipeline adds new columns to CSV or Parquet files using data from existing columns and LLM-generated content, automating tabular data enrichment via LLMs.</p>
-<h3 id="scope">Scope</h3>
-<p>This pipeline processes CSV files in S3, selects up to five columns as prompt variables, and generates new column content by invoking the OpenAI Responses API. Output is written back to S3 in CSV and Parquet formats, with support for <code>full_table</code> and <code>processed_only</code> write modes, overwrite/resumable behavior, autosaving, validation, and test mode. Implementation uses Python, a YAML configuration, and works with AWS S3 and OpenAI Python client (GPT-4.1-mini and GPT-5 models).</p>
-<h2 id="assets">Assets</h2>
-<p>The core logic is in the Python script <code>process/llm_table_runner.py</code>, which reads input CSVs from S3, processes them with LLM prompts, and writes results back to S3 in CSV and Parquet formats.</p>
-<h3 id="configuration">Configuration</h3>
-<p>Configuration is via YAML, supporting options for:</p>
-<ul>
-<li>S3 bucket, region, and input/output keys</li>
-<li>Columns to keep and ID generation (column or hash)</li>
-<li>Up to five prompt variables from input columns</li>
-<li>Output column and prompt template</li>
-<li>LLM model/formulation (model, effort, verbosity, temperature, output tokens)</li>
-<li>Web search enablement</li>
-<li>Inline citation stripping</li>
-<li>Validation: non-empty check, max words, optional regex</li>
-<li>Run parameters: test row limit, autosave interval, request delay, retries</li>
-<li>Write/overwrite modes</li>
-</ul>
-<h3 id="exampletaskconfigurations">Example Task Configurations</h3>
-<ul>
-<li>
-<p><code>tasks/llm_task_template.yml</code>: Irish politician data</p>
-<ul>
-<li>S3: <code>eirepolitic-data</code> (region <code>us-east-2</code>)</li>
-<li>Input: <code>processed/members/members_summaries.csv</code></li>
-<li>Outputs: <code>processed/members/members_summaries.csv</code> and <code>processed/members/parquets/members_summaries.parquet</code></li>
-<li>Columns: <code>member_code</code>, <code>full_name</code>, <code>background</code></li>
-<li>ID: <code>member_code</code> (else hash on <code>full_name</code>)</li>
-<li>Prompt var: <code>full_name</code></li>
-<li>Output: <code>conflicts_of_interest</code></li>
-<li>Prompt: Identify conflicts of interest via web search</li>
-<li>Model: <code>gpt-4.1-mini</code> + web search, medium reasoning/verbosity, 320 tokens</li>
-<li>Write mode: <code>full_table</code></li>
-<li>Validation: non-empty, max 2000 words</li>
-</ul>
-</li>
-<li>
-<p><code>tasks/Absence_Reasons.yml</code>: Like above, but outputs <code>absence_reason</code> and prompts for TD absence explanations in 2025.</p>
-</li>
-</ul>
-<h3 id="automation">Automation</h3>
-<p>GitHub Actions workflows (e.g. <code>.github/workflows/llm_task_controller_template.yml</code>, <code>Absence_Reason_Manual.yml</code>) provide manual triggers, optional test row overrides, and install dependencies including <code>pyarrow</code> and <code>pyyaml</code>.</p>
-<h2 id="inputsandoutputs">Inputs and Outputs</h2>
-<h3 id="inputs">Inputs</h3>
-<ul>
-<li>CSV from S3 (bucket, region, and key configurable)</li>
-<li>Subset of columns selectable</li>
-<li>ID column or SHA-256 hash of specified fallback columns</li>
-<li>Up to 5 prompt variable columns</li>
-<li>Prompt template leveraging the above columns</li>
-<li>LLM configuration: model name, web search toggle, temperature, max tokens, effort, verbosity, citation strip</li>
-<li>Run config: retries, delay, autosave, test row limit</li>
-<li>Validation: require non-empty, max words, optional regex</li>
-</ul>
-<h3 id="outputs">Outputs</h3>
-<ul>
-<li>Results written to S3 as a CSV (configurable key) and Parquet file</li>
-<li>Output: retained columns + LLM-generated column (e.g. <code>conflicts_of_interest</code> or <code>absence_reason</code>)</li>
-<li>Write modes:
-  <ul>
-    <li><code>full_table</code>: writes all rows with the new column</li>
-    <li><code>processed_only</code>: writes only processed rows</li>
-  </ul>
-</li>
-<li>Overwrite:
-  <ul>
-    <li><code>true</code>: recompute for all rows</li>
-    <li><code>false</code>: fill missing only (default)</li>
-  </ul>
-</li>
-<li>Validation: non-empty, max words, optional regex; repair prompt sent if failed</li>
-</ul>
-<h2 id="howitworks">How it works</h2>
-<p>The pipeline enhances CSV/Parquet files by adding LLM-generated columns using <code>llm_table_runner.py</code>. Input data is read from S3, columns are selected, and up to five prompt variables are built from those columns as specified in a YAML config. Each prompt is rendered, sent to the OpenAI Responses API, and output (with optional web search and citation removal) is validated: non-empty, max words, and optional regex. Repair prompts are used and request retries occur on validation/API failure.</p>
-<p>The pipeline chooses between writing all rows (<code>full_table</code>) or just processed rows (<code>processed_only</code>), with overwrite or resumable modes. Progress is autosaved as configured, and unique row IDs are handled by column or hash as needed.</p>
-<p>Final results are written to S3 in CSV/Parquet. Run <code>llm_table_runner.py</code> with a YAML config that sets all workflow parameters.</p>
-<h2 id="howtorun">How to run</h2>
-<p>Run via:</p>
-<pre><code class="bash language-bash">python process/llm_table_runner.py &amp;amp;amp;amp;amp;amp;amp;lt;task_config.yml&amp;amp;amp;amp;amp;amp;amp;gt;
-</code></pre>
-<p>The YAML config specifies S3 bucket/region, input/output keys, kept columns, ID, prompt vars, output column, prompt, LLM settings, run parameters, write mode, and validation.</p>
-<ul>
-<li>Reads CSV from S3 as per <code>input_key</code></li>
-<li>Keeps specified columns</li>
-<li>Ensures/creates ID column as configured</li>
-<li>Loads any existing output to maintain resumability</li>
-<li>Determines rows to process (missing/overwrite)</li>
-<li>For each, builds prompt, calls OpenAI, retries/repairs as per config</li>
-<li>Validates and, upon success, updates output column</li>
-<li>Writes back CSV/Parquet to S3 as specified (<code>full_table</code> or <code>processed_only</code>)</li>
-<li>Autosaves at interval; delays between requests</li>
-<li>Logs paths, model, rows processed, and summary info</li>
-</ul>
-<p>Requires <code>OPENAI_API_KEY</code> and AWS credentials in the environment. Can be run manually or in CI (see the Automation section).</p>
-<h2 id="dataqualityandvalidation">Data quality and validation</h2>
-<p>The pipeline ensures data quality via configurable validation for LLM output: non-empty (require_non_empty), max words (max_words), and optional regex (regex_must_match). Repair prompts are used if validation fails.</p>
-<p>ID columns are specified or generated by hash. Previous outputs are preserved unless overwrite is enabled. Citation removal is optional. Retries and request delays are configurable.</p>
-<p>Outputs are saved to S3 in both CSV and Parquet formats. Write modes and overwrite behavior match configuration. Autosaving safeguards progress; validation and repair maintain data integrity.</p>
-<h2 id="maintenance">Maintenance</h2>
-<p>Update and maintain the <code>llm_table_runner.py</code> script and YAML configs with S3 locations, columns, prompt variables, and all operational parameters.</p>
-<h3 id="dependencies">Dependencies</h3>
-<p>Required Python packages:</p>
-<ul>
-<li><code>boto3</code></li>
-<li><code>pandas</code></li>
-<li><code>openai</code></li>
-<li><code>pyarrow</code></li>
-<li><code>pyyaml</code></li>
-</ul>
-<h3 id="configuration-1">Configuration</h3>
-<ul>
-<li>Reads/writes CSV and Parquet with S3</li>
-<li>Supports <code>full_table</code> and <code>processed_only</code> write modes</li>
-<li>Controls overwrite with <code>overwrite_existing</code></li>
-<li>Up to 5 prompt variables from columns</li>
-<li>Validation: non-empty, max words, regex (optional)</li>
-<li>Citation stripping optional</li>
-<li>Configurable autosaves</li>
-<li>Row IDs by column or hash</li>
-</ul>
-<h3 id="executionandlogging">Execution and Logging</h3>
-<ul>
-<li>Executed via <code>python process/llm_table_runner.py &lt;task_config.yml&gt;</code></li>
-<li>Supports test mode row limit</li>
-<li>Logs progress, autosaves, and summary</li>
-</ul>
-<h3 id="integration">Integration</h3>
-<ul>
-<li>Works with GitHub Actions for manual runs and managing dependencies/environment</li>
-</ul>
-<h3 id="reliability">Reliability</h3>
-<ul>
-<li>OpenAI API calls auto-retry per configuration</li>
-<li>Web search option for enhanced prompts</li>
-</ul>
-<p>Keep dependencies updated and monitor logs for stability and maintainability.</p>
-<h2 id="orchestration">Orchestration</h2>
-<p>Orchestration is handled by <code>process/llm_table_runner.py</code> and a YAML config specifying S3 paths, kept columns, prompt variables, LLM model, and operational settings.</p>
-<p>The script reads the input from S3, builds up to five prompt variables, and calls the OpenAI Responses API (optionally with web search). Results are validated and written as CSV and Parquet to S3 using <code>full_table</code> or <code>processed_only</code> modes. Overwrite is controlled by <code>overwrite_existing</code>. Autosaving and validation occur per config, with repair prompts on failed validation. Row IDs are handled by column or hash; the pipeline is resumable.</p>
-<p>To run:</p>
-<pre><code class="bash language-bash">python process/llm_table_runner.py &amp;amp;amp;amp;amp;amp;amp;lt;task_config.yml&amp;amp;amp;amp;amp;amp;amp;gt;
-</code></pre>
-<p>Example YAMLs detail all required settings. GitHub Actions workflows automate pipeline setup, dependency install, and execution, using environment variables for necessary keys.</p>
-<h2 id="lineage">Lineage</h2>
-<p>The pipeline is built in <code>llm_table_runner.py</code> and processes CSV from S3, retaining selected columns as defined in YAML. It creates prompt variables, generates output with the OpenAI API (optional web search), writes CSV and Parquet back to S3 in either <code>full_table</code> or <code>processed_only</code> mode, and handles overwrite as configured. Validation and repair, citation removal, row IDs by column or hash, autosave, retry logic, and test mode are supported. Models include GPT-4.1-mini and GPT-5; env vars are used for credentials. The pipeline is resumable, flexible, and can be executed via command line or GitHub Actions with YAML config. Example YAMLs show real-world use cases; workflow files enable automation with test row overrides.</p>
+---
+title: "LLM Column Creator"
+layout: default
+---
+
+# LLM Column Creator
+
+**Project:** eirepolitic  
+**Type:** pipeline  
+**Last generated:** 2026-02-27T21:20:03.760090Z
+
+---
+
+## Overview
+
+### Purpose
+The "LLM Column Creator" pipeline adds new columns to existing CSV or Parquet files by generating content based on existing columns and large language models (LLMs).
+
+### Scope
+This pipeline uses a Python script (`llm_table_runner.py`) and a YAML configuration file. It reads CSV files from S3, keeps selected columns, creates up to five prompt variables, and uses the OpenAI Responses API (with optional web search) to generate new column content. It outputs results to S3 in CSV and Parquet formats.
+
+It supports configurable write modes (`full_table` or `processed_only`) and an `overwrite_existing` flag to control whether only missing rows or all rows are processed. Output is validated for non-empty content, word count limits, and optional regex patterns. Other features include citation removal, autosaving, unique row IDs, GPT-5 family model support, and reasoning/verbosity options.
+
+Run the script with a YAML configuration that specifies S3 details, target columns, prompt variables, output columns, prompt templates, LLM parameters, retry/delay settings, modes, overwrite behavior, and validation rules. Example YAMLs show how to add columns like "conflicts_of_interest" and "absence_reason" for Irish politicians using LLM and web search content.
+
+## Assets
+
+The pipeline includes these key assets:
+
+- **Python Script**  
+  - `llm_table_runner.py` at `process/llm_table_runner.py` in the GitHub repo.  
+  - Reads CSV from S3, retains selected columns, creates up to five prompt variables, calls OpenAI Responses API, and writes output CSV and Parquet files to S3.  
+  - Write modes:  
+    - `full_table`: entire dataset with input, kept, and output columns.  
+    - `processed_only`: only rows processed in current run.  
+  - Overwrite:  
+    - `true`: recomputes the output column for all/test rows.  
+    - `false` (default): fills only missing values for resumable runs.  
+  - Includes helper S3 functions and a `TaskConfig` dataclass for YAML loading.  
+  - Validation for non-empty, word count, and optional regex.  
+  - Autosave for incremental S3 writes.  
+  - Command line argument specifies the YAML task config.
+
+- **YAML Configuration Files**  
+  - Define S3 paths, columns, IDs, prompt variables, output column, prompt template, LLM params, run mode, and validation.  
+  - Example files include `tasks/llm_task_template.yml` and `tasks/Absence_Reasons.yml`, specifying S3 details, kept columns, prompt variables, and model (`gpt-4.1-mini`).
+
+- **Output Files**  
+  - Written to S3 as CSV and Parquet (Snappy compressed).
+
+- **GitHub Actions Workflows**  
+  - `.github/workflows/llm_task_controller_template.yml` and `.github/workflows/Absence_Reason_Manual.yml` allow manual runs, set AWS/OpenAI credentials, install dependencies, and run the script with a YAML config.
+
+## Inputs and Outputs
+
+### Inputs
+The pipeline reads a CSV from S3 specified by the YAML config (`bucket`, `input_key`). Selected columns are kept (`keep_cols`). A row ID is sourced from `id_col` or generated from `id_hash_cols`. Up to five columns serve as prompt variables (`var_cols`) for filling placeholders in the prompt template.
+
+### Outputs
+A new column (`output_col`) is generated by LLM calls, validated for non-empty, word count, and optional regex. If validation fails, the LLM attempts a correction. The output column is appended and saved to S3 as CSV (`output_csv_key`) and Parquet (`output_parquet_key`). Write mode (`full_table` or `processed_only`) and the `overwrite_existing` flag control which rows are processed. Autosave and test mode (`test_rows`) are supported.
+
+## How it works
+
+The pipeline updates input CSV/Parquet files by adding new columns generated from other columns or LLM outputs. It is driven by a YAML config.
+
+Input files are loaded from S3; selected columns are kept. Each row is assigned a unique ID from a specified column or hash. Existing output files are loaded if present to avoid recomputation.
+
+Up to five variables from columns are used in the prompt template. The OpenAI Responses API is called (optionally with web search) per row to generate the new column, with optional citation removal.
+
+Rows to process are chosen by missing output or overwrite mode. Each prompt is rendered, sent to the LLM, and the output is validated (non-empty, word count, optional regex). If invalid, a repair prompt is used.
+
+Progress is autosaved at intervals. Output is written to S3 as CSV and Parquet. Two write modes are offered (`full_table`, `processed_only`). The script is executed via a single YAML configuration file specifying all parameters.
+
+## How to run
+
+Run the script `process/llm_table_runner.py` with a YAML config:
+
+```bash
+python process/llm_table_runner.py <task_config.yml>
+```
+
+### Configuration
+
+The YAML config specifies:
+
+- S3 bucket and file keys
+- Columns to keep and ID columns
+- Prompt variables and output column
+- Prompt template and LLM model/settings
+- Write mode and overwrite flag
+- Validation rules
+
+### Data Input and Output
+
+- Reads input CSV from S3 (`input_key`)
+- Writes output CSV and Parquet to S3 (`output_csv_key`, `output_parquet_key`)
+
+### Write Modes and Overwrite
+
+- `full_table`: writes all input rows with output column
+- `processed_only`: writes only processed rows
+- `overwrite_existing`: 
+  - `true`: recomputes all rows
+  - `false`: fills only missing values
+
+### Test Mode
+
+Limit rows processed via `test_rows` in the config.
+
+### Environment Variables
+
+Required:
+
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`
+- `OPENAI_API_KEY`
+
+### Dependencies
+
+Requires Python 3.11 and:
+
+- `boto3`
+- `pandas`
+- `pyarrow`
+- `pyyaml`
+- OpenAI Python client
+
+### Running via GitHub Actions
+
+GitHub workflows can run the pipeline by:
+
+- Checking out the repo
+- Setting up Python 3.11
+- Installing dependencies
+- Optionally overriding `test_rows`
+- Running the script with YAML config
+
+### Output and Logging
+
+The script reports:
+
+- S3 input/output paths
+- Model info
+- Number of rows processed
+- Autosave events
+- Completion status
+
+## Data quality and validation
+
+Validation parameters are defined in the `validation` section of the YAML config:
+
+- `require_non_empty` (bool): Output must not be empty, else `"empty_output"`.
+- `max_words` (int): Output is clamped at this word count.
+- `regex_must_match` (regex string): Output must match or fail with `"regex_failed"`.
+
+Validation returns a success flag, failure reason, and cleaned/original text. On failure, a repair prompt is appended, and LLM is called again. If still invalid, the original output is not used.
+
+Existing outputs are loaded to skip previously processed rows unless overwriting. Missing values (None, empty, "nan", etc.) are robustly detected.
+
+Autosaves occur every `autosave_interval` rows. Output is written in CSV and Parquet formats using the write mode setting.
+
+Rows are identified by an ID column or by a SHA-256 hash (24 chars) of specified columns. Overwriting fills all rows; otherwise, only missing values are populated. Defaults require non-empty output and a 2000 word limit.
+
+## Maintenance
+
+Configuration is via YAML, covering S3 paths, columns, IDs, prompts, output, LLM, run parameters, write mode, and validation.
+
+Input files are read from S3; outputs are written in CSV (UTF-8) and Parquet formats. Two write modes: `full_table` (all rows) and `processed_only` (current run).
+
+Overwrite is controlled by `overwrite_existing`. If true, all results are recomputed. If false, only missing values are filled to support resumable runs.
+
+Row IDs are sourced or generated by hashing. Existing output files are loaded to preserve data. Only rows missing the output value are processed unless overwrite is set.
+
+Test mode limits row count via `test_rows`. Autosave minimizes data loss.
+
+OpenAI API calls are retried per `max_retries` and delayed per `delay_between_requests`. Validation includes non-empty, word count, and optional regex with repair attempts.
+
+Up to five prompt variables per row can be used; citation removal and optional web search are supported.
+
+Python dependencies: `boto3`, `pandas`, `pyarrow`, `pyyaml`, OpenAI client. Execute with:
+
+```bash
+python process/llm_table_runner.py <task_config.yml>
+```
+
+GitHub Actions workflows provide manual runs, environment setup, dependencies, and optional `test_rows` override.
+
+## Orchestration
+
+Orchestration relies on a YAML config that specifies all S3/file/column/LLM/run/validation parameters. The runner script (`llm_table_runner.py`) processes the table using LLM calls per config.
+
+Input CSV is read from S3, selected columns become prompt variables. OpenAI Responses API is called (with optional web search), outputting new column content.
+
+Write modes:
+
+- `full_table`: all input + output columns.
+- `processed_only`: only rows processed in this run.
+
+`overwrite_existing` controls recomputation of all/test rows or filling only missing values.
+
+Autosave is interval-based (`autosave_interval`). LLM outputs are validated (non-empty, word count, regex). If failed, a repair prompt is used. Only valid outputs are kept.
+
+Row uniqueness is maintained with an ID column or by hashing columns. Existing outputs are loaded unless overwriting.
+
+Retry logic is configurable (`max_retries`, `delay_between_requests`). GitHub workflows run the script, inject environment variables, and support overriding `test_rows`. Output is written to S3 as CSV and Parquet.
+
+## Lineage
+
+The pipeline is implemented by `llm_table_runner.py` using a YAML config specifying all file, column, and prompt details. It reads/writes S3 CSV and Parquet files.
+
+Selected columns are kept, up to five variables are used in prompt templates, and the OpenAI API is called per row to generate a new column.
+
+Rows have a unique ID sourced or generated from a hash. Existing outputs are loaded if present to avoid data loss.
+
+Supports write modes (`full_table`, `processed_only`) and resume/overwrite with appropriate flags.
+
+LLM outputs are validated; if validation fails, a repair prompt is attempted. Retry and autosave mechanisms ensure reliability.
+
+Features include optional citation removal, test mode, configurable request delays, and support for multiple LLM models.
+
+Python dependencies: `boto3`, `pandas`, `pyarrow`, `pyyaml`, OpenAI client. Run with:
+
+```bash
+python process/llm_table_runner.py <task_config.yml>
+```
+
+YAML task files describe all S3, columns, prompt, and validation details. The pipeline is used for use cases like adding `conflicts_of_interest` or `absence_reason` columns.
+
+GitHub workflows provide manual or automated execution with environment variable setup.
