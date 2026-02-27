@@ -1,6 +1,6 @@
 ---
 title: "AutoDoc Creation Pipeline"
-layout: doc
+layout: default
 ---
 
 # Constituency Images Indexer
