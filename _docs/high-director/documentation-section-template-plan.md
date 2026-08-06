@@ -5,8 +5,8 @@ section: high-director
 doc_type: agent
 status: active
 created: 2026-08-05
-updated: 2026-08-05
-last_verified: 2026-08-05
+updated: 2026-08-06
+last_verified: 2026-08-06
 owner: High Director
 order: 30
 permalink: /projects/high-director/documentation-section-template-plan/
@@ -100,43 +100,34 @@ Result: pull request #14 merged successfully; documentation validation and Pages
 
 ### Step 2 — Core implementation templates
 
-Status: in review
-
-Create or revise templates for:
-
-- Repositories
-- Systems
-- Data and Schemas
-- Runbooks
-
-These templates share the strongest operational emphasis and establish the common language for current state, interfaces, dependencies, deployment, validation, failure modes, and continuation.
+Status: merged; deployment requires retry
 
 - [x] Rebuild `_templates/repository-template.md`.
 - [x] Rebuild `_templates/system-template.md`.
 - [x] Add `_templates/data-schema-template.md`.
 - [x] Rebuild `_templates/runbook-template.md`.
 - [x] Update `DOCUMENTATION_STANDARD.md` with shared template usage rules.
-- [x] Open pull request #15.
-- [x] Pass documentation validation for pull request #15.
-- [ ] Merge pull request #15 and confirm the resulting Pages deployment.
+- [x] Open and validate pull request #15.
+- [x] Merge pull request #15.
+- [ ] Obtain a successful Pages deployment for merged commit `ef60fec607d07d1ed180375d11f8041d510066ae` or a later commit containing the same changes.
 
-Approval checkpoint: review the operational template structure before applying it to governance and reference categories.
+Deployment record: Pages run `31110810856` built the Jekyll site successfully, but the deployment job failed after ten minutes. The templates passed documentation validation and the Pages build stage; the deployment state is not yet confirmed successful.
 
 ### Step 3 — Governance and agent templates
 
-Status: not started
+Status: in review
 
-Create or revise templates for:
-
-- Architecture Decisions
-- High Director
+- [x] Rebuild `_templates/decision-template.md`.
+- [x] Add `_templates/high-director-template.md`.
+- [x] Update this persistent plan.
+- [ ] Open and pass validation for the Step 3 pull request.
+- [ ] Merge only after validation passes and the outstanding Pages deployment state is resolved.
+- [ ] Confirm the resulting Pages deployment.
 
 Emphasis:
 
-- Decision context, alternatives, consequences, supersession, and verification.
-- Agent-assisted development context, exact actions taken, constraints, safe continuation, unresolved decisions, and evidence boundaries.
-
-Deliverables follow the same branch, pull request, validation, plan-update, merge, and deployment checks as Step 2.
+- Decision context, alternatives, consequences, supersession, implementation state, reversal, and verification.
+- Agent-assisted development context, exact actions taken, constraints, evidence, security boundaries, safe continuation, and unresolved work.
 
 Approval checkpoint: review decision-record and High Director continuation guidance.
 
@@ -173,8 +164,6 @@ Status: not started
 Approval checkpoint: final template review. Do not begin example documents until this checkpoint is approved.
 
 ## Template Files
-
-The intended category template set is:
 
 - `_templates/repository-template.md`
 - `_templates/system-template.md`
@@ -220,6 +209,10 @@ Control: show configuration names and storage locations only. Never include secr
 
 Control: do not increase validator requirements for existing `_docs` pages solely to support richer templates.
 
+### Deployment uncertainty
+
+Control: distinguish a successful Jekyll build from a successful Pages deployment and do not mark a material step complete until the deployment job succeeds.
+
 ### Premature example work
 
 Control: the example phase remains blocked until Step 5 is approved.
@@ -239,10 +232,10 @@ This initiative is complete only when:
 
 ## Next Safe Action
 
-Merge pull request #15 after the updated plan passes validation, confirm the Pages deployment, then begin Step 3 on a new branch from `main`.
+Open the Step 3 pull request, pass documentation validation, resolve the outstanding Pages deployment state, and merge only after both checks are satisfactory.
 
 ## Verification Record
 
-- Last verified: 2026-08-05
-- Verified against: `main` after pull request #14 and pull request #15 branch state
-- Verification scope: Step 1 merge and deployment state; Step 2 templates, shared standard changes, and documentation validation
+- Last verified: 2026-08-06
+- Verified against: merged pull requests #14 and #15; Pages run `31110810856`; Step 3 branch files
+- Verification scope: template commits, documentation validation state, Jekyll Pages build result, failed deployment result, and Step 3 implementation status
