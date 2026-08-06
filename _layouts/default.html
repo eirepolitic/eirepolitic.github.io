@@ -6,46 +6,39 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ page.title | default: site.title }}</title>
+    <meta name="description" content="{{ page.summary | default: site.description | escape }}" />
+    <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}" />
-    <link rel="stylesheet" href="{{ '/assets/css/docs-nav.css?v=' | append: site.github.build_revision | relative_url }}" />
-    <style>
-      .page-header { padding: 1.25rem 1rem !important; }
-      .project-tagline { margin-top: 0.5rem !important; margin-bottom: 0.75rem !important; }
-      .top-nav { margin-top: 0.5rem; font-size: 1.08rem; line-height: 1.6; }
-      .top-nav a, .top-nav a:visited { color: #ffffff !important; text-decoration: none !important; font-weight: 600; }
-      .top-nav a:hover, .top-nav a:focus { text-decoration: underline !important; }
-      .top-nav .sep { margin: 0 0.6rem; opacity: 0.9; color: #ffffff; }
-      body > main.main-content.wide { max-width: none !important; width: 100% !important; }
-    </style>
+    <link rel="stylesheet" href="{{ '/assets/css/site.css?v=' | append: site.github.build_revision | relative_url }}" />
   </head>
   <body>
-    <header class="page-header" role="banner">
-      <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
-        <div style="width:160px; height:160px; border-radius:9999px; background:#fff; display:flex; align-items:center; justify-content:center;">
-          <img src="{{ '/assets/brand/logo.png' | relative_url }}" alt="Eire Politic logo" style="width:100px; height:100px; object-fit:contain;" />
-        </div>
-        <h1 class="project-name" style="margin:0;"><a style="color:#fff; text-decoration:none;" href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-header" role="banner">
+      <div class="site-header-inner">
+        <a class="site-brand" href="{{ '/' | relative_url }}" aria-label="Eire Politic home">
+          <span class="site-logo"><img src="{{ '/assets/brand/logo.png' | relative_url }}" alt="" /></span>
+          <span>
+            <strong>{{ site.title }}</strong>
+            <small>Technical knowledge base</small>
+          </span>
+        </a>
+        <nav class="primary-nav" aria-label="Primary">
+          <a{% if page.url == '/' %} class="active" aria-current="page"{% endif %} href="{{ '/' | relative_url }}">Home</a>
+          <a{% if page.url contains '/docs/' or page.collection == 'docs' %} class="active" aria-current="page"{% endif %} href="{{ '/docs/' | relative_url }}">Documentation</a>
+          <a{% if page.url == '/articles/' %} class="active" aria-current="page"{% endif %} href="{{ '/articles/' | relative_url }}">Articles</a>
+          <a{% if page.url == '/content/' %} class="active" aria-current="page"{% endif %} href="{{ '/content/' | relative_url }}">Content</a>
+        </nav>
       </div>
-      <p class="project-tagline">{{ site.description }}</p>
-      <nav class="top-nav" aria-label="Primary">
-        <a href="{{ '/' | relative_url }}">Home</a>
-        {% if site.header_pages %}
-          {% for path in site.header_pages %}
-            {% assign my_page = site.pages | where: "path", path | first %}
-            {% if my_page %}
-              <span class="sep">|</span>
-              <a href="{{ my_page.url | relative_url }}">{{ my_page.title }}</a>
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-      </nav>
     </header>
-    <main id="content" class="main-content{% if page.wide == true %} wide{% endif %}" role="main">
+    <main id="content" class="site-main{% if page.wide == true %} site-main-wide{% endif %}" role="main">
       {{ content }}
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a></span>
-      </footer>
     </main>
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <span>{{ site.title }}</span>
+        {% if site.github.repository_url %}<a href="{{ site.github.repository_url }}">View source on GitHub</a>{% endif %}
+      </div>
+    </footer>
+    <script src="{{ '/assets/js/site.js?v=' | append: site.github.build_revision | relative_url }}" defer></script>
   </body>
 </html>
