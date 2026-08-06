@@ -34,14 +34,9 @@ Persistent implementation plan for converting the site into a structured technic
 - **Step 5 — Documentation layout and design system:** Complete — 2026-08-05, PR #7
 - **Step 6 — Homepage redesign:** Complete — 2026-08-05, PR #8
 - **Step 7 — Client-side search:** Complete — 2026-08-05, PR #9
+- **Step 8 — Indexes and relationships:** Complete — 2026-08-05, PR #10
 
-Step 7 added a Jekyll-generated JSON index, ranked browser search across metadata and page text, URL query support, keyboard shortcuts, accessible status messaging, and a dedicated search page requiring no external service.
-
-## Step 8 — Indexes and relationships
-
-**Status:** Not started
-
-Add generated repository, technology, document-type, status, and recent-update indexes, plus related-document links.
+Step 8 added generated repository, technology, document-type, lifecycle-status, and recently-updated indexes. Documentation pages now support explicit related links and automatically list other pages for the same repository.
 
 ## Step 9 — Documentation quality validation
 
