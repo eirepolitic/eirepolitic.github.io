@@ -20,16 +20,10 @@ Every published technical document must include:
 title: Clear human-readable title
 summary: One-sentence description of the document
 section: repositories
-Doc_type: repository
+doc_type: repository
 status: active
 updated: 2026-08-05
 ---
-```
-
-Use the lowercase key `doc_type`; the capitalized example above is invalid. The correct form is:
-
-```yaml
-doc_type: repository
 ```
 
 Required fields:
@@ -140,6 +134,18 @@ Use relevant sections from this order:
 15. Related documentation
 
 Omit sections that add no value. Do not add empty headings.
+
+## Template usage
+
+Use the category template under `_templates/` as the starting point for a new main documentation page.
+
+- Templates are standards and guidance, not rigid forms.
+- Remove guidance text, placeholders, and headings that add no value.
+- Do not publish empty sections.
+- Keep the main page complete for ordinary items.
+- Create subordinate pages only when a topic has a separate owner or verification cycle, requires substantial procedure or reference detail, or makes the main page difficult to scan.
+- Keep the main page authoritative for purpose, current implementation state, source-of-truth locations, dependencies, limitations, outstanding work, next safe action, and verification.
+- Use stable internal links from the main page to subordinate pages and explain the relationship when it is not obvious.
 
 ## Writing rules
 
