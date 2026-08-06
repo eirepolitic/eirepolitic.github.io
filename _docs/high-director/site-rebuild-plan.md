@@ -36,40 +36,34 @@ Persistent implementation plan for converting the site into a structured technic
 
 **Status:** Complete — 2026-08-05, PR #3
 
-Added `DOCUMENTATION_STANDARD.md` and templates for repositories, systems, runbooks, decisions, and references.
+Added `DOCUMENTATION_STANDARD.md` and reusable templates.
 
 ## Step 2 — Jekyll collection foundation
 
 **Status:** Complete — 2026-08-05, PR #4
 
-Configured the `_docs` collection, stable URLs, default metadata, section folders, and the generated `/docs/` index.
+Configured the `_docs` collection, stable URLs, default metadata, section folders, and `/docs/` index.
 
 ## Step 3 — Migrate and normalize existing documentation
 
 **Status:** Complete — 2026-08-05, PR #5
 
-**Completed deliverables**
-
-- Migrated six historical pipeline pages into `_docs/archive/`
-- Migrated High Director pages into `_docs/high-director/`
-- Added normalized metadata and archive lifecycle fields
-- Preserved existing public URLs through explicit permalinks
-- Removed duplicate source pages and obsolete templates
-- Confirmed the existing schemas section contained no documents to migrate
+Migrated archive and High Director documentation, normalized metadata, preserved URLs, and removed duplicate sources.
 
 ## Step 4 — Data-driven navigation
 
-**Status:** Not started
+**Status:** Complete — 2026-08-05, PR #6
 
-Replace folder-substring navigation with metadata-based navigation.
+**Completed deliverables**
 
-**Deliverables**
-
-- Sections: Repositories, Systems, Data and Schemas, Runbooks, Architecture Decisions, High Director, Notes, Archive
-- Ordered navigation using front matter
-- Section landing pages
-- Active-page highlighting
-- Mobile navigation behavior
+- Added ordered section definitions in `_data/docs_sections.yml`
+- Added metadata-driven documentation navigation
+- Added landing pages for all eight sections
+- Added document counts and ordered document lists
+- Added active-section highlighting
+- Added responsive mobile navigation using native disclosure controls
+- Made the `/docs/` index metadata driven
+- Configured collection pages to use the documentation layout
 
 ## Step 5 — Documentation layout and design system
 
