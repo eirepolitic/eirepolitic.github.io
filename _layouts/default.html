@@ -10,6 +10,7 @@
     <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/site.css?v=' | append: site.github.build_revision | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/assets/css/search.css?v=' | append: site.github.build_revision | relative_url }}" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -25,6 +26,7 @@
         <nav class="primary-nav" aria-label="Primary">
           <a{% if page.url == '/' %} class="active" aria-current="page"{% endif %} href="{{ '/' | relative_url }}">Home</a>
           <a{% if page.url contains '/docs/' or page.collection == 'docs' %} class="active" aria-current="page"{% endif %} href="{{ '/docs/' | relative_url }}">Documentation</a>
+          <a{% if page.url == '/search/' %} class="active" aria-current="page"{% endif %} href="{{ '/search/' | relative_url }}">Search</a>
           <a{% if page.url == '/articles/' %} class="active" aria-current="page"{% endif %} href="{{ '/articles/' | relative_url }}">Articles</a>
           <a{% if page.url == '/content/' %} class="active" aria-current="page"{% endif %} href="{{ '/content/' | relative_url }}">Content</a>
         </nav>

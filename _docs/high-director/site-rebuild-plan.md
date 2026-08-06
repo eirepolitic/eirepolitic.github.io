@@ -33,14 +33,9 @@ Persistent implementation plan for converting the site into a structured technic
 - **Step 4 — Data-driven navigation:** Complete — 2026-08-05, PR #6
 - **Step 5 — Documentation layout and design system:** Complete — 2026-08-05, PR #7
 - **Step 6 — Homepage redesign:** Complete — 2026-08-05, PR #8
+- **Step 7 — Client-side search:** Complete — 2026-08-05, PR #9
 
-Step 6 made the knowledge base the primary homepage purpose, added metadata-driven section cards, recent documentation, a High Director continuity panel, and secondary links to articles and published content.
-
-## Step 7 — Client-side search
-
-**Status:** Not started
-
-Add repository-hosted client-side search.
+Step 7 added a Jekyll-generated JSON index, ranked browser search across metadata and page text, URL query support, keyboard shortcuts, accessible status messaging, and a dedicated search page requiring no external service.
 
 ## Step 8 — Indexes and relationships
 
