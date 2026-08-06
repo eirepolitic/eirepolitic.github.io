@@ -35,14 +35,9 @@ Persistent implementation plan for converting the site into a structured technic
 - **Step 6 — Homepage redesign:** Complete — 2026-08-05, PR #8
 - **Step 7 — Client-side search:** Complete — 2026-08-05, PR #9
 - **Step 8 — Indexes and relationships:** Complete — 2026-08-05, PR #10
+- **Step 9 — Documentation quality validation:** Complete — 2026-08-05, PR #11
 
-Step 8 added generated repository, technology, document-type, lifecycle-status, and recently-updated indexes. Documentation pages now support explicit related links and automatically list other pages for the same repository.
-
-## Step 9 — Documentation quality validation
-
-**Status:** Not started
-
-Add automated metadata, permalink, link, asset, and archive checks with GitHub Actions.
+Step 9 added a Python validator for required metadata, allowed values, ISO dates, duplicate permalinks, archived-document fields, internal links, assets, and related-document URLs. A GitHub Actions workflow now runs these checks on relevant pull requests and by manual dispatch.
 
 ## Step 10 — Operational documentation
 
