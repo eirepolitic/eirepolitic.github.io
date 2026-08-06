@@ -36,14 +36,9 @@ Persistent implementation plan for converting the site into a structured technic
 - **Step 7 — Client-side search:** Complete — 2026-08-05, PR #9
 - **Step 8 — Indexes and relationships:** Complete — 2026-08-05, PR #10
 - **Step 9 — Documentation quality validation:** Complete — 2026-08-05, PR #11
+- **Step 10 — Operational documentation:** Complete — 2026-08-05, PR #12
 
-Step 9 added a Python validator for required metadata, allowed values, ISO dates, duplicate permalinks, archived-document fields, internal links, assets, and related-document URLs. A GitHub Actions workflow now runs these checks on relevant pull requests and by manual dispatch.
-
-## Step 10 — Operational documentation
-
-**Status:** Not started
-
-Document editing, publishing, navigation, search, validation, and troubleshooting.
+Step 10 added the Documentation Site Operations runbook covering document creation and editing, publishing, validation, navigation, search, archiving, URL changes, troubleshooting, security, and continuation in a future chat.
 
 ## Step 11 — Final cleanup and release
 
@@ -69,4 +64,4 @@ Complete accessibility, mobile, broken-link, orphaned-file, metadata, and archit
 
 ## Continuation note for a new chat
 
-Read this file, inspect the latest merged pull requests, and continue from the first step whose status is not `Complete`. Update this page in the same pull request as each completed step.
+Read this file, inspect the latest merged pull requests, read `DOCUMENTATION_STANDARD.md` and the Documentation Site Operations runbook, then continue from the first step whose status is not `Complete`. Update this page in the same pull request as each completed step.
