@@ -1,0 +1,32 @@
+- id: repositories
+  title: Repositories
+  description: Source repositories, ownership, workflows, dependencies, and development state.
+  order: 10
+- id: systems
+  title: Systems
+  description: Capabilities and services that span repositories, platforms, or tools.
+  order: 20
+- id: data
+  title: Data and Schemas
+  description: Datasets, schemas, file formats, storage layouts, and data contracts.
+  order: 30
+- id: runbooks
+  title: Runbooks
+  description: Operational procedures for running, validating, troubleshooting, and recovering systems.
+  order: 40
+- id: decisions
+  title: Architecture Decisions
+  description: Important technical choices, alternatives, and consequences.
+  order: 50
+- id: high-director
+  title: High Director
+  description: Agent capabilities, operating rules, build plans, and continuation guidance.
+  order: 60
+- id: notes
+  title: Notes
+  description: Useful technical reference that has not yet become formal system documentation.
+  order: 70
+- id: archive
+  title: Archive
+  description: Historical, superseded, deprecated, or retired documentation.
+  order: 80
