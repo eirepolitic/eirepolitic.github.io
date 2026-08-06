@@ -27,37 +27,24 @@ Persistent implementation plan for converting the site into a structured technic
 
 **Status:** Complete — 2026-08-05, PR #2
 
-Created this persistent plan and exposed it under High Director documentation.
-
 ## Step 1 — Documentation standard
 
 **Status:** Complete — 2026-08-05, PR #3
 
-Defined the content model before migration.
-
-**Completed deliverables**
-
-- `DOCUMENTATION_STANDARD.md`
-- Required and optional front matter fields
-- Allowed sections, document types, and lifecycle statuses
-- Naming, URL, archive, verification, and writing rules
-- Templates for repository, system, runbook, decision, and reference pages
+Added `DOCUMENTATION_STANDARD.md` and templates for repositories, systems, runbooks, decisions, and references.
 
 ## Step 2 — Jekyll collection foundation
 
-**Status:** Not started
+**Status:** Complete — 2026-08-05, PR #4
 
-Create a `_docs` Jekyll collection and configure stable output URLs.
+**Completed deliverables**
 
-**Deliverables**
-
-- `_docs/` directory structure
-- `_config.yml` collection configuration
-- Default front matter rules
-- Basic collection index generation
-- Compatibility check with GitHub Pages
-
-**Checkpoint:** Confirm the collection builds before migrating existing documentation.
+- Configured the `_docs` Jekyll collection with output enabled
+- Added stable `/docs/:path/` permalinks
+- Added default layout and visibility values
+- Added section folders for repositories, systems, data, runbooks, decisions, High Director, notes, and archive
+- Added a generated `/docs/` collection index
+- Preserved all existing documentation during the foundation change
 
 ## Step 3 — Migrate and normalize existing documentation
 
@@ -116,27 +103,11 @@ Build a compact documentation interface.
 
 Make documentation the primary purpose of the homepage.
 
-**Deliverables**
-
-- Knowledge-base purpose statement
-- Main documentation entry points
-- Recently updated documents
-- Active repositories and systems
-- High Director entry point
-- Secondary links to articles and public outputs
-
 ## Step 7 — Client-side search
 
 **Status:** Not started
 
-Add search without an external service.
-
-**Deliverables**
-
-- Jekyll-generated JSON search index
-- Search interface
-- Matching across title, summary, repository, tags, technologies, and page text
-- Keyboard-accessible results
+Add repository-hosted client-side search.
 
 ## Step 8 — Indexes and relationships
 
@@ -148,26 +119,19 @@ Add generated repository, technology, document-type, status, and recent-update i
 
 **Status:** Not started
 
-Add automated checks for metadata, statuses, document types, duplicate permalinks, internal links, assets, and archive fields.
-
-**Deliverables**
-
-- Python validation script
-- GitHub Actions pull-request workflow
-
-**Checkpoint:** Review rules before making failures mandatory.
+Add automated metadata, permalink, link, asset, and archive checks with GitHub Actions.
 
 ## Step 10 — Operational documentation
 
 **Status:** Not started
 
-Document local editing, publishing, new-document creation, archiving, navigation, search, validation, and troubleshooting.
+Document editing, publishing, navigation, search, validation, and troubleshooting.
 
 ## Step 11 — Final cleanup and release
 
 **Status:** Not started
 
-Complete the custom 404 page, accessibility and mobile review, broken-link review, orphan cleanup, metadata normalization, and final architecture summary.
+Complete accessibility, mobile, broken-link, orphaned-file, metadata, and architecture reviews.
 
 ## Decisions already made
 
