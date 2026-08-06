@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/site.css?v=' | append: site.github.build_revision | relative_url }}" />
     <link rel="stylesheet" href="{{ '/assets/css/search.css?v=' | append: site.github.build_revision | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/assets/css/indexes.css?v=' | append: site.github.build_revision | relative_url }}" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -18,10 +19,7 @@
       <div class="site-header-inner">
         <a class="site-brand" href="{{ '/' | relative_url }}" aria-label="Eire Politic home">
           <span class="site-logo"><img src="{{ '/assets/brand/logo.png' | relative_url }}" alt="" /></span>
-          <span>
-            <strong>{{ site.title }}</strong>
-            <small>Technical knowledge base</small>
-          </span>
+          <span><strong>{{ site.title }}</strong><small>Technical knowledge base</small></span>
         </a>
         <nav class="primary-nav" aria-label="Primary">
           <a{% if page.url == '/' %} class="active" aria-current="page"{% endif %} href="{{ '/' | relative_url }}">Home</a>
@@ -32,15 +30,8 @@
         </nav>
       </div>
     </header>
-    <main id="content" class="site-main{% if page.wide == true %} site-main-wide{% endif %}" role="main">
-      {{ content }}
-    </main>
-    <footer class="site-footer">
-      <div class="site-footer-inner">
-        <span>{{ site.title }}</span>
-        {% if site.github.repository_url %}<a href="{{ site.github.repository_url }}">View source on GitHub</a>{% endif %}
-      </div>
-    </footer>
+    <main id="content" class="site-main{% if page.wide == true %} site-main-wide{% endif %}" role="main">{{ content }}</main>
+    <footer class="site-footer"><div class="site-footer-inner"><span>{{ site.title }}</span>{% if site.github.repository_url %}<a href="{{ site.github.repository_url }}">View source on GitHub</a>{% endif %}</div></footer>
     <script src="{{ '/assets/js/site.js?v=' | append: site.github.build_revision | relative_url }}" defer></script>
   </body>
 </html>
