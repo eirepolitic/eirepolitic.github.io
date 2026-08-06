@@ -1,0 +1,37 @@
+name: Validate documentation
+
+on:
+  pull_request:
+    paths:
+      - "_docs/**"
+      - "docs/**"
+      - "assets/**"
+      - "_layouts/**"
+      - "_includes/**"
+      - "_data/**"
+      - "scripts/validate_docs.py"
+      - ".github/workflows/validate-documentation.yml"
+      - "DOCUMENTATION_STANDARD.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install validator dependency
+        run: python -m pip install --disable-pip-version-check PyYAML==6.0.2
+
+      - name: Validate documentation
+        run: python scripts/validate_docs.py
