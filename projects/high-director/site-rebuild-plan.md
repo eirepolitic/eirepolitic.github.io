@@ -8,7 +8,7 @@ updated: 2026-08-05
 
 # Documentation Site Rebuild Plan
 
-This file is the persistent implementation plan for converting the site into a structured technical knowledge base for Eire Politic projects and High Director-assisted development.
+Persistent implementation plan for converting the site into a structured technical knowledge base for Eire Politic projects and High Director-assisted development.
 
 ## Operating rules
 
@@ -18,42 +18,30 @@ This file is the persistent implementation plan for converting the site into a s
 - Preserve existing URLs where practical.
 - Do not store secrets in the repository.
 - Update this plan after each completed step.
-- Mark completed work with a completion date and pull request number.
 
 ## Status key
 
-- `Not started`
-- `In progress`
-- `Blocked`
-- `Complete`
+`Not started` · `In progress` · `Blocked` · `Complete`
 
 ## Step 0 — Record the plan
 
-**Status:** In progress
+**Status:** Complete — 2026-08-05, PR #2
 
-Create this persistent plan and expose it under the High Director documentation section.
-
-**Deliverables**
-
-- Build plan page
-- Clear implementation order
-- Checkpoints and completion records
+Created this persistent plan and exposed it under High Director documentation.
 
 ## Step 1 — Documentation standard
 
-**Status:** Not started
+**Status:** Complete — 2026-08-05, PR #3
 
-Define the content model before moving files.
+Defined the content model before migration.
 
-**Deliverables**
+**Completed deliverables**
 
 - `DOCUMENTATION_STANDARD.md`
 - Required and optional front matter fields
-- Allowed document types and lifecycle statuses
-- Naming, URL, archive, and writing conventions
-- Templates for repository, system, runbook, decision, and general reference pages
-
-**No user input expected.**
+- Allowed sections, document types, and lifecycle statuses
+- Naming, URL, archive, verification, and writing rules
+- Templates for repository, system, runbook, decision, and reference pages
 
 ## Step 2 — Jekyll collection foundation
 
@@ -79,7 +67,7 @@ Move current technical pages into the collection and add consistent metadata.
 
 **Deliverables**
 
-- Existing pipeline documents moved into `_docs/archive/`
+- Pipeline documents moved into `_docs/archive/`
 - Schema documents moved into `_docs/data/`
 - High Director documents moved into `_docs/high-director/`
 - Existing public URLs preserved where practical
@@ -96,19 +84,17 @@ Replace folder-substring navigation with metadata-based navigation.
 
 **Deliverables**
 
-- Top-level sections: Repositories, Systems, Data and Schemas, Runbooks, Architecture Decisions, High Director, Notes, Archive
+- Sections: Repositories, Systems, Data and Schemas, Runbooks, Architecture Decisions, High Director, Notes, Archive
 - Ordered navigation using front matter
 - Section landing pages
 - Active-page highlighting
 - Mobile navigation behavior
 
-**No user input expected unless section names need changing.**
-
 ## Step 5 — Documentation layout and design system
 
 **Status:** Not started
 
-Replace the current large Cayman-style presentation with a compact documentation interface.
+Build a compact documentation interface.
 
 **Deliverables**
 
@@ -119,10 +105,10 @@ Replace the current large Cayman-style presentation with a compact documentation
 - Document metadata panel
 - Automatic on-page table of contents
 - Consistent typography, tables, code blocks, and callouts
-- Centralized CSS and JavaScript assets
+- Centralized CSS and JavaScript
 - Removal of avoidable inline styles
 
-**Checkpoint:** Visual approval before applying optional cosmetic refinements.
+**Checkpoint:** Visual approval before optional cosmetic refinements.
 
 ## Step 6 — Homepage redesign
 
@@ -139,8 +125,6 @@ Make documentation the primary purpose of the homepage.
 - High Director entry point
 - Secondary links to articles and public outputs
 
-**User input may be requested only for wording or featured content.**
-
 ## Step 7 — Client-side search
 
 **Status:** Not started
@@ -153,90 +137,53 @@ Add search without an external service.
 - Search interface
 - Matching across title, summary, repository, tags, technologies, and page text
 - Keyboard-accessible results
-- No external account, database, or paid service
 
 ## Step 8 — Indexes and relationships
 
 **Status:** Not started
 
-Make content discoverable through generated indexes.
-
-**Deliverables**
-
-- Repository index
-- Technology index
-- Document-type index
-- Status index
-- Recently updated index
-- Related-document links
-- Source repository and source path links where available
+Add generated repository, technology, document-type, status, and recent-update indexes, plus related-document links.
 
 ## Step 9 — Documentation quality validation
 
 **Status:** Not started
 
-Add automated checks for documentation integrity.
+Add automated checks for metadata, statuses, document types, duplicate permalinks, internal links, assets, and archive fields.
 
 **Deliverables**
 
 - Python validation script
-- Required metadata checks
-- Status and document-type validation
-- Duplicate permalink detection
-- Broken internal link checks
-- Missing asset checks
-- Archive metadata checks
 - GitHub Actions pull-request workflow
 
-**Checkpoint:** Review validation rules before making failures mandatory.
+**Checkpoint:** Review rules before making failures mandatory.
 
 ## Step 10 — Operational documentation
 
 **Status:** Not started
 
-Document how the site itself is maintained.
-
-**Deliverables**
-
-- Local editing and publishing instructions
-- New-document workflow
-- Archive workflow
-- Navigation behavior
-- Search-index behavior
-- Validation and troubleshooting guide
-- High Director continuation instructions
+Document local editing, publishing, new-document creation, archiving, navigation, search, validation, and troubleshooting.
 
 ## Step 11 — Final cleanup and release
 
 **Status:** Not started
 
-Complete a final repository and live-site review.
-
-**Deliverables**
-
-- Custom 404 page
-- Accessibility and mobile review
-- Broken-link review
-- Orphaned-file cleanup
-- Metadata normalization
-- Final architecture summary
-- Update this plan with all pull requests and completion dates
+Complete the custom 404 page, accessibility and mobile review, broken-link review, orphan cleanup, metadata normalization, and final architecture summary.
 
 ## Decisions already made
 
 - Keep GitHub Pages and Jekyll.
-- Use Markdown as the primary documentation format.
-- Keep the site optimized for internal technical reference first.
-- Treat portfolio value as a secondary result of clear, attractive documentation.
+- Use Markdown as the primary format.
+- Optimize for internal technical reference first.
+- Treat portfolio value as a secondary result.
 - Avoid external services where repository-hosted functionality is sufficient.
 - Prefer metadata-driven organization over folder-name logic.
 
 ## Decisions that may require user input later
 
-- Whether selected documentation should be explicitly marked private-sensitive and excluded from publication.
-- Which repositories and systems should be featured on the homepage.
-- Whether archived pages should remain searchable by default.
-- Whether the final visual style should be light-only or include a dark mode.
+- Whether selected documentation should be excluded from publication.
+- Which repositories and systems should be featured.
+- Whether archived pages should be searched by default.
+- Whether to add dark mode.
 
 ## Continuation note for a new chat
 
