@@ -24,10 +24,6 @@ Persistent implementation plan for converting the site into a structured technic
 - Do not store secrets in the repository.
 - Update this plan after each completed step.
 
-## Status key
-
-`Not started` · `In progress` · `Blocked` · `Complete`
-
 ## Completed steps
 
 - **Step 0 — Record the plan:** Complete — 2026-08-05, PR #2
@@ -36,14 +32,9 @@ Persistent implementation plan for converting the site into a structured technic
 - **Step 3 — Migrate and normalize documentation:** Complete — 2026-08-05, PR #5
 - **Step 4 — Data-driven navigation:** Complete — 2026-08-05, PR #6
 - **Step 5 — Documentation layout and design system:** Complete — 2026-08-05, PR #7
+- **Step 6 — Homepage redesign:** Complete — 2026-08-05, PR #8
 
-Step 5 delivered a compact sticky header, responsive documentation sidebar, breadcrumbs, status and metadata panels, archive notices, automatic on-page contents, centralized CSS and JavaScript, accessible navigation, and consistent styles for prose, code, tables, callouts, and section cards.
-
-## Step 6 — Homepage redesign
-
-**Status:** Not started
-
-Make documentation the primary purpose of the homepage.
+Step 6 made the knowledge base the primary homepage purpose, added metadata-driven section cards, recent documentation, a High Director continuity panel, and secondary links to articles and published content.
 
 ## Step 7 — Client-side search
 
