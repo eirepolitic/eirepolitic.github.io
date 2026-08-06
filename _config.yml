@@ -1,8 +1,22 @@
 title: Eire Politic
 theme: jekyll-theme-cayman
-description: Data pipelines, classification, and dashboards for Irish politics
+description: Technical documentation for Eire Politic repositories, systems, data, infrastructure, and High Director-assisted development
+
+collections:
+  docs:
+    output: true
+    permalink: /docs/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: docs
+    values:
+      layout: page
+      visibility: public
 
 header_pages:
+  - docs/index.md
   - projects/index.md
   - articles.md
   - content.md
