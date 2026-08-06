@@ -7,72 +7,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ page.title | default: site.title }}</title>
-    <link
-      rel="stylesheet"
-      href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}"
-    />
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/assets/css/docs-nav.css?v=' | append: site.github.build_revision | relative_url }}" />
     <style>
-      /* Make Cayman header shorter */
-      .page-header {
-        padding: 1.25rem 1rem !important;
-      }
-      .project-tagline {
-        margin-top: 0.5rem !important;
-        margin-bottom: 0.75rem !important;
-      }
-
-      /* Header nav styling override for Cayman */
-      .top-nav {
-        margin-top: 0.5rem;
-        font-size: 1.08rem;
-        line-height: 1.6;
-      }
-      .top-nav a,
-      .top-nav a:visited {
-        color: #ffffff !important;
-        text-decoration: none !important;
-        font-weight: 600;
-      }
-      .top-nav a:hover,
-      .top-nav a:focus {
-        text-decoration: underline !important;
-      }
-      .top-nav .sep {
-        margin: 0 0.6rem;
-        opacity: 0.9;
-        color: #ffffff;
-      }
-
-      /* Opt-in wide pages (set `wide: true` in page front matter)
-         Use higher specificity to beat Cayman defaults. */
-      body > main.main-content.wide {
-        max-width: none !important;
-        width: 100% !important;
-      }
+      .page-header { padding: 1.25rem 1rem !important; }
+      .project-tagline { margin-top: 0.5rem !important; margin-bottom: 0.75rem !important; }
+      .top-nav { margin-top: 0.5rem; font-size: 1.08rem; line-height: 1.6; }
+      .top-nav a, .top-nav a:visited { color: #ffffff !important; text-decoration: none !important; font-weight: 600; }
+      .top-nav a:hover, .top-nav a:focus { text-decoration: underline !important; }
+      .top-nav .sep { margin: 0 0.6rem; opacity: 0.9; color: #ffffff; }
+      body > main.main-content.wide { max-width: none !important; width: 100% !important; }
     </style>
   </head>
-
   <body>
     <header class="page-header" role="banner">
       <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
         <div style="width:160px; height:160px; border-radius:9999px; background:#fff; display:flex; align-items:center; justify-content:center;">
-          <img
-            src="{{ '/assets/brand/logo.png' | relative_url }}"
-            alt="Eire Politic logo"
-            style="width:100px; height:100px; object-fit:contain;"
-          />
+          <img src="{{ '/assets/brand/logo.png' | relative_url }}" alt="Eire Politic logo" style="width:100px; height:100px; object-fit:contain;" />
         </div>
-
-        <h1 class="project-name" style="margin:0;">
-          <a style="color:#fff; text-decoration:none;" href="{{ '/' | relative_url }}">{{ site.title }}</a>
-        </h1>
+        <h1 class="project-name" style="margin:0;"><a style="color:#fff; text-decoration:none;" href="{{ '/' | relative_url }}">{{ site.title }}</a></h1>
       </div>
-
       <p class="project-tagline">{{ site.description }}</p>
-
       <nav class="top-nav" aria-label="Primary">
         <a href="{{ '/' | relative_url }}">Home</a>
-
         {% if site.header_pages %}
           {% for path in site.header_pages %}
             {% assign my_page = site.pages | where: "path", path | first %}
@@ -84,14 +41,10 @@
         {% endif %}
       </nav>
     </header>
-
     <main id="content" class="main-content{% if page.wide == true %} wide{% endif %}" role="main">
       {{ content }}
-
       <footer class="site-footer">
-        <span class="site-footer-owner">
-          <a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a>
-        </span>
+        <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a></span>
       </footer>
     </main>
   </body>
