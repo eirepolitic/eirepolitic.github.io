@@ -12,11 +12,10 @@ defaults:
       path: ""
       type: docs
     values:
-      layout: page
+      layout: docs
       visibility: public
 
 header_pages:
   - docs/index.md
-  - projects/index.md
   - articles.md
   - content.md

@@ -1,0 +1,23 @@
+---
+layout: docs
+---
+
+{{ content }}
+
+{% assign section_docs = site.docs | where: 'section', page.section | where_exp: 'doc', "doc.visibility != 'private'" | sort: 'order' %}
+{% if section_docs.size > 0 %}
+  <ul class="docs-list">
+  {% for doc in section_docs %}
+    <li{% if page.url == doc.url %} class="active"{% endif %}>
+      <a href="{{ doc.url | relative_url }}">{{ doc.title }}</a>
+      {% if doc.summary %}<p>{{ doc.summary }}</p>{% endif %}
+      <div class="docs-list-meta">
+        {% if doc.status %}<span>{{ doc.status }}</span>{% endif %}
+        {% if doc.updated %}<span>Updated {{ doc.updated | date: '%Y-%m-%d' }}</span>{% endif %}
+      </div>
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p>No documents have been added to this section yet.</p>
+{% endif %}
