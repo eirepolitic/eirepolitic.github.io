@@ -28,50 +28,16 @@ Persistent implementation plan for converting the site into a structured technic
 
 `Not started` · `In progress` · `Blocked` · `Complete`
 
-## Step 0 — Record the plan
+## Completed steps
 
-**Status:** Complete — 2026-08-05, PR #2
+- **Step 0 — Record the plan:** Complete — 2026-08-05, PR #2
+- **Step 1 — Documentation standard:** Complete — 2026-08-05, PR #3
+- **Step 2 — Jekyll collection foundation:** Complete — 2026-08-05, PR #4
+- **Step 3 — Migrate and normalize documentation:** Complete — 2026-08-05, PR #5
+- **Step 4 — Data-driven navigation:** Complete — 2026-08-05, PR #6
+- **Step 5 — Documentation layout and design system:** Complete — 2026-08-05, PR #7
 
-## Step 1 — Documentation standard
-
-**Status:** Complete — 2026-08-05, PR #3
-
-Added `DOCUMENTATION_STANDARD.md` and reusable templates.
-
-## Step 2 — Jekyll collection foundation
-
-**Status:** Complete — 2026-08-05, PR #4
-
-Configured the `_docs` collection, stable URLs, default metadata, section folders, and `/docs/` index.
-
-## Step 3 — Migrate and normalize existing documentation
-
-**Status:** Complete — 2026-08-05, PR #5
-
-Migrated archive and High Director documentation, normalized metadata, preserved URLs, and removed duplicate sources.
-
-## Step 4 — Data-driven navigation
-
-**Status:** Complete — 2026-08-05, PR #6
-
-**Completed deliverables**
-
-- Added ordered section definitions in `_data/docs_sections.yml`
-- Added metadata-driven documentation navigation
-- Added landing pages for all eight sections
-- Added document counts and ordered document lists
-- Added active-section highlighting
-- Added responsive mobile navigation using native disclosure controls
-- Made the `/docs/` index metadata driven
-- Configured collection pages to use the documentation layout
-
-## Step 5 — Documentation layout and design system
-
-**Status:** Not started
-
-Build a compact documentation interface with a compact header, desktop sidebar, responsive mobile navigation, breadcrumbs, metadata, page contents, consistent components, and centralized assets.
-
-**Checkpoint:** Visual approval before optional cosmetic refinements.
+Step 5 delivered a compact sticky header, responsive documentation sidebar, breadcrumbs, status and metadata panels, archive notices, automatic on-page contents, centralized CSS and JavaScript, accessible navigation, and consistent styles for prose, code, tables, callouts, and section cards.
 
 ## Step 6 — Homepage redesign
 
