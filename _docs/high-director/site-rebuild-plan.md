@@ -13,16 +13,16 @@ permalink: /projects/high-director/site-rebuild-plan/
 
 # Documentation Site Rebuild Plan
 
-Persistent implementation plan for converting the site into a structured technical knowledge base for Eire Politic projects and High Director-assisted development.
+The initial rebuild of the Eire Politic documentation site is complete.
 
 ## Operating rules
 
-- Complete one step per chat checkpoint where practical.
-- Keep each step small enough to implement, review, and merge in one session.
 - Use branches and pull requests for material changes.
-- Preserve existing URLs where practical.
-- Do not store secrets in the repository.
-- Update this plan after each completed step.
+- Preserve established public URLs where practical.
+- Never commit secrets or confidential information.
+- Follow `DOCUMENTATION_STANDARD.md`.
+- Validate changes before merging.
+- Verify the Pages deployment after merging.
 
 ## Completed steps
 
@@ -37,31 +37,33 @@ Persistent implementation plan for converting the site into a structured technic
 - **Step 8 — Indexes and relationships:** Complete — 2026-08-05, PR #10
 - **Step 9 — Documentation quality validation:** Complete — 2026-08-05, PR #11
 - **Step 10 — Operational documentation:** Complete — 2026-08-05, PR #12
+- **Step 11 — Final cleanup and release:** Complete — 2026-08-05, PR #13
 
-Step 10 added the Documentation Site Operations runbook covering document creation and editing, publishing, validation, navigation, search, archiving, URL changes, troubleshooting, security, and continuation in a future chat.
+Step 11 added a custom 404 page, a final architecture summary, stronger keyboard focus and reduced-motion behavior, small-screen safeguards, and removal of obsolete placeholder files.
 
-## Step 11 — Final cleanup and release
+## Final architecture
 
-**Status:** Not started
+- Hosting: GitHub Pages
+- Generator: Jekyll
+- Technical content: `_docs/`
+- Metadata standard: `DOCUMENTATION_STANDARD.md`
+- Navigation model: `_data/docs_sections.yml`
+- Search: generated JSON index and browser JavaScript
+- Validation: `scripts/validate_docs.py` and GitHub Actions
+- Operations guide: Documentation Site Operations runbook
+- Architecture reference: Documentation Site Architecture
 
-Complete accessibility, mobile, broken-link, orphaned-file, metadata, and architecture reviews.
+## Future work
 
-## Decisions already made
+Future work should be tracked as normal documentation or a new focused build plan rather than extending this completed rebuild plan.
 
-- Keep GitHub Pages and Jekyll.
-- Use Markdown as the primary format.
-- Optimize for internal technical reference first.
-- Treat portfolio value as a secondary result.
-- Avoid external services where repository-hosted functionality is sufficient.
-- Prefer metadata-driven organization over folder-name logic.
+Potential optional improvements:
 
-## Decisions that may require user input later
-
-- Whether selected documentation should be excluded from publication.
-- Which repositories and systems should be featured.
-- Whether archived pages should be searched by default.
-- Whether to add dark mode.
+- Add repository and system documentation as projects are reviewed.
+- Decide whether dark mode is useful.
+- Decide whether archived documents should remain in default search results.
+- Add selected homepage features when active repositories are documented.
 
 ## Continuation note for a new chat
 
-Read this file, inspect the latest merged pull requests, read `DOCUMENTATION_STANDARD.md` and the Documentation Site Operations runbook, then continue from the first step whose status is not `Complete`. Update this page in the same pull request as each completed step.
+Read `DOCUMENTATION_STANDARD.md`, Documentation Site Operations, Documentation Site Architecture, and the latest merged pull requests. Create a new focused plan for any substantial future initiative.
