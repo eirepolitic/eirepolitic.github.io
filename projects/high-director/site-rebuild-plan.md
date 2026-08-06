@@ -29,7 +29,7 @@ This file is the persistent implementation plan for converting the site into a s
 
 ## Step 0 — Record the plan
 
-**Status:** In progress
+**Status:** Complete — 2026-08-05, PR #2
 
 Create this persistent plan and expose it under the High Director documentation section.
 
@@ -41,7 +41,7 @@ Create this persistent plan and expose it under the High Director documentation 
 
 ## Step 1 — Documentation standard
 
-**Status:** Not started
+**Status:** Complete — 2026-08-05
 
 Define the content model before moving files.
 
