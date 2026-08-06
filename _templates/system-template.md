@@ -1,72 +1,128 @@
 ---
-title: System Name
-summary: One-sentence description of the system.
+title: <System name>
+summary: <One sentence describing the system outcome, users, and boundary>
 section: systems
 doc_type: system
 status: active
-repositories: []
-technologies: []
-tags: []
-created: 2026-08-05
-updated: 2026-08-05
-last_verified: 2026-08-05
-order: 10
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+last_verified: YYYY-MM-DD
+owner: <Person or team>
+system: <Canonical system name>
+order: 100
+permalink: /projects/systems/<slug>/
+# Optional:
+# repository: <Primary repository name>
+# tags:
+#   - <platform>
+#   - <domain>
 ---
 
-# System Name
+# <System name>
 
-## Overview
+> Keep this page authoritative for the complete system boundary. Remove headings that add no value rather than leaving them empty.
 
-Describe the capability and its users.
+## Summary
 
-## Current state
+State the business or technical outcome, principal users or consumers, and what is inside and outside the system boundary.
 
-State what is deployed, active, paused, or planned.
+## Current Implementation State
 
-## Source of truth
+Describe what is operating now across all repositories and platforms. Separate deployed, partially implemented, planned, retired, and unverified components.
 
-List authoritative repositories, workflows, AWS resources, applications, and reports.
+Include current environments, active integrations, significant manual steps, and known differences between intended and actual operation.
+
+## System Boundary
+
+Define included components, excluded responsibilities, external actors, and ownership boundaries. Name exact repositories, AWS services, Appsmith apps, Power BI workspaces, Power Automate flows, GitHub workflows, datasets, and other platforms where applicable.
+
+## Source of Truth
+
+List authoritative sources for the system and explain which concern each governs.
+
+| Concern | Authoritative source | Exact location |
+| --- | --- | --- |
+| Application code | `<repository>` | `<path>` |
+| Infrastructure | `<repository or platform>` | `<path or resource name>` |
+| Schema | `<document or registry>` | `<stable link or path>` |
+| Operational procedure | `<runbook>` | `<stable internal link>` |
+| Configuration | `<platform or repository>` | `<file, environment, or setting name>` |
 
 ## Architecture
 
-Describe components, boundaries, and data flow.
+Describe the major components, trust boundaries, data flow, control flow, and integration methods. Link to an architecture decision or detailed diagram when necessary.
 
-## Inputs and outputs
+Use exact interface names, queues, buckets, tables, APIs, workflows, apps, reports, and connection names.
 
-Document data sources, formats, destinations, and consumers.
+## Components and Repositories
+
+For each component, state its purpose, owner, repository or platform location, deployment state, and relationship to other components.
+
+## Inputs and Outputs
+
+### Inputs
+
+Document producers, interfaces, formats, frequencies, expected volumes, validation rules, and sensitivity.
+
+### Outputs
+
+Document consumers, interfaces, formats, destinations, service expectations, retention, and compatibility obligations.
 
 ## Dependencies
 
-List repositories, services, datasets, and external tools.
+List internal systems, external services, repositories, datasets, identities, infrastructure, schedules, and human processes required for operation. Identify critical and optional dependencies.
 
 ## Configuration
 
-Document configuration names and locations without secret values.
+Record configuration object names and locations without values. Include environment variables, GitHub variables and secret names, AWS parameters, Appsmith datasources, Power BI connections, Power Automate connections, schedules, and feature flags when relevant.
 
-## Operation
+## Deployment and Environments
 
-Explain how the system is run, monitored, and maintained.
+Describe each environment, deployment trigger, workflow or manual path, target resources, approvals, migration requirements, rollback method, and post-deployment verification.
+
+## Operation and Monitoring
+
+Explain schedules, triggers, health signals, dashboards, logs, alerts, ownership, routine maintenance, capacity checks, and operational dependencies.
+
+Link detailed procedures to runbooks rather than duplicating them.
 
 ## Validation
 
-Explain how to confirm expected behavior.
+State how component behavior, interfaces, schemas, end-to-end flow, deployment, and documentation are verified. Record expected evidence and the last verified environment or release.
 
-## Failure modes
+## Failure Modes and Recovery
 
-List likely failures, indicators, and recovery references.
+Summarize likely cross-component failures, symptoms, evidence locations, safe first checks, containment boundaries, and authoritative recovery runbooks.
 
-## Security considerations
+## Security and Access
 
-Document access boundaries and sensitive data considerations.
+Describe identities, roles, trust boundaries, network boundaries, data classifications, secret stores, least-privilege expectations, audit evidence, and prohibited data handling.
 
-## Known limitations
+Name configuration and secret objects only. Never include secret values, credentials, tokens, private keys, or confidential identifiers.
 
-Record current constraints.
+## Known Limitations
 
-## How to continue development
+Record current architectural, operational, data, platform, scaling, resilience, observability, and support limitations.
 
-State outstanding work and the next safe action.
+## Outstanding Work
 
-## Related documentation
+List actionable work across components, with repository or platform location, dependency, blocker, and relevant issue or plan.
 
-- Add related site links.
+## Next Safe Development Action
+
+State the smallest coordinated action that can proceed without guessing. Name the exact component, repository or platform object, prerequisite checks, expected impact, and validation path.
+
+## Related Documents
+
+Link repositories, schemas, runbooks, architecture decisions, component documentation, and dependent systems using stable internal links. State parent, child, upstream, downstream, or supersession relationships where useful.
+
+## Verification Record
+
+- Last verified: `YYYY-MM-DD`
+- Verified against: `<environments, deployments, repositories, workflow runs, or authoritative sources>`
+- Verified by: `<person or process>`
+- Verification scope: `<components and flows actually checked>`
+
+## When to Create Subordinate Pages
+
+Create subordinate pages for independently owned components, detailed architecture, interfaces, deployment procedures, environment-specific operation, migrations, or complex failure recovery. Keep this overview authoritative for system purpose, boundary, current state, component map, end-to-end inputs and outputs, dependencies, limitations, outstanding work, and next safe action.

@@ -88,19 +88,19 @@ Every category template will include:
 
 ### Step 1 — Plan and compatibility baseline
 
-Status: in progress
+Status: complete
 
 - [x] Review the required standards, architecture, operations runbook, rebuild plan, section metadata, layouts, existing templates, validation script, current `_docs` documents, repository tree, and recent merged pull requests.
 - [x] Confirm the template initiative can proceed without layout or navigation changes.
-- [x] Commit this persistent plan on a dedicated branch.
-- [x] Open the plan pull request.
-- [ ] Pass validation, merge pull request #14, and confirm the resulting Pages deployment.
+- [x] Commit the persistent plan on a dedicated branch.
+- [x] Pass validation and merge pull request #14.
+- [x] Confirm the GitHub Pages deployment for the merged change.
 
-Approval checkpoint: review the persistent plan and baseline assumptions.
+Result: pull request #14 merged successfully; documentation validation and Pages deployment completed successfully.
 
 ### Step 2 — Core implementation templates
 
-Status: not started
+Status: in review
 
 Create or revise templates for:
 
@@ -109,15 +109,16 @@ Create or revise templates for:
 - Data and Schemas
 - Runbooks
 
-These templates share the strongest operational emphasis and will establish the common language for current state, interfaces, dependencies, deployment, validation, failure modes, and continuation.
+These templates share the strongest operational emphasis and establish the common language for current state, interfaces, dependencies, deployment, validation, failure modes, and continuation.
 
-Deliverables:
-
-- Four category-specific template files under `_templates/`.
-- Any narrowly required update to `DOCUMENTATION_STANDARD.md` explaining template usage and omission rules.
-- Updated completion state in this plan.
-- Passing documentation validation.
-- Merged pull request and confirmed Pages deployment.
+- [x] Rebuild `_templates/repository-template.md`.
+- [x] Rebuild `_templates/system-template.md`.
+- [x] Add `_templates/data-schema-template.md`.
+- [x] Rebuild `_templates/runbook-template.md`.
+- [x] Update `DOCUMENTATION_STANDARD.md` with shared template usage rules.
+- [x] Open pull request #15.
+- [x] Pass documentation validation for pull request #15.
+- [ ] Merge pull request #15 and confirm the resulting Pages deployment.
 
 Approval checkpoint: review the operational template structure before applying it to governance and reference categories.
 
@@ -171,9 +172,9 @@ Status: not started
 
 Approval checkpoint: final template review. Do not begin example documents until this checkpoint is approved.
 
-## Proposed Template Files
+## Template Files
 
-Final names will be checked against existing conventions before Step 2 implementation. The intended set is:
+The intended category template set is:
 
 - `_templates/repository-template.md`
 - `_templates/system-template.md`
@@ -238,10 +239,10 @@ This initiative is complete only when:
 
 ## Next Safe Action
 
-Pass validation for pull request #14, merge the plan, confirm Pages deployment, then begin Step 2 on a new branch from `main`.
+Merge pull request #15 after the updated plan passes validation, confirm the Pages deployment, then begin Step 3 on a new branch from `main`.
 
 ## Verification Record
 
 - Last verified: 2026-08-05
-- Verified against: `main` after merged pull request #13
-- Verification scope: required standards, architecture and operations documents, section data, layouts, templates, validator, existing `_docs` content, repository tree, and recent merged pull requests
+- Verified against: `main` after pull request #14 and pull request #15 branch state
+- Verification scope: Step 1 merge and deployment state; Step 2 templates, shared standard changes, and documentation validation
