@@ -1,7 +1,7 @@
 ---
 title: <Dataset or schema name>
 summary: <One sentence stating what the data represents, its grain, and primary use>
-section: data-schemas
+section: data
 doc_type: reference
 status: active
 created: YYYY-MM-DD
@@ -9,7 +9,7 @@ updated: YYYY-MM-DD
 last_verified: YYYY-MM-DD
 owner: <Person or team>
 order: 100
-permalink: /projects/data-schemas/<slug>/
+permalink: /projects/data/<slug>/
 # Optional:
 # repository: <Repository containing authoritative definitions>
 # system: <Producing or governing system>
