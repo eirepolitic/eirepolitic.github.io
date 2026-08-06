@@ -41,6 +41,28 @@ layout: default
     {% endif %}
 
     <div class="docs-body">{{ content }}</div>
+
+    {% if page.collection == 'docs' %}
+      {% assign related_repository_docs = site.docs | where: 'repository', page.repository | where_exp: 'doc', 'doc.url != page.url' | where_exp: 'doc', "doc.visibility != 'private'" | sort: 'title' %}
+      {% if page.related or page.repository and related_repository_docs.size > 0 %}
+      <section class="related-docs" aria-labelledby="related-docs-title">
+        <h2 id="related-docs-title">Related documentation</h2>
+        <ul>
+          {% if page.related %}
+            {% for related_url in page.related %}
+              {% assign related_doc = site.docs | where: 'url', related_url | first %}
+              <li><a href="{{ related_url | relative_url }}">{% if related_doc %}{{ related_doc.title }}{% else %}{{ related_url }}{% endif %}</a></li>
+            {% endfor %}
+          {% endif %}
+          {% if page.repository %}
+            {% for doc in related_repository_docs limit: 6 %}
+              <li><a href="{{ doc.url | relative_url }}">{{ doc.title }}</a></li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </section>
+      {% endif %}
+    {% endif %}
   </article>
 
   <aside class="docs-toc" aria-label="On this page">
