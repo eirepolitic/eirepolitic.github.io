@@ -1,0 +1,17 @@
+<nav class="docs-nav" aria-label="Documentation">
+  <details class="docs-nav-mobile" open>
+    <summary>Documentation sections</summary>
+    <div class="docs-nav-list">
+      <a class="docs-nav-home{% if page.url == '/docs/' %} active{% endif %}" href="{{ '/docs/' | relative_url }}">All documentation</a>
+      {% assign sections = site.data.docs_sections | sort: 'order' %}
+      {% for section in sections %}
+        {% assign section_url = '/docs/' | append: section.id | append: '/' %}
+        <a href="{{ section_url | relative_url }}"{% if page.section == section.id or page.url == section_url %} class="active" aria-current="page"{% endif %}>
+          {{ section.title }}
+          {% assign section_docs = site.docs | where: 'section', section.id %}
+          <span class="docs-nav-count">{{ section_docs.size }}</span>
+        </a>
+      {% endfor %}
+    </div>
+  </details>
+</nav>
