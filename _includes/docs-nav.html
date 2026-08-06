@@ -3,6 +3,7 @@
     <summary>Documentation sections</summary>
     <div class="docs-nav-list">
       <a class="docs-nav-home{% if page.url == '/docs/' %} active{% endif %}" href="{{ '/docs/' | relative_url }}">All documentation</a>
+      <a{% if page.url == '/docs/indexes/' %} class="active" aria-current="page"{% endif %} href="{{ '/docs/indexes/' | relative_url }}">Indexes</a>
       {% assign sections = site.data.docs_sections | sort: 'order' %}
       {% for section in sections %}
         {% assign section_url = '/docs/' | append: section.id | append: '/' %}
