@@ -3,19 +3,48 @@ layout: default
 ---
 
 <div class="docs-shell">
-  <aside class="docs-sidebar">
+  <aside class="docs-sidebar" aria-label="Documentation navigation">
     {% include docs-nav.html %}
   </aside>
 
   <article class="docs-content">
-    {% if page.section %}
-      {% assign current_section = site.data.docs_sections | where: 'id', page.section | first %}
-      <p class="docs-breadcrumb"><a href="{{ '/docs/' | relative_url }}">Documentation</a>{% if current_section %} / {{ current_section.title }}{% endif %}</p>
+    {% assign current_section = site.data.docs_sections | where: 'id', page.section | first %}
+    <nav class="docs-breadcrumb" aria-label="Breadcrumb">
+      <a href="{{ '/docs/' | relative_url }}">Documentation</a>
+      {% if current_section %}<span aria-hidden="true">/</span><a href="{{ '/docs/' | append: current_section.id | append: '/' | relative_url }}">{{ current_section.title }}</a>{% endif %}
+      {% if page.collection == 'docs' %}<span aria-hidden="true">/</span><span aria-current="page">{{ page.title }}</span>{% endif %}
+    </nav>
+
+    <header class="docs-page-header">
+      <div>
+        <h1>{{ page.title }}</h1>
+        {% if page.summary %}<p class="docs-summary">{{ page.summary }}</p>{% endif %}
+      </div>
+      {% if page.status %}<span class="status-badge status-{{ page.status }}">{{ page.status }}</span>{% endif %}
+    </header>
+
+    {% if page.collection == 'docs' %}
+    <dl class="docs-metadata">
+      {% if page.repository %}<div><dt>Repository</dt><dd><code>{{ page.repository }}</code></dd></div>{% endif %}
+      {% if page.doc_type %}<div><dt>Type</dt><dd>{{ page.doc_type }}</dd></div>{% endif %}
+      {% if page.updated %}<div><dt>Updated</dt><dd>{{ page.updated | date: '%Y-%m-%d' }}</dd></div>{% endif %}
+      {% if page.last_verified %}<div><dt>Verified</dt><dd>{{ page.last_verified | date: '%Y-%m-%d' }}</dd></div>{% endif %}
+    </dl>
     {% endif %}
 
-    <h1>{{ page.title }}</h1>
-    {% if page.summary %}<p class="docs-summary">{{ page.summary }}</p>{% endif %}
+    {% if page.status == 'archived' %}
+    <aside class="callout callout-warning" aria-label="Archive notice">
+      <strong>Archived documentation.</strong>
+      {% if page.archive_reason %} {{ page.archive_reason }}{% endif %}
+      {% if page.superseded_by %} Replaced by <a href="{{ page.superseded_by | relative_url }}">newer documentation</a>.{% endif %}
+    </aside>
+    {% endif %}
 
-    {{ content }}
+    <div class="docs-body">{{ content }}</div>
   </article>
+
+  <aside class="docs-toc" aria-label="On this page">
+    <strong>On this page</strong>
+    <nav id="page-toc"></nav>
+  </aside>
 </div>
