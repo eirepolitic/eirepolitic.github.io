@@ -1,0 +1,21 @@
+---
+layout: default
+---
+
+<div class="docs-shell">
+  <aside class="docs-sidebar">
+    {% include docs-nav.html %}
+  </aside>
+
+  <article class="docs-content">
+    {% if page.section %}
+      {% assign current_section = site.data.docs_sections | where: 'id', page.section | first %}
+      <p class="docs-breadcrumb"><a href="{{ '/docs/' | relative_url }}">Documentation</a>{% if current_section %} / {{ current_section.title }}{% endif %}</p>
+    {% endif %}
+
+    <h1>{{ page.title }}</h1>
+    {% if page.summary %}<p class="docs-summary">{{ page.summary }}</p>{% endif %}
+
+    {{ content }}
+  </article>
+</div>
