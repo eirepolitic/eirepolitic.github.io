@@ -1,9 +1,14 @@
 ---
-title: "Documentation Site Rebuild Plan"
-layout: default
-permalink: /projects/high-director/site-rebuild-plan/
+title: Documentation Site Rebuild Plan
+summary: Persistent implementation plan for rebuilding the site as a structured technical knowledge base.
+section: high-director
+doc_type: agent
 status: active
+created: 2026-08-05
 updated: 2026-08-05
+last_verified: 2026-08-05
+order: 20
+permalink: /projects/high-director/site-rebuild-plan/
 ---
 
 # Documentation Site Rebuild Plan
@@ -37,31 +42,20 @@ Added `DOCUMENTATION_STANDARD.md` and templates for repositories, systems, runbo
 
 **Status:** Complete — 2026-08-05, PR #4
 
-**Completed deliverables**
-
-- Configured the `_docs` Jekyll collection with output enabled
-- Added stable `/docs/:path/` permalinks
-- Added default layout and visibility values
-- Added section folders for repositories, systems, data, runbooks, decisions, High Director, notes, and archive
-- Added a generated `/docs/` collection index
-- Preserved all existing documentation during the foundation change
+Configured the `_docs` collection, stable URLs, default metadata, section folders, and the generated `/docs/` index.
 
 ## Step 3 — Migrate and normalize existing documentation
 
-**Status:** Not started
+**Status:** Complete — 2026-08-05, PR #5
 
-Move current technical pages into the collection and add consistent metadata.
+**Completed deliverables**
 
-**Deliverables**
-
-- Pipeline documents moved into `_docs/archive/`
-- Schema documents moved into `_docs/data/`
-- High Director documents moved into `_docs/high-director/`
-- Existing public URLs preserved where practical
-- Redirect pages added where URLs must change
-- Duplicate templates and obsolete placeholders removed
-
-**Checkpoint:** Review navigation and confirm no important page was omitted.
+- Migrated six historical pipeline pages into `_docs/archive/`
+- Migrated High Director pages into `_docs/high-director/`
+- Added normalized metadata and archive lifecycle fields
+- Preserved existing public URLs through explicit permalinks
+- Removed duplicate source pages and obsolete templates
+- Confirmed the existing schemas section contained no documents to migrate
 
 ## Step 4 — Data-driven navigation
 
@@ -81,19 +75,7 @@ Replace folder-substring navigation with metadata-based navigation.
 
 **Status:** Not started
 
-Build a compact documentation interface.
-
-**Deliverables**
-
-- Compact site header
-- Persistent desktop sidebar
-- Responsive mobile navigation
-- Breadcrumbs
-- Document metadata panel
-- Automatic on-page table of contents
-- Consistent typography, tables, code blocks, and callouts
-- Centralized CSS and JavaScript
-- Removal of avoidable inline styles
+Build a compact documentation interface with a compact header, desktop sidebar, responsive mobile navigation, breadcrumbs, metadata, page contents, consistent components, and centralized assets.
 
 **Checkpoint:** Visual approval before optional cosmetic refinements.
 

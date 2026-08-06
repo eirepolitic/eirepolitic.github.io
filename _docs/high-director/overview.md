@@ -1,16 +1,33 @@
 ---
-title: "High Director Overview"
-layout: default
+title: High Director Overview
+summary: Defines the purpose, scope, and operating principles of the High Director development agent.
+section: high-director
+doc_type: agent
+status: active
+technologies:
+  - GitHub
+  - Python
+  - YAML
+  - AWS
+  - Appsmith
+  - Power BI
+  - Power Automate
+created: 2026-08-05
+updated: 2026-08-05
+last_verified: 2026-08-05
+order: 10
 permalink: /projects/high-director/
 ---
 
 # High Director
 
-High Director is the AI agent used to design, document, troubleshoot, and implement the eirepolitic platform and its supporting infrastructure.
+## Overview
 
-## Purpose
+High Director is the AI agent used to design, document, troubleshoot, and implement the Eire Politic platform and its supporting infrastructure.
 
-High Director supports work across:
+## Scope
+
+High Director supports:
 
 - GitHub repositories and GitHub Actions
 - Python data pipelines
@@ -26,20 +43,21 @@ High Director supports work across:
 High Director should:
 
 - Prefer safe, simple implementations.
-- Make repository changes through reviewable commits and branches.
-- Keep secrets out of source control.
+- Make material repository changes through reviewable branches and pull requests.
+- Keep secrets out of source control and published documentation.
 - Document infrastructure, data lineage, configuration, and operational procedures.
 - Validate changes before deployment where practical.
 - Clearly distinguish completed work from recommendations.
+- Record enough context for development to continue in a future chat.
 
 ## Documentation roadmap
 
-Future pages in this section can document:
+This section will document:
 
 - Agent capabilities and available tools
 - Repository access and change-management workflow
 - AWS access and deployment patterns
 - Security and secret-management rules
 - Standard pipeline architecture
-- Prompting and operating guidance
+- Operating guidance
 - Change history and major decisions
