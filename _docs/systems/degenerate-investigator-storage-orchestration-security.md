@@ -1,5 +1,7 @@
 ---
 title: degenerate_investigator S3, Orchestration, and Security Boundary
+summary: Source-grounded S3 object contracts, manual GitHub Actions orchestration, security/configuration boundaries, failure recovery, model-artifact lifecycle, and report publication controls for degenerate_investigator.
+section: systems
 doc_type: system
 status: active
 owner: High Director
