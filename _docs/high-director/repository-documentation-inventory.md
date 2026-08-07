@@ -29,6 +29,7 @@ This inventory does not treat conversation history or inferred behavior as imple
 | `_docs/high-director/example-documents-plan.md` | Completed real-example documentation phase | Historical behavior / verification record | Example-document initiative history |
 | `_docs/high-director/high-director-documentation-initiative-plan.md` | Persistent plan for documenting the High Director agent | Planned work plus verified initiative progress | Initiative plan and next-action source of truth |
 | `_docs/high-director/repository-documentation-inventory.md` | Repository-only evidence inventory | Verified repository inspection | Canonical inventory of repository-verifiable High Director documentation |
+| `_docs/high-director/capability-component-inventory.md` | Evidence-classified capability/component inventory | Repository + observable runtime evidence | Canonical capability/component and missing-source register |
 
 ## Supporting canonical documentation outside the High Director section
 
@@ -95,6 +96,7 @@ No material duplicate source of truth was found among the current High Director 
 - completed initiative plans are historical records and should not be reused as current runtime documentation.
 - the active initiative plan owns project status, phases, outstanding work, and next safe action.
 - this inventory owns repository-verifiable evidence classification and canonical file mapping.
+- `capability-component-inventory.md` owns capability/component classification and the prioritized missing-source register.
 
 Future pages should link to these sources rather than restating their details.
 
@@ -110,6 +112,7 @@ Future pages should link to these sources rather than restating their details.
 | Documentation publishing | `_docs/runbooks/publish-documentation-change.md` |
 | Initiative status and next action | `_docs/high-director/high-director-documentation-initiative-plan.md` |
 | Repository-only High Director evidence inventory | `_docs/high-director/repository-documentation-inventory.md` |
+| Capability/component inventory and missing-source register | `_docs/high-director/capability-component-inventory.md` |
 | High Director runtime implementation | Not yet established |
 | High Director action schema | Not yet established |
 | High Director AWS implementation | Not yet established |
@@ -119,12 +122,8 @@ Future pages should link to these sources rather than restating their details.
 
 Repository inspection is sufficient for the documentation platform, its workflow, and its historical documentation initiatives. It is insufficient for the High Director runtime implementation.
 
-The missing-source list therefore remains external to this repository and will be refined during capability/component inventory before the first external source is requested.
+The prioritized external-source dependency register is maintained in `_docs/high-director/capability-component-inventory.md`. Current initiative status and the next safe development action are maintained only in `_docs/high-director/high-director-documentation-initiative-plan.md`.
 
 ## Verification record
 
-Verified on 2026-08-06 by direct inspection of the repository tree, High Director documents, documentation templates, repository standard, Jekyll configuration, section metadata, validation workflow, supporting system/repository/runbook records, and completed initiative records.
-
-## Next safe action
-
-Complete Phase 1 validation, merge, and Pages verification. After that gate succeeds, begin the capability and component inventory without requesting external code yet.
+Verified on 2026-08-06 by direct inspection of the repository tree, High Director documents, documentation templates, repository standard, Jekyll configuration, section metadata, validation workflow, supporting system/repository/runbook records, completed initiative records, and Phase 2 capability/component evidence classification.
