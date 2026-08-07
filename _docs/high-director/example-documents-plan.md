@@ -34,8 +34,8 @@ Templates should be refined only when real usage exposes a concrete defect.
 ## Category Progress
 
 - [x] Repository — `eirepolitic.github.io`; PR #20 merged, validation `31137389854` passed, Pages deployment `31137413142` succeeded.
-- [x] System — Eire Politic Documentation Site drafted from the live implementation and verified architecture.
-- [ ] Data & Schema
+- [x] System — Eire Politic Documentation Site; PR #21 merged, validation `31137496390` passed, Pages deployment `31137516088` succeeded.
+- [x] Data & Schema — Documentation Search Index drafted from the committed generator and browser consumer.
 - [ ] Runbook
 - [ ] Architecture Decision
 - [ ] High Director
@@ -44,15 +44,15 @@ Templates should be refined only when real usage exposes a concrete defect.
 
 ## Current Step
 
-System example is in review on branch `high-director/example-system-documentation-site`.
+Data & Schema example is in review on branch `high-director/example-data-search-index`.
 
 ## Next Safe Action
 
-Validate and merge the system example, confirm Pages deployment, then create the Data & Schema example from the real generated documentation search index or documentation metadata model.
+Validate and merge the Data & Schema example, confirm Pages deployment, then review the existing Documentation Site Operations page against the runbook template and close only real gaps.
 
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: completed template initiative, PR #20, validation run `31137389854`, Pages run `31137413142`, `main`, repository tree, `_templates/system-template.md`, and `_docs/high-director/site-architecture.md`
+- Verified against: PRs #20 and #21; validation runs `31137389854` and `31137496390`; Pages runs `31137413142` and `31137516088`; `search-index.json`; `assets/js/search.js`; `_templates/data-schema-template.md`
 - Verified by: High Director
-- Verification scope: repository example completion, system example source material, validation requirement, and deployment requirement
+- Verification scope: repository and system example completion, search-index schema source material, validation requirement, and deployment requirement
