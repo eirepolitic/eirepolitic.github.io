@@ -110,14 +110,16 @@ No separate news-service API integration was verified in source. If live AWS/IAM
 - [x] Inspect complete `degenerate_investigator` repository tree and substantive files.
 - [x] Re-verify S3 defaults and workflow orchestration model.
 - [x] Create persistent workstream plan.
-- [ ] Publish and merge P0-10 repository architecture documentation.
-- [ ] Publish and merge P0-11 S3/orchestration/security boundary documentation.
-- [ ] Complete P1-25 through P1-33 in focused PRs, keeping market-context documentation strictly internal/analytical.
+- [x] Publish and merge P0-10 repository architecture documentation.
+- [x] Publish and merge P0-11 S3/orchestration/security boundary documentation.
+- [x] Confirm Pages deployment for foundation merge SHA `050fabcd59fa154fdb9cac51fa19b422720e3504`.
+- [ ] Publish and merge P1-25 current UFC event/fighter ingestion documentation.
+- [ ] Complete P1-26 through P1-33 in focused PRs, keeping market-context documentation strictly internal/analytical.
 - [ ] Complete P2-43 publication workflow documentation.
 - [ ] Final cross-link and continuation review.
 
 ## Current continuation point
 
-Foundation branch: `docs/degenerate-foundation-20260807`.
+Current branch: `docs/degenerate-current-ingestion-20260807`.
 
-Current task: validate and merge the repository architecture and S3/orchestration/security boundary pages. Do not start subordinate pipeline pages until the foundation PR is merged and its matching Pages deployment succeeds.
+Current task: validate and merge P1-25 current UFC event/fighter ingestion documentation, then confirm the matching Pages deployment before starting historical ingestion P1-26.
