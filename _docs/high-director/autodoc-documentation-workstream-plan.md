@@ -32,7 +32,20 @@ The workstream is active. Repository discovery material exists at `_docs/high-di
 - P2: generated/reviewed artifact lifecycle and manual recovery workflows.
 - P3: historical AutoDoc-generated `docs/eirepolitic/pipeline/*` artifacts.
 
-Current repository verification covers the full `autodoc` tree plus the primary workflows, process entry points, templates, AutoDoc-owned configs, generated/reviewed artifact directories, and `requirements.txt`. Current backend source takes precedence over historical handoff text. The Appsmith handoff embedded in AutoDoc config evidence is authoritative for the captured implementation at the time of capture, but does not prove exact current live Appsmith state.
+The repository/system architecture foundation is complete and published:
+
+```text
+PR: #76
+Validation: run #126 / success
+Merge commit: dd410f89e5b0259b7224593c3feaf6b136ba1a1c
+Pages: run #182 / success for the merge commit
+```
+
+Published foundation pages are `_docs/repositories/autodoc.md` and `_docs/systems/autodoc.md`.
+
+The active component is the Appsmith/configuration/index boundary on branch `docs/autodoc-appsmith-config-index`. Current repository evidence is sufficient to document the base/enriched JSON and `_index.json` contracts. Exact current live Appsmith widget/query/action state now requires one coherent sanitized Appsmith source before that portion can be called current implementation.
+
+Current backend source takes precedence over historical handoff text. The Appsmith handoff embedded in AutoDoc config evidence is authoritative for the captured implementation at the time of capture, but does not prove exact current live Appsmith state.
 
 No major component is complete until its focused pull request passes `Validate documentation`, is merged, and the matching GitHub Pages deployment succeeds for the merge commit.
 
@@ -96,12 +109,20 @@ Verified workflow files include:
 - `.github/workflows/index_rebuilder.yaml`
 - `.github/workflows/publish_to_website.yml`
 
+Verified configuration/index facts now include:
+
+- base configs at `doc_configs/<project>/<doc_key>.json` with observed top-level fields `project`, `type`, `title`, `doc_key`, `context`, `updated_at`, and `assets`;
+- current enrichment source modes `pasted`, `github_path`, and `github_url`;
+- enriched configs at `<doc_key>.enriched.json` with per-asset resolution fields plus `_enrichment` metadata;
+- `_index.json` entries containing `doc_key`, `title`, `type`, and Git-derived `updated_at`;
+- `process/update_index.py` as the authoritative deterministic registry rebuilder.
+
 ## Work Sequence
 
 Use focused branches named `docs/autodoc-*`. Planned sequence:
 
-1. Repository/system architecture foundation.
-2. Appsmith intake/configuration application plus base-config and `_index.json` boundary.
+1. Repository/system architecture foundation — **complete via PR #76 / Pages #182**.
+2. Appsmith intake/configuration application plus base-config and `_index.json` boundary — **active**.
 3. Automatic pipeline orchestration and trust/security boundaries.
 4. Reviewed-document website-publication boundary and governance mismatch.
 5. Enrichment/source resolution.
@@ -147,11 +168,12 @@ This governance applies to this documentation workstream even though current Aut
 - Repository source establishes expected GitHub/OpenAI/publication behavior but does not prove all live external account permissions or credential scopes.
 - Some generated/reviewed artifacts are historical observations and may not represent current source behavior.
 - The direct website publication workflow conflicts with current documentation governance; this workstream documents the mismatch but does not redesign it without approval.
+- No formal JSON Schema or centralized config validator was found; the current config/index contract is consumer-enforced.
 
 ## Outstanding Work
 
-1. Publish the repository/system architecture foundation.
-2. Verify and document the Appsmith/config/index boundary, requesting a live Appsmith source only where exact current state is required.
+1. Obtain one coherent sanitized current AutoDoc Appsmith application source and compare it to the repository handoff.
+2. Complete the Appsmith intake/configuration page and finish the config/index focused PR.
 3. Publish orchestration/trust-boundary documentation from current workflows and process code.
 4. Publish the website-publication boundary with verified current behavior versus current governance.
 5. Complete P1 stage documentation.
@@ -161,7 +183,7 @@ This governance applies to this documentation workstream even though current Aut
 
 ## Next Safe Development Action
 
-Complete the focused repository/system architecture PR on branch `docs/autodoc-foundation-architecture`, run and confirm `Validate documentation`, merge, and confirm the matching Pages deployment. Then start a separate `docs/autodoc-appsmith-config-index` branch for the Appsmith/configuration/index boundary.
+Request a single sanitized export/source of the current live AutoDoc Appsmith application. Compare widgets, queries, JS Objects, bindings, datasource/authentication shape, and submit/load behavior with the captured handoff; persist the sanitized evidence and drift record in `eirepolitic.github.io`; then complete and validate the focused Appsmith/config/index PR.
 
 ## Handoff Notes
 
@@ -176,13 +198,14 @@ Complete the focused repository/system architecture PR on branch `docs/autodoc-f
 - [Documentation target catalogue](/projects/high-director/documentation-target-catalogue/)
 - [Repository documentation discovery plan](/projects/high-director/repository-documentation-discovery/)
 - [Repository scan — AutoDoc](/projects/high-director/repository-scan-autodoc/)
+- [AutoDoc configuration and project index](/projects/data/autodoc-configuration-and-project-index/)
 - [Documentation site operations](/docs/runbooks/documentation-site-operations/)
 - [Publish a documentation change](/projects/runbooks/publish-documentation-change/)
 
 ## Verification Record
 
 - Last verified: `2026-08-07`
-- Verified against: `eirepolitic.github.io` `main`; `DOCUMENTATION_STANDARD.md`; full `_templates/`; owner catalogue/discovery/AutoDoc scan; `autodoc.md`; documentation publishing runbooks/workflow; current `autodoc` tree; primary workflows, `process/*.py`, `doc_configs/`, `templates/`, generated/reviewed artifact directories, and `requirements.txt`.
+- Verified against: `eirepolitic.github.io` `main`; foundation PR #76, validation run #126, merge commit `dd410f89e5b0259b7224593c3feaf6b136ba1a1c`, Pages run #182; current `autodoc` tree; primary workflows and `process/*.py`; `doc_configs/autodoc/autodoc_app.json`, `autodoc_creation_pipeline.json`, enriched config, and `_index.json`.
 - Verified by: High Director
-- Verification scope: workstream scope, evidence hierarchy, implementation boundaries, security/publication constraints, and PR/validation/Pages gates.
+- Verification scope: workstream progress, foundation publication gate, current config/enriched/index contracts, evidence hierarchy, security/publication constraints, and next live-source requirement.
 - Unverified areas: exact current live Appsmith configuration and external account permission state.
