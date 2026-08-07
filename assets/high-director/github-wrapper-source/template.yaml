@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: GitHub GPT Wrapper on Lambda Function URL
+
+Parameters:
+  GithubOwner:
+    Type: String
+    Description: GitHub user or organization that owns the repos
+  GithubToken:
+    Type: String
+    NoEcho: true
+    Description: Fine-grained GitHub PAT
+  AppApiKey:
+    Type: String
+    NoEcho: true
+    Description: API key used by your GPT Action
+  DefaultBaseBranch:
+    Type: String
+    Default: main
+  BranchPrefix:
+    Type: String
+    Default: gpt
+
+Resources:
+  GithubGptWrapper:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src.app.handler
+      Runtime: python3.13
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          GITHUB_OWNER: !Ref GithubOwner
+          GITHUB_TOKEN: !Ref GithubToken
+          APP_API_KEY: !Ref AppApiKey
+          DEFAULT_BASE_BRANCH: !Ref DefaultBaseBranch
+          BRANCH_PREFIX: !Ref BranchPrefix
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: BUFFERED
+
+Outputs:
+  FunctionUrl:
+    Description: Public Function URL for the wrapper API
+    Value: !GetAtt GithubGptWrapperUrl.FunctionUrl
