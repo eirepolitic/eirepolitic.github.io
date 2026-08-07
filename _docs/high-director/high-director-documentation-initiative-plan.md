@@ -28,7 +28,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
 - **Phase 5:** complete — GitHub Action schema PR #35 / Pages #142; Lambda source PR #36 / Pages #143; closure PR #37 / Pages #144; live Lambda/IAM PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action PR #40 / Pages #147; closure PR #41 / Pages #148; Google OAuth PR #42 / Pages #149.
-- **Phase 6 — Architecture and data flows:** architecture content complete on the working branch; validation/merge/Pages gate pending. Data-flow documentation will follow as a separate focused PR after architecture deploys successfully.
+- **Phase 6 — Architecture and data flows:** architecture complete in PR #43 / Pages #150. Data-flow content is complete on the working branch; validation/merge/Pages gate pending.
 - **Phases 7–10:** not started.
 
 ## Canonical evidence pages
@@ -41,11 +41,12 @@ Implementation claims must be classified as verified implementation, user-suppli
 - `_docs/high-director/github-integration.md` — GitHub integration behavior and authentication boundary.
 - `_docs/high-director/capability-component-inventory.md` — capability/component inventory and missing-source register.
 - `_docs/high-director/runtime-architecture.md` — verified High Director runtime architecture and trust boundaries.
+- `_docs/high-director/data-flows.md` — verified GitHub, Google Workspace, secret, failure, and documentation-control flows.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
 
 ## Source collection status
 
-The two configured GPT Actions now have authoritative contracts and authentication boundaries documented.
+The two configured GPT Actions have authoritative contracts and authentication boundaries documented.
 
 Verified source sets collected:
 
@@ -56,7 +57,7 @@ Verified source sets collected:
 5. Google Workspace Action OpenAPI schema and OAuth authentication selection.
 6. Google OAuth authorization/token endpoints, token exchange method, and four configured scopes.
 
-No additional external source should be requested speculatively. Later phases may request another source only if a specific evidence gap blocks accurate architecture, security, runbook, or deployment documentation.
+No additional external source should be requested speculatively. Later phases may request another source only if a specific evidence gap blocks accurate security, runbook, deployment, code, or dependency documentation.
 
 ## Security publication rule
 
@@ -72,24 +73,27 @@ Before supplied source material is committed:
 
 ### Phase 6 — Architecture and data flows
 
-**Status:** in progress — architecture content complete, exit gate pending
+**Status:** in progress — architecture deployed; data-flow content complete, exit gate pending
 
-Architecture working-branch deliverables:
+Architecture completed:
 
-- added `_docs/high-director/runtime-architecture.md`;
-- documented High Director GPT, GitHub Action, public Lambda Function URL, FastAPI/Mangum Lambda application, GitHub REST API boundary, Google Workspace Action, OAuth boundary, IAM role boundary, and documentation control plane;
-- documented the verified authentication mechanisms: `X-API-Key`, `GITHUB_TOKEN` Bearer auth, Lambda execution-role trust, and Google OAuth;
-- documented data classifications crossing GitHub and Google trust boundaries;
-- documented architecture drift between Lambda v0.3.0, configured GitHub schema v0.2.1, and bundled schema v0.2.0;
-- preserved platform-managed/unverified areas as limitations rather than inferred implementation.
+- `_docs/high-director/runtime-architecture.md` added;
+- PR #43 validated/merged;
+- Pages deployment #150 succeeded.
 
-Architecture exit gate:
+Data-flow working-branch deliverables:
 
-- documentation validation passes;
+- added `_docs/high-director/data-flows.md`;
+- documented GitHub read, preview, write, delete, PR, workflow, variable, secret, and logs flows;
+- documented Google OAuth, Calendar read/write, Gmail read/send flows;
+- documented external-source ingestion and documentation publication control flows;
+- documented verified failure-path flows and sensitive-data publication boundaries.
+
+Phase 6 exit gate:
+
+- data-flow documentation validation passes;
 - PR merges;
 - resulting Pages deployment succeeds.
-
-After that gate, create a separate focused PR for exact GitHub and Google data-flow sequences.
 
 ### Phase 7 — Security and configuration reference
 
@@ -136,11 +140,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the runtime-architecture branch.
+- Validate the data-flow branch.
 - Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then document exact GitHub and Google data flows in a separate Phase 6 PR.
+- Then begin Phase 7 security/configuration documentation using the verified architecture/data-flow sources.
 
 ## Next safe development action
 
-Complete the runtime-architecture validation/merge/deployment gate, then create the focused data-flow documentation PR using the already verified Action contracts and implementation sources.
+Complete the data-flow validation/merge/deployment gate, then create a focused Phase 7 security/configuration PR without requesting additional external source unless a specific evidence gap blocks accuracy.
