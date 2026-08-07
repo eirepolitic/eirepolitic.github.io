@@ -1,6 +1,6 @@
 ---
 title: Example Documents Phase
-summary: Track verified real-world examples for every documentation category and preserve the exact continuation state for future High Director sessions.
+summary: Completed real-world examples for every documentation category, with validation, deployment evidence, and continuation guidance for future High Director sessions.
 section: high-director
 doc_type: agent
 status: active
@@ -25,9 +25,9 @@ Create one real, verified documentation example for each top-level category and 
 
 ## Current State
 
-Seven category examples are merged and deployed: Repository, System, Data & Schema, Runbook, Architecture Decision, High Director, and Note. The Archive example is being reviewed on branch `high-director/example-archive-member-images`.
+The Example Documents phase is complete. All eight top-level documentation categories now have a real example that was validated, merged, and successfully deployed through GitHub Pages.
 
-Archive is the final category before phase completion.
+No template changes were required during the phase.
 
 ## Scope
 
@@ -70,6 +70,7 @@ Current repository state and merged pull requests take precedence over stale pro
 - Architecture Decision — Use Metadata-Driven Static Documentation on GitHub Pages; PR #24, validation `31137849202`, Pages `31137870369`.
 - High Director — this persistent Example Documents Phase plan; PR #25, validation `31137946466`, Pages `31137960412`.
 - Note — Documentation Validation Compatibility Findings; PR #26, validation `31138059436`, Pages `31138080555`.
+- Archive — Member Images Pipeline; PR #27, validation `31138182928`, Pages `31138202986`.
 
 ## Category Progress
 
@@ -78,15 +79,15 @@ Current repository state and merged pull requests take precedence over stale pro
 - [x] Data & Schema
 - [x] Runbook
 - [x] Architecture Decision
-- [x] High Director — this persistent phase plan is the real continuation example.
-- [x] Note — Documentation Validation Compatibility Findings.
-- [x] Archive — Member Images Pipeline refined as a historical record with unverified current-source state clearly marked.
+- [x] High Director
+- [x] Note
+- [x] Archive
 
 ## Current Implementation Details
 
-Each documentation change uses a branch from current `main`, a focused pull request, the documentation validator, merge only after validation succeeds, and post-merge GitHub Pages confirmation. Stable examples created by this phase live in their matching `_docs/` sections.
+Each documentation change used a branch from current `main`, a focused pull request, the documentation validator, merge only after validation succeeded, and post-merge GitHub Pages confirmation. Stable examples created or refined by this phase live in their matching `_docs/` sections.
 
-The validator accepts only the documented site lifecycle vocabulary; `complete` is not an allowed front-matter status. Initiative or phase completion is therefore recorded explicitly in document content while valid lifecycle metadata is retained.
+The validator accepts only the documented site lifecycle vocabulary; `complete` is not an allowed front-matter status. Phase completion is therefore recorded explicitly in this document while valid lifecycle metadata is retained.
 
 ## Decisions and Constraints
 
@@ -94,7 +95,7 @@ The validator accepts only the documented site lifecycle vocabulary; `complete` 
 - Keep pull requests small and reviewable.
 - Run documentation validation before every merge.
 - Confirm Pages deployment after every merged documentation change.
-- Update this plan after every meaningful step.
+- Update persistent plans after meaningful steps.
 - Do not modify templates unless real usage exposes a concrete defect.
 - Do not change architecture, security boundaries, or cost without a separate decision.
 
@@ -106,45 +107,45 @@ The repository and GitHub Pages site are public. Do not commit credentials, toke
 
 ## Validation and Evidence
 
-For each category example:
+Every category example completed the required path:
 
-1. Review authoritative repository files or existing operational evidence.
-2. Draft the real example on a branch from `main`.
-3. Open a focused pull request.
-4. Require `Validate documentation` to succeed.
-5. Merge only after validation passes.
-6. Confirm the resulting Pages build and deploy jobs succeed.
-7. Record PR, validation, and deployment evidence in this plan.
+1. Source material reviewed.
+2. Focused branch and pull request created.
+3. `Validate documentation` passed.
+4. Pull request merged into `main`.
+5. GitHub Pages build and deployment succeeded.
+6. Evidence recorded in this plan.
 
-Evidence through the Note example is recorded in `Completed Work`. Archive validation and deployment evidence will be added after its PR is merged.
+The exact PR, validation, and Pages run IDs are recorded in `Completed Work`.
 
 ## Failure Modes and Recovery
 
 - Outdated branch: recreate or update from current `main` before continuing.
 - Validation failure: fix the referenced document or valid rule; do not bypass the validator.
 - Failed Pages deployment: inspect the failed Pages job and correct the root cause in a small PR.
-- Stale plan state: verify merged PRs and workflow runs, then correct this plan.
+- Stale documentation state: verify merged PRs and workflow runs, then correct the relevant page.
 - Secret or confidential content discovered: stop normal publication work and use the appropriate security response rather than relying on a revert.
 
 ## Known Limitations
 
-- The examples cover verified repository documentation work available in this site; they are not intended to represent every possible infrastructure pattern.
+- The examples cover verified documentation work available in this site; they are not intended to represent every possible infrastructure pattern.
 - GitHub Pages and GitHub Actions are external dependencies.
 - Front-matter lifecycle vocabulary has no `complete` value.
-- The historical `eirepolitic` repository referenced by the Archive example is not accessible through the configured GitHub connection, so current source state is deliberately left unverified.
+- The historical `eirepolitic` repository referenced by the Archive example is not accessible through the configured GitHub connection, so current source state remains deliberately unverified in that archive.
 
 ## Outstanding Work
 
-1. Validate, merge, and deploy the Archive example.
-2. Record final phase completion in this plan after the Archive deployment succeeds.
+No required work remains for the Example Documents phase.
+
+Future documentation should use these examples and the existing templates as practical references. Templates should change only when real usage reveals a concrete defect or a separately reviewed standards requirement changes.
 
 ## Next Safe Development Action
 
-Validate and merge branch `high-director/example-archive-member-images`, confirm the resulting Pages deployment, then make a final plan-only update recording all eight examples as complete and the Example Documents phase as complete.
+Treat the Example Documents phase as closed. For the next real documentation task, start from current `main`, select the matching template and relevant real example, verify facts against the current source of truth, run documentation validation before merge, and confirm Pages deployment after merge.
 
 ## Handoff Notes
 
-Always pass only `eirepolitic.github.io` to repository tools. Start each new documentation step from current `main`. Do not begin the final phase-completion update until the Archive merged documentation change has a successful Pages deployment. Keep this plan synchronized with actual PR and workflow evidence.
+Always pass only `eirepolitic.github.io` to repository tools for this site. The template initiative and Example Documents phase are both complete. Do not reopen either initiative without a real defect, standards change, or new documentation requirement.
 
 ## Related Documents
 
@@ -154,7 +155,7 @@ Always pass only `eirepolitic.github.io` to repository tools. Start each new doc
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: PRs #20 through #26; validation runs `31137389854`, `31137496390`, `31137604054`, `31137737015`, `31137849202`, `31137946466`, and `31138059436`; Pages runs `31137413142`, `31137516088`, `31137621658`, `31137754183`, `31137870369`, `31137960412`, and `31138080555`; `_templates/archive-template.md`; `_docs/archive/member-images-pipeline.md`; current `main`
+- Verified against: PRs #20 through #27; validation runs `31137389854`, `31137496390`, `31137604054`, `31137737015`, `31137849202`, `31137946466`, `31138059436`, and `31138182928`; Pages runs `31137413142`, `31137516088`, `31137621658`, `31137754183`, `31137870369`, `31137960412`, `31138080555`, and `31138202986`; all eight category examples; current `main`
 - Verified by: High Director
-- Verification scope: category completion through Note, Archive historical record, validation/deployment gates, constraints, and final completion path
-- Unverified areas: Archive PR validation/deployment; current source repository for the historical Member Images Pipeline
+- Verification scope: all eight category examples, validation gates, merge state, deployment evidence, phase completion, constraints, and continuation guidance
+- Unverified areas: current source repository state for the historical Member Images Pipeline only; this does not block archive or phase completion
