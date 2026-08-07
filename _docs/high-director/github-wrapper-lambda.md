@@ -16,7 +16,7 @@ permalink: /projects/high-director/github-wrapper-lambda/
 
 ## Purpose
 
-This page documents the user-supplied authoritative Lambda deployment/source package behind the High Director GitHub Action.
+This page documents the user-supplied authoritative Lambda deployment/source package behind the High Director GitHub Action. Live deployed AWS settings are canonicalized separately in [High Director GitHub Wrapper Live AWS Configuration]({{ '/projects/high-director/github-wrapper-live-aws-configuration/' | relative_url }}).
 
 ## Evidence classification
 
@@ -80,6 +80,8 @@ The supplied SAM template declares:
 | Function URL auth | `NONE` |
 | Function URL invoke mode | `BUFFERED` |
 
+The live AWS Console source supplied later confirms Python 3.13, handler `src.app.handler`, architecture `x86_64`, Function URL auth `NONE`, invoke mode `BUFFERED`, and CORS disabled. Live memory/timeout were not part of that source set.
+
 The template declares five deployment parameters:
 
 - `GithubOwner`
@@ -112,13 +114,15 @@ The owner value in `samconfig.toml` is intentionally redacted from the published
 | `GITHUB_API_VERSION` | default `2022-11-28` | `X-GitHub-Api-Version` request header |
 | `REQUEST_TIMEOUT` | default `30` | HTTPX timeout seconds |
 
+The live AWS Console confirms the deployed presence of `APP_API_KEY`, `BRANCH_PREFIX`, `DEFAULT_BASE_BRANCH`, `GITHUB_OWNER`, and `GITHUB_TOKEN`. No values were supplied or published.
+
 The code refuses to start when `GITHUB_OWNER`, `GITHUB_TOKEN`, or `APP_API_KEY` is missing.
 
 ## Authentication model
 
 ### GPT to Lambda wrapper
 
-The SAM template sets the Lambda Function URL `AuthType` to `NONE`. Therefore AWS does not require IAM authentication at the Function URL layer in this template.
+The SAM template and live AWS Console both show Lambda Function URL `AuthType: NONE`. AWS therefore does not require IAM authentication at the Function URL layer.
 
 The application itself enforces an API key by comparing incoming `X-API-Key` with the `APP_API_KEY` environment variable. Invalid/missing values return application error `401 unauthorized`.
 
@@ -162,7 +166,7 @@ The application source exposes 31 HTTP routes including `/health`:
 - repository Actions variable set/delete;
 - repository Actions secret set/delete.
 
-The current GPT Action schema v0.2.1 exposes 28 operations and intentionally/incidentally does not expose these application routes:
+The current GPT Action schema v0.2.1 exposes 28 operations and does not expose these application routes:
 
 - `GET /health`
 - `DELETE /repos/{repo}/branches/{branch_name:path}`
@@ -172,8 +176,6 @@ Therefore **application capability is broader than the currently configured GPT 
 
 ## Version and schema drift
 
-Three authoritative artifacts carry different versions:
-
 | Artifact | Version/status |
 |---|---|
 | `src/app.py` FastAPI app | `0.3.0` |
@@ -182,93 +184,48 @@ Three authoritative artifacts carry different versions:
 
 The bundled v0.2.0 schema contains 30 `operationId` declarations, including branch deletion and artifact metadata, but it is malformed YAML as packaged due to indentation near the first `paths` entry. The current v0.2.1 GPT schema is therefore the canonical Action contract for what the GPT can call today.
 
-Do not overwrite or merge these versions in documentation; treat the differences as verified configuration drift until an intentional synchronization change is made.
-
 ## File-change behavior
 
 Preview endpoints calculate unified diffs without writing.
 
-Apply endpoints:
-
-1. resolve the base branch;
-2. sanitize or generate a target branch name;
-3. create the branch if it does not exist;
-4. call GitHub's contents API to create/update/delete the file;
-5. return commit/content metadata.
-
-Branch names are sanitized to letters, digits, `.`, `_`, `/`, and `-`, limited to 200 characters. Auto-generated branches use `BRANCH_PREFIX` plus a path-derived token and random UUID suffix.
+Apply endpoints resolve a base branch, sanitize/generate a target branch, create it if needed, call GitHub's contents API, and return commit/content metadata.
 
 ## Direct-default-branch boundary
 
-The README's recommended operating rules say never write directly to the default branch. **The application code does not enforce that rule for file writes.** A caller that explicitly supplies the default branch as `branch_name` can cause the apply endpoint to write there because `ensure_branch_exists()` accepts an existing branch.
+The README says never write directly to the default branch. **The application code does not enforce that rule for file writes.** A caller that explicitly supplies the default branch as `branch_name` can cause an apply endpoint to write there because `ensure_branch_exists()` accepts an existing branch.
 
-By contrast, the branch deletion implementation explicitly refuses to delete the repository default branch.
-
-Therefore protection from direct writes to `main` currently depends on agent/tool operating discipline and GitHub repository protections, not an application-level guard in `apply_upsert`/`apply_delete`.
+Branch deletion does explicitly refuse to delete the repository default branch.
 
 ## Pull-request behavior
 
-The wrapper can:
-
-- create draft or non-draft PRs;
-- list/filter PRs;
-- fetch PR details;
-- update title/body/base/state;
-- close PRs;
-- merge PRs using `merge`, `squash`, or `rebase`, optionally with a commit title/message and expected SHA.
+The wrapper can create/list/get/update/close/merge pull requests. Merge methods are `merge`, `squash`, and `rebase`, with optional commit title/message and expected SHA.
 
 This confirms that README statements saying the starter "does not merge PRs" are historical/outdated relative to `src/app.py` 0.3.0.
 
 ## Workflow behavior
 
-The wrapper can:
-
-- list workflows;
-- list runs for a workflow;
-- inspect a run;
-- inspect run jobs/steps;
-- obtain a temporary GitHub redirect URL for run logs;
-- list run artifacts;
-- fetch artifact metadata;
-- dispatch workflows;
-- enable workflows;
-- disable workflows.
-
-The logs implementation deliberately disables redirect following and returns GitHub's redirect location to the caller.
+The wrapper can list workflows, inspect runs/jobs/logs/artifacts, fetch artifact metadata, dispatch workflows, and enable/disable workflows.
 
 ## Repository variables and secrets
 
 Variables are created through the GitHub Actions variables API; a `409` create conflict triggers an update path.
 
-For secrets, the wrapper:
-
-1. fetches the repository Actions public key;
-2. encrypts supplied plaintext using PyNaCl `SealedBox`;
-3. sends only the encrypted value and key ID to GitHub;
-4. returns metadata/status without returning the secret value.
-
-The plaintext exists transiently in the Lambda process/request body and is not returned by the wrapper.
+For secrets, the wrapper fetches the repository Actions public key, encrypts supplied plaintext using PyNaCl `SealedBox`, sends the encrypted value/key ID to GitHub, and does not return the plaintext.
 
 ## Error model and failure modes
 
-The application normalizes failures into JSON error objects with `error`, `message`, `status`, and `details`.
-
 Verified failure classes include:
 
-- `400 bad_request` for invalid repository naming or invalid inputs;
-- `401 unauthorized` for invalid/missing application API key;
-- `404 not_found` for absent files/resources;
-- `422 validation_error` for FastAPI/Pydantic request validation failures;
+- `400 bad_request`;
+- `401 unauthorized`;
+- `404 not_found`;
+- `422 validation_error`;
 - upstream GitHub status codes surfaced as `github_error`;
-- `502 github_transport_error` for HTTP transport failures;
-- `504 github_timeout` for GitHub request timeouts;
-- `500 internal_error` for otherwise unhandled exceptions.
-
-GitHub API error bodies are included in the wrapper's `details.github_response`. Operational logs/telemetry configuration outside application responses remains unverified.
+- `502 github_transport_error`;
+- `504 github_timeout`;
+- `500 internal_error`.
 
 ## Dependencies
-
-Pinned first-party dependency manifest:
 
 ```text
 fastapi==0.115.12
@@ -282,40 +239,50 @@ Bundled third-party modules in the deployment package are implementation depende
 
 ## README drift
 
-The supplied README is a starter/deployment guide, not a reliable description of current runtime behavior in every detail. Verified drift includes:
+Verified drift includes:
 
-- README manual deployment path says Python 3.12; SAM template declares Python 3.13;
+- README manual deployment path says Python 3.12; SAM and live runtime are Python 3.13;
 - README says the starter does not merge PRs; application v0.3.0 implements PR merge;
-- README proposes a mandatory preview/user-approval rule; the application does not technically enforce preview-before-apply;
-- README says never write directly to `main`; application apply endpoints do not enforce this.
+- README proposes mandatory preview/user approval; application does not enforce preview-before-apply;
+- README says never write directly to `main`; apply endpoints do not enforce that restriction.
 
-Use current source/configuration as authoritative over README guidance when they conflict.
+Use current source/live configuration as authoritative over README guidance when they conflict.
+
+## Live execution role
+
+The live AWS Console source verifies execution role:
+
+```text
+github-gpt-wrapper-GithubGptWrapperRole-6j2drFhUXMyo
+```
+
+The supplied permissions view shows attached managed policy `AWSLambdaBasicExecutionRole`. The supplied trust policy permits `lambda.amazonaws.com` to call `sts:AssumeRole`.
+
+See the live-AWS configuration page for the canonical security-boundary record.
 
 ## Sanitization record
 
-Before publication:
-
-- private Lambda Function URL hostname was removed from the bundled OpenAPI copy;
-- literal GitHub owner value was replaced with `REDACTED_OWNER` in `samconfig.toml`;
-- no API key, GitHub PAT, AWS credential, password, private key, personal email, or token value was found in first-party text files;
-- vendored third-party dependencies/binaries were excluded from publication;
-- source package filename UUID/deployment export identifier is not used as a public identifier.
+- private Lambda Function URL hostname removed;
+- literal GitHub owner value replaced with `REDACTED_OWNER` in published `samconfig.toml`;
+- AWS account ID omitted from live-configuration publication;
+- no API key, GitHub PAT, AWS credential, password, private key, personal email, or token value is published;
+- vendored third-party dependencies/binaries excluded.
 
 ## What remains unverified
 
-- physical Lambda function name in the deployed AWS account;
-- deployed Runtime/Handler values as shown in the Lambda console (the SAM template declares them);
+- exact deployed Lambda function name;
+- live memory and timeout;
 - current environment-variable values;
-- API-key creation, storage, and rotation process;
+- API-key creation/storage/rotation process;
 - exact GitHub fine-grained PAT permissions actually granted;
-- Lambda execution role and IAM policies;
-- CloudWatch logging/alarms and monitoring configuration;
-- Function URL CORS/resource-policy configuration beyond the supplied SAM template;
-- whether any API Gateway, WAF, or other network layer exists outside this template;
-- deployment history/versioning/aliases.
+- whether additional/inline execution-role policies exist beyond the supplied view;
+- CloudWatch log retention/alarms/monitoring;
+- Function URL resource-policy details;
+- deployment history/versioning/aliases/reserved concurrency/dead-letter configuration.
 
 ## Related Documents
 
+- [High Director GitHub Wrapper Live AWS Configuration]({{ '/projects/high-director/github-wrapper-live-aws-configuration/' | relative_url }})
 - [High Director GitHub Action OpenAPI Schema]({{ '/projects/high-director/github-action-openapi-schema/' | relative_url }})
 - [High Director GitHub Integration]({{ '/docs/high-director/github-integration/' | relative_url }})
 - [High Director GPT Configuration]({{ '/projects/high-director/gpt-configuration/' | relative_url }})

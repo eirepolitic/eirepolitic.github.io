@@ -27,7 +27,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
-- **Phase 5:** in progress — GitHub Action schema subphase complete in PR #35 / Pages #142; GitHub wrapper Lambda source subphase complete in PR #36 / Pages #143. Next subphase is live Lambda/IAM configuration.
+- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144 complete; live Lambda/IAM configuration content complete on the working branch and awaiting validation/merge/Pages verification.
 - **Phases 6–10:** not started.
 
 ## Canonical evidence pages
@@ -35,6 +35,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - `_docs/high-director/gpt-configuration.md` — authoritative GPT configuration/instructions.
 - `_docs/high-director/github-action-openapi-schema.md` — current sanitized GPT Action contract.
 - `_docs/high-director/github-wrapper-lambda.md` — authoritative Lambda source/deployment-package analysis.
+- `_docs/high-director/github-wrapper-live-aws-configuration.md` — live Lambda runtime, Function URL, environment-key, execution-role, managed-policy, and trust-policy configuration.
 - `_docs/high-director/github-integration.md` — GitHub integration behavior and authentication boundary.
 - `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
@@ -46,48 +47,42 @@ Implementation claims must be classified as verified implementation, user-suppli
 1. High Director GPT configuration and instructions.
 2. Current private Lambda-backed GitHub Action OpenAPI schema and API-key authentication selection.
 3. GitHub wrapper Lambda source/deployment package.
+4. Live Lambda/IAM configuration for the GitHub wrapper.
 
-The Lambda package verifies:
+The live AWS source verifies:
 
-- FastAPI/Mangum application `github-gpt-wrapper` version `0.3.0`;
-- GitHub REST API access with Bearer `GITHUB_TOKEN`;
-- application API-key validation against `APP_API_KEY` / `X-API-Key`;
-- backend owner enforcement through `GITHUB_OWNER` and rejection of `owner/repo` input;
-- 31 application routes;
-- AWS SAM handler `src.app.handler` and declared runtime `python3.13`;
-- 512 MB memory, 30-second timeout, Function URL `AuthType: NONE`, buffered invoke mode;
-- pinned dependencies: FastAPI, Mangum, HTTPX, PyNaCl, Pydantic;
-- repository secret encryption using GitHub's public key and PyNaCl `SealedBox`;
-- structured GitHub timeout/transport/API error handling.
-
-Verified drift:
-
-- Lambda app `0.3.0` > current GPT schema `0.2.1` > bundled OpenAPI `0.2.0`;
-- current GPT schema exposes 28 operations while Lambda implements 31 routes including health, branch deletion, and artifact metadata;
-- bundled v0.2.0 `openapi.yaml` is malformed as packaged;
-- README guidance is stale where it says PR merge is unavailable and implies direct-default-branch protection is enforced.
+- Python 3.13 runtime;
+- handler `src.app.handler`;
+- architecture `x86_64`;
+- runtime update mode `Auto`;
+- public Lambda Function URL;
+- Function URL auth type `NONE`;
+- invoke mode `BUFFERED`;
+- CORS not enabled;
+- deployed environment-variable keys `APP_API_KEY`, `BRANCH_PREFIX`, `DEFAULT_BASE_BRANCH`, `GITHUB_OWNER`, `GITHUB_TOKEN`;
+- execution-role name `github-gpt-wrapper-GithubGptWrapperRole-6j2drFhUXMyo`;
+- visible attached managed policy `AWSLambdaBasicExecutionRole`;
+- trust principal `lambda.amazonaws.com` with `sts:AssumeRole`.
 
 Sanitization:
 
-- private Lambda URL removed from publication;
-- literal GitHub owner value redacted from `samconfig.toml`;
-- no API key, PAT, AWS credential, password, private key, token, or personal email was found in first-party text files;
-- vendored third-party binaries/modules were not copied into the documentation repository.
+- private Function URL hostname omitted;
+- AWS account ID omitted;
+- environment-variable values not supplied/published;
+- no API key, GitHub PAT, AWS access key, password, private key, or other credential value published.
 
-## Next authoritative source
+## Next authoritative source after current deployment gate
 
-**AWS Lambda live configuration and execution-role/IAM configuration for the GitHub wrapper.**
+**`www.googleapis.com` Action OpenAPI schema and authentication selection.**
 
 Why next:
 
-- verifies deployed runtime/handler against the SAM template;
-- verifies live Function URL authentication/configuration;
-- verifies execution-role name and attached/inline permissions;
-- verifies environment-variable names without exposing values;
-- closes the most important remaining security boundary before architecture/runbook work;
-- establishes whether CloudWatch or other AWS permissions/services are actually used.
+- it is the only remaining configured GPT Action whose contract is still unknown;
+- it identifies the exact Google API product(s), operations, request/response structures, and authentication mode;
+- it establishes any OAuth scopes or API-key declaration needed for the security/data-flow model;
+- it determines whether Gmail, Calendar, or another Google service is actually part of the High Director design rather than inferred from hostname alone.
 
-Do not request or publish environment-variable values, API keys, GitHub PATs, secret ARNs containing sensitive identifiers, or credential material.
+Request only the Action schema/authentication configuration; do not request tokens, OAuth client secrets, API keys, refresh tokens, or user account identifiers.
 
 ## Security publication rule
 
@@ -109,17 +104,14 @@ Completed subphases:
 
 - authoritative GPT configuration/instructions;
 - current GitHub Action schema and API-key configuration;
-- GitHub wrapper Lambda source/deployment package.
+- GitHub wrapper Lambda source/deployment package;
+- live GitHub-wrapper Lambda/IAM configuration (content complete, deployment gate pending).
 
-Current next subphase:
+Next subphase after successful deployment:
 
-- live Lambda function configuration and execution-role/IAM configuration only.
+- `www.googleapis.com` Action OpenAPI schema and authentication selection.
 
-Subsequent likely sources:
-
-- `www.googleapis.com` Action OpenAPI schema;
-- any external supporting repository source actually referenced by implementation;
-- non-secret monitoring/deployment configuration needed for runbooks.
+Subsequent sources will be requested only if verified evidence shows they are required, including any external supporting repository source or non-secret monitoring/deployment configuration needed for runbooks.
 
 ### Phase 6 — Architecture and data flows
 
@@ -172,10 +164,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate and merge this Lambda-source closure update.
+- Validate the live Lambda/IAM configuration branch.
+- Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then request only the live Lambda/IAM configuration for the GitHub wrapper.
+- Then request only the `www.googleapis.com` Action schema/authentication configuration.
 
 ## Next safe development action
 
-After this closure update deploys successfully, request the live Lambda and execution-role configuration with explicit AWS Console retrieval steps.
+Complete the live Lambda/IAM documentation validation/merge/deployment gate, then request the Google Action schema with explicit GPT Builder retrieval steps.
