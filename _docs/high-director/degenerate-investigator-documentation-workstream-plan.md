@@ -115,13 +115,16 @@ No separate news-service API integration was verified in source. If live AWS/IAM
 - [x] Confirm Pages deployment for foundation merge SHA `050fabcd59fa154fdb9cac51fa19b422720e3504`.
 - [x] Publish and merge P1-25 current UFC event/fighter ingestion documentation.
 - [x] Confirm Pages deployment for P1-25 merge SHA `2ee49dde1dac5ce26b4786731332acbf205612df`.
-- [ ] Publish and merge P1-26 historical fight/fighter-profile ingestion documentation.
-- [ ] Complete P1-27 through P1-33 in focused PRs, keeping market-context documentation strictly internal/analytical.
+- [x] Publish and merge P1-26 historical fight/fighter-profile ingestion documentation.
+- [x] Confirm Pages deployment for P1-26 merge SHA `33f7bf19997ac91aa0b3b3803d14af989b0c9e80`.
+- [ ] Publish and merge P1-27 current MMA market-context ingestion documentation.
+- [ ] Publish and merge P1-28 fighter recent-news enrichment documentation.
+- [ ] Complete P1-29 through P1-33 in focused PRs.
 - [ ] Complete P2-43 publication workflow documentation.
 - [ ] Final cross-link and continuation review.
 
 ## Current continuation point
 
-Current branch: `docs/degenerate-historical-ingestion-20260807`.
+Current branch: `docs/degenerate-enrichment-20260807`.
 
-Current task: validate and merge P1-26 historical fight/fighter-profile ingestion documentation, then confirm the matching Pages deployment before starting external enrichment.
+Current task: validate and merge P1-27/P1-28 enrichment documentation, then confirm the matching Pages deployment before starting feature/training-data documentation.
