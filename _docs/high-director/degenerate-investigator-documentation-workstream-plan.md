@@ -117,14 +117,17 @@ No separate news-service API integration was verified in source. If live AWS/IAM
 - [x] Confirm Pages deployment for P1-25 merge SHA `2ee49dde1dac5ce26b4786731332acbf205612df`.
 - [x] Publish and merge P1-26 historical fight/fighter-profile ingestion documentation.
 - [x] Confirm Pages deployment for P1-26 merge SHA `33f7bf19997ac91aa0b3b3803d14af989b0c9e80`.
-- [ ] Publish and merge P1-27 current MMA market-context ingestion documentation.
-- [ ] Publish and merge P1-28 fighter recent-news enrichment documentation.
-- [ ] Complete P1-29 through P1-33 in focused PRs.
+- [x] Publish and merge P1-27 current MMA market-context ingestion documentation.
+- [x] Publish and merge P1-28 fighter recent-news enrichment documentation.
+- [x] Confirm Pages deployment for P1-27/P1-28 merge SHA `cb7be00a986f5da4ae9a84e97afc4bfa1ae23e34`.
+- [ ] Publish and merge P1-29 matchup feature-engineering documentation.
+- [ ] Publish and merge P1-30 historical training-dataset documentation.
+- [ ] Complete P1-31 through P1-33 in focused PRs.
 - [ ] Complete P2-43 publication workflow documentation.
 - [ ] Final cross-link and continuation review.
 
 ## Current continuation point
 
-Current branch: `docs/degenerate-enrichment-20260807`.
+Current branch: `docs/degenerate-features-training-data-20260807`.
 
-Current task: validate and merge P1-27/P1-28 enrichment documentation, then confirm the matching Pages deployment before starting feature/training-data documentation.
+Current task: validate and merge P1-29/P1-30 feature and training-data documentation, then confirm the matching Pages deployment before starting model training.
