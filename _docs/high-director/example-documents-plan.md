@@ -25,9 +25,9 @@ Create one real, verified documentation example for each top-level category and 
 
 ## Current State
 
-Five category examples are merged and deployed: Repository, System, Data & Schema, Runbook, and Architecture Decision. This plan itself is the real High Director example and is being reviewed on branch `high-director/example-high-director-plan`.
+Six category examples are merged and deployed: Repository, System, Data & Schema, Runbook, Architecture Decision, and High Director. The Note example is being reviewed on branch `high-director/example-note-validation-findings`.
 
-Remaining categories after this review are Note and Archive.
+Archive is the only remaining category after the Note example.
 
 ## Scope
 
@@ -68,6 +68,7 @@ Current repository state and merged pull requests take precedence over stale pro
 - Data & Schema — Documentation Search Index; PR #22, validation `31137604054`, Pages `31137621658`.
 - Runbook — Publish a Documentation Change; PR #23, validation `31137737015`, Pages `31137754183`.
 - Architecture Decision — Use Metadata-Driven Static Documentation on GitHub Pages; PR #24, validation `31137849202`, Pages `31137870369`.
+- High Director — this persistent Example Documents Phase plan; PR #25, validation `31137946466`, Pages `31137960412`.
 
 ## Category Progress
 
@@ -77,7 +78,7 @@ Current repository state and merged pull requests take precedence over stale pro
 - [x] Runbook
 - [x] Architecture Decision
 - [x] High Director — this persistent phase plan is the real continuation example.
-- [ ] Note
+- [x] Note — Documentation Validation Compatibility Findings drafted from observed validation failures and source files.
 - [ ] Archive
 
 ## Current Implementation Details
@@ -114,7 +115,7 @@ For each category example:
 6. Confirm the resulting Pages build and deploy jobs succeed.
 7. Record PR, validation, and deployment evidence in this plan.
 
-Evidence through the Architecture Decision example is recorded in `Completed Work`.
+Evidence through the High Director example is recorded in `Completed Work`.
 
 ## Failure Modes and Recovery
 
@@ -132,14 +133,13 @@ Evidence through the Architecture Decision example is recorded in `Completed Wor
 
 ## Outstanding Work
 
-1. Complete and deploy this High Director example review.
-2. Create a real Note example from a verified operational finding.
-3. Refine one existing real archived document against the Archive template without inventing missing historical facts.
-4. Record final phase completion in this plan after all category examples are deployed.
+1. Validate, merge, and deploy the Note example.
+2. Refine one existing real archived document against the Archive template without inventing missing historical facts.
+3. Record final phase completion in this plan after all category examples are deployed.
 
 ## Next Safe Development Action
 
-Validate and merge branch `high-director/example-high-director-plan`, confirm the resulting Pages deployment, then inspect `_templates/note-template.md` and create a Note example from a concrete documentation-validation finding. Do not modify the Note template unless the real example exposes a defect.
+Validate and merge branch `high-director/example-note-validation-findings`, confirm the resulting Pages deployment, then inspect `_templates/archive-template.md` and one existing document under `_docs/archive/`. Change only factual gaps supported by the archived record.
 
 ## Handoff Notes
 
@@ -153,7 +153,7 @@ Always pass only `eirepolitic.github.io` to repository tools. Start each new doc
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: PRs #20 through #24; validation runs `31137389854`, `31137496390`, `31137604054`, `31137737015`, and `31137849202`; Pages runs `31137413142`, `31137516088`, `31137621658`, `31137754183`, and `31137870369`; `_templates/high-director-template.md`; current `main`
+- Verified against: PRs #20 through #25; validation runs `31137389854`, `31137496390`, `31137604054`, `31137737015`, `31137849202`, and `31137946466`; Pages runs `31137413142`, `31137516088`, `31137621658`, `31137754183`, `31137870369`, and `31137960412`; `_templates/note-template.md`; current `main`
 - Verified by: High Director
-- Verification scope: category completion through Architecture Decision, continuation process, validation/deployment gates, constraints, and next work
-- Unverified areas: Note and Archive examples are not yet complete
+- Verification scope: category completion through High Director, Note source findings, validation/deployment gates, constraints, and next work
+- Unverified areas: Note is not yet merged; Archive example is not yet complete
