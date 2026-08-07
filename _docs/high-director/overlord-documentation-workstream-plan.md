@@ -1,6 +1,8 @@
 ---
 title: Overlord Documentation Workstream Plan
-doc_type: high-director
+summary: Persistent execution plan, evidence baseline, scope boundary, sequencing, and merge/deployment gates for the Overlord documentation workstream.
+section: high-director
+doc_type: agent
 status: active
 owner: High Director
 created: 2026-08-07
