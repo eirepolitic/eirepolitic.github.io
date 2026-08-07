@@ -1,5 +1,7 @@
 ---
 title: degenerate_investigator Repository and UFC Analytics Architecture
+summary: Source-grounded repository and system architecture for the UFC analytics, ingestion, feature engineering, model training, scoring, reporting, S3, and publication workflow.
+section: repositories
 doc_type: repository
 status: active
 owner: High Director
