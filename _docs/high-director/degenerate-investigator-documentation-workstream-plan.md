@@ -113,13 +113,15 @@ No separate news-service API integration was verified in source. If live AWS/IAM
 - [x] Publish and merge P0-10 repository architecture documentation.
 - [x] Publish and merge P0-11 S3/orchestration/security boundary documentation.
 - [x] Confirm Pages deployment for foundation merge SHA `050fabcd59fa154fdb9cac51fa19b422720e3504`.
-- [ ] Publish and merge P1-25 current UFC event/fighter ingestion documentation.
-- [ ] Complete P1-26 through P1-33 in focused PRs, keeping market-context documentation strictly internal/analytical.
+- [x] Publish and merge P1-25 current UFC event/fighter ingestion documentation.
+- [x] Confirm Pages deployment for P1-25 merge SHA `2ee49dde1dac5ce26b4786731332acbf205612df`.
+- [ ] Publish and merge P1-26 historical fight/fighter-profile ingestion documentation.
+- [ ] Complete P1-27 through P1-33 in focused PRs, keeping market-context documentation strictly internal/analytical.
 - [ ] Complete P2-43 publication workflow documentation.
 - [ ] Final cross-link and continuation review.
 
 ## Current continuation point
 
-Current branch: `docs/degenerate-current-ingestion-20260807`.
+Current branch: `docs/degenerate-historical-ingestion-20260807`.
 
-Current task: validate and merge P1-25 current UFC event/fighter ingestion documentation, then confirm the matching Pages deployment before starting historical ingestion P1-26.
+Current task: validate and merge P1-26 historical fight/fighter-profile ingestion documentation, then confirm the matching Pages deployment before starting external enrichment.
