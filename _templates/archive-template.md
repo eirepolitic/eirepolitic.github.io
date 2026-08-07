@@ -47,7 +47,9 @@ Clearly distinguish verified final state from reconstructed history.
 
 ## Source of Truth
 
-Identify the remaining authoritative historical sources.
+Identify the remaining authoritative historical sources, such as the final repository commit, release, workflow, deployment record, schema snapshot, or successor document.
+
+State which source should be trusted if historical copies conflict.
 
 ## Why It Was Archived
 
@@ -57,28 +59,42 @@ Explain the technical, operational, business, architectural, or lifecycle reason
 
 Describe the replacement implementation or explain why none exists.
 
+Use exact repository names, systems, file paths, or stable internal links where known.
+
 ## Security Considerations
 
 Do not preserve secrets or sensitive operational details. Remove obsolete credentials while retaining useful structural information.
 
+Never include credentials, tokens, private keys, secret values, connection strings, confidential identifiers, private personal data, or sensitive screenshots.
+
 ## Known Limitations
 
-Explain why this document should not be used as current operational guidance.
+Explain why this document should not be used as current operational guidance, including outdated dependencies, obsolete paths, retired infrastructure, unverified assumptions, or changed interfaces.
 
 ## Outstanding Historical Questions
 
-Record any uncertainties in the historical record.
+Record any uncertainties in the historical record that are worth resolving. Omit this section when no useful questions remain.
+
+## Next Safe Action
+
+State the safest action for a future developer who encounters this archived material.
+
+Usually this should direct the reader to the successor implementation, current repository, or authoritative system page rather than modifying the archived implementation.
+
+Example: Review the successor system page and current repository documentation before changing any code derived from this archived implementation.
 
 ## Related Documents
 
-Link successor repositories, systems, decisions, runbooks, or notes.
+Link successor repositories, systems, decisions, runbooks, notes, or migration records using stable internal links. Explain predecessor, successor, or historical relationships where useful.
 
 ## Verification Record
 
 - Last verified: `YYYY-MM-DD`
-- Verified against: `<final commit, deployment, or authoritative record>`
-- Verification scope: `<historical facts checked>`
+- Verified against: `<final commit, deployment, release, or authoritative historical record>`
+- Verified by: `<person or process>`
+- Verification scope: `<historical facts actually checked>`
+- Unverified areas: `<list or None>`
 
 ## When to Create Subordinate Pages
 
-Create subordinate pages only when preserving extensive historical architecture, migrations, or research is valuable. Keep this overview authoritative for archive reason, last known state, and successor guidance.
+Create subordinate pages only when preserving extensive historical architecture, migrations, incident analysis, or research is genuinely valuable. Keep this overview authoritative for archive reason, last known state, successor guidance, limitations, and the safest continuation path.
