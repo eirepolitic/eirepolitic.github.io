@@ -1,0 +1,347 @@
+    return success(
+        message="branch created",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "new_branch": new_branch,
+            "from_branch": from_branch,
+            "status": "created",
+        },
+    )
+
+
+@app.delete("/repos/{repo}/branches/{branch_name:path}")
+def delete_branch_endpoint(
+    repo: str,
+    branch_name: str,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    delete_branch(repo, branch_name)
+
+    return success(
+        message="branch deleted",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "branch_name": branch_name,
+            "status": "deleted",
+        },
+    )
+
+
+@app.post("/repos/{repo}/pull-requests")
+def create_pull_request(repo: str, body: PullRequestCreateRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    base_branch = body.base_branch or get_default_branch(repo)
+    resp = gh_request(
+        "POST",
+        f"/repos/{GITHUB_OWNER}/{repo}/pulls",
+        expected=(201,),
+        json={
+            "title": body.title,
+            "body": body.body or "",
+            "head": body.head_branch,
+            "base": base_branch,
+            "draft": body.draft,
+        },
+    )
+    pr = resp.json()
+
+    return success(
+        message="pull request created",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "number": pr.get("number"),
+            "url": pr.get("html_url"),
+            "state": pr.get("state"),
+            "head": (pr.get("head") or {}).get("ref"),
+            "base": (pr.get("base") or {}).get("ref"),
+        },
+    )
+
+
+@app.get("/repos/{repo}/pull-requests")
+def list_pull_requests(
+    repo: str,
+    state: str = "open",
+    head: Optional[str] = None,
+    base: Optional[str] = None,
+    per_page: int = 30,
+    page: int = 1,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    params: Dict[str, Any] = {"state": state, "per_page": per_page, "page": page}
+    if head:
+        params["head"] = f"{GITHUB_OWNER}:{head}" if ":" not in head else head
+    if base:
+        params["base"] = base
+
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/pulls", params=params)
+    prs = resp.json()
+
+    return success(
+        message="pull requests fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "count": len(prs),
+            "pull_requests": [
+                {
+                    "number": pr.get("number"),
+                    "title": pr.get("title"),
+                    "state": pr.get("state"),
+                    "draft": pr.get("draft"),
+                    "merged_at": pr.get("merged_at"),
+                    "head": (pr.get("head") or {}).get("ref"),
+                    "base": (pr.get("base") or {}).get("ref"),
+                    "url": pr.get("html_url"),
+                }
+                for pr in prs
+            ],
+        },
+    )
+
+
+@app.get("/repos/{repo}/pull-requests/{number}")
+def get_pull_request(
+    repo: str,
+    number: int,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/pulls/{number}")
+    pr = resp.json()
+
+    return success(
+        message="pull request fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "number": pr.get("number"),
+            "title": pr.get("title"),
+            "body": pr.get("body"),
+            "state": pr.get("state"),
+            "draft": pr.get("draft"),
+            "locked": pr.get("locked"),
+            "mergeable": pr.get("mergeable"),
+            "mergeable_state": pr.get("mergeable_state"),
+            "merged": pr.get("merged"),
+            "merged_at": pr.get("merged_at"),
+            "head": (pr.get("head") or {}).get("ref"),
+            "base": (pr.get("base") or {}).get("ref"),
+            "url": pr.get("html_url"),
+        },
+    )
+
+
+@app.patch("/repos/{repo}/pull-requests/{number}")
+def update_pull_request(
+    repo: str,
+    number: int,
+    body: PullRequestUpdateRequest,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+
+    payload: Dict[str, Any] = {}
+    if body.title is not None:
+        payload["title"] = body.title
+    if body.body is not None:
+        payload["body"] = body.body
+    if body.base_branch is not None:
+        payload["base"] = body.base_branch
+    if body.state is not None:
+        payload["state"] = body.state
+
+    if not payload:
+        raise AppError(400, "bad_request", "No pull request fields were provided to update")
+
+    resp = gh_request(
+        "PATCH",
+        f"/repos/{GITHUB_OWNER}/{repo}/pulls/{number}",
+        json=payload,
+    )
+    pr = resp.json()
+
+    return success(
+        message="pull request updated",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "number": pr.get("number"),
+            "title": pr.get("title"),
+            "state": pr.get("state"),
+            "head": (pr.get("head") or {}).get("ref"),
+            "base": (pr.get("base") or {}).get("ref"),
+            "url": pr.get("html_url"),
+        },
+    )
+
+
+@app.post("/repos/{repo}/pull-requests/{number}/close")
+def close_pull_request(
+    repo: str,
+    number: int,
+    body: PullRequestCloseRequest,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    payload: Dict[str, Any] = {"state": "closed"}
+    if body.state_reason:
+        payload["state_reason"] = body.state_reason
+
+    resp = gh_request(
+        "PATCH",
+        f"/repos/{GITHUB_OWNER}/{repo}/pulls/{number}",
+        json=payload,
+    )
+    pr = resp.json()
+
+    return success(
+        message="pull request closed",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "number": pr.get("number"),
+            "state": pr.get("state"),
+            "state_reason": body.state_reason,
+            "url": pr.get("html_url"),
+            "status": "closed",
+        },
+    )
+
+
+@app.post("/repos/{repo}/pull-requests/{number}/merge")
+def merge_pull_request(
+    repo: str,
+    number: int,
+    body: PullRequestMergeRequest,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    merge_method = body.merge_method.strip().lower()
+    if merge_method not in {"merge", "squash", "rebase"}:
+        raise AppError(400, "bad_request", "merge_method must be one of: merge, squash, rebase")
+
+    payload: Dict[str, Any] = {"merge_method": merge_method}
+    if body.commit_title is not None:
+        payload["commit_title"] = body.commit_title
+    if body.commit_message is not None:
+        payload["commit_message"] = body.commit_message
+    if body.sha is not None:
+        payload["sha"] = body.sha
+
+    resp = gh_request(
+        "PUT",
+        f"/repos/{GITHUB_OWNER}/{repo}/pulls/{number}/merge",
+        expected=(200,),
+        json=payload,
+    )
+    data = resp.json()
+
+    return success(
+        message="pull request merge attempted",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "number": number,
+            "merged": data.get("merged"),
+            "message": data.get("message"),
+            "sha": data.get("sha"),
+            "merge_method": merge_method,
+            "status": "merged" if data.get("merged") else "not_merged",
+        },
+    )
+
+
+@app.get("/repos/{repo}/workflows")
+def list_workflows(repo: str, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/actions/workflows")
+    data = resp.json()
+
+    return success(
+        message="workflows fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "total_count": data.get("total_count", 0),
+            "workflows": [
+                {
+                    "id": workflow.get("id"),
+                    "name": workflow.get("name"),
+                    "path": workflow.get("path"),
+                    "state": workflow.get("state"),
+                    "html_url": workflow.get("html_url"),
+                }
+                for workflow in data.get("workflows", [])
+            ],
+        },
+    )
+
+
+@app.get("/repos/{repo}/workflows/{workflow_id}/runs")
+def list_workflow_runs(
+    repo: str,
+    workflow_id: str,
+    branch: Optional[str] = None,
+    event: Optional[str] = None,
+    status: Optional[str] = None,
+    per_page: int = 20,
+    page: int = 1,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    params: Dict[str, Any] = {"per_page": per_page, "page": page}
+    if branch:
+        params["branch"] = branch
+    if event:
+        params["event"] = event
+    if status:
+        params["status"] = status
+
+    resp = gh_request(
+        "GET",
+        f"/repos/{GITHUB_OWNER}/{repo}/actions/workflows/{workflow_id}/runs",
+        params=params,
+    )
+    data = resp.json()
+
+    return success(
+        message="workflow runs fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "workflow_id": workflow_id,
+            "total_count": data.get("total_count", 0),
+            "workflow_runs": [
+                {
+                    "id": run.get("id"),
+                    "name": run.get("name"),
+                    "display_title": run.get("display_title"),
+                    "status": run.get("status"),
+                    "conclusion": run.get("conclusion"),
+                    "event": run.get("event"),
+                    "head_branch": run.get("head_branch"),
+                    "head_sha": run.get("head_sha"),
+                    "run_number": run.get("run_number"),
+                    "created_at": run.get("created_at"),
+                    "updated_at": run.get("updated_at"),
+                    "url": run.get("html_url"),
+                }
+                for run in data.get("workflow_runs", [])
+            ],
+        },
+    )
