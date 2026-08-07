@@ -25,9 +25,11 @@ This page documents the user-supplied authoritative GPT Action configuration for
 The source consisted of:
 
 - GPT Action authentication selection: `OAuth`;
-- complete pasted OpenAPI schema titled `Google Workspace API`, version `1.2.0`.
+- complete pasted OpenAPI schema titled `Google Workspace API`, version `1.2.0`;
+- GPT Builder OAuth settings showing the authorization URL, token URL, token exchange method, and hidden Client ID/Client Secret fields;
+- complete copied OAuth scope list.
 
-The pasted text contained Markdown escaping/link formatting around YAML list markers and server URLs. The technical schema is normalized below for documentation; operation IDs, paths, fields, enums, constraints, descriptions, and response structures are preserved.
+The pasted OpenAPI text contained Markdown escaping/link formatting around YAML list markers and server URLs. The technical schema is normalized for documentation; operation IDs, paths, fields, enums, constraints, descriptions, and response structures are preserved.
 
 ## Action identity
 
@@ -68,44 +70,45 @@ The schema description states that the Action can read Gmail, send email, and ma
 | `getGmailAttachment` | `GET` | `/gmail/v1/users/me/messages/{messageId}/attachments/{attachmentId}` | Retrieve base64url-encoded attachment data |
 | `sendGmailMessage` | `POST` | `/gmail/v1/users/me/messages/send` | Send an RFC 2822 MIME message encoded as base64url |
 
-## OAuth boundary
+## OAuth configuration
 
 The GPT Action authentication type is authoritatively verified as **OAuth**.
 
-The supplied OpenAPI schema does not include OAuth `securitySchemes`, scope names, authorization URL, token URL, client ID, or client secret. Those values are configured outside this schema in the GPT Action authentication settings and remain **unknown / unverified**.
+### Endpoints
 
-No OAuth client secret, access token, refresh token, authorization code, or authenticated-account identifier was supplied or published.
+| Setting | Authoritative value |
+|---|---|
+| Authorization URL | `https://accounts.google.com/o/oauth2/v2/auth` |
+| Token URL | `https://oauth2.googleapis.com/token` |
+| Token exchange method | Default (`POST` request) |
+
+### Configured scopes
+
+The GPT Builder configuration contains these four scopes:
+
+```text
+https://www.googleapis.com/auth/calendar.events
+https://www.googleapis.com/auth/calendar.calendarlist.readonly
+https://www.googleapis.com/auth/gmail.readonly
+https://www.googleapis.com/auth/gmail.send
+```
+
+These scopes establish the configured permission boundary:
+
+- `calendar.events` — manage events on calendars the authenticated account can access;
+- `calendar.calendarlist.readonly` — read the authenticated account's calendar list;
+- `gmail.readonly` — read Gmail messages/settings data exposed by the Gmail API within the scope's permissions;
+- `gmail.send` — send email on behalf of the authenticated account.
+
+The OAuth Client ID and Client Secret exist in GPT Builder but were shown as hidden and are intentionally not published. Access tokens, refresh tokens, authorization codes, and authenticated-account identifiers were not supplied.
 
 ## Calendar data model
 
-The schema supports calendar-list metadata including:
+The schema supports calendar-list metadata including calendar ID, summary/description/location, time zone, primary/selected flags, and access role.
 
-- calendar ID;
-- summary/description/location;
-- time zone;
-- primary/selected flags;
-- access role.
+Event reads can return event ID/status/link, summary/description/location, start/end date or date-time/time zone, attendees and response status, recurrence data, organizer information, and conference/Google Meet entry-point metadata.
 
-Event reads can return:
-
-- event ID/status/link;
-- summary, description, and location;
-- start/end date or date-time/time zone;
-- attendees and response status;
-- recurrence data;
-- organizer information;
-- conference/Google Meet entry-point metadata.
-
-Event creation/update supports:
-
-- title/description/location;
-- all-day or timed start/end;
-- attendee arrays;
-- recurrence rules;
-- reminders;
-- color/visibility/transparency;
-- guest permissions;
-- Google Meet creation via `conferenceDataVersion=1` and `conferenceData.createRequest`.
+Event creation/update supports title/description/location, all-day or timed start/end, attendee arrays, recurrence rules, reminders, color/visibility/transparency, guest permissions, and Google Meet creation via `conferenceDataVersion=1` and `conferenceData.createRequest`.
 
 `sendUpdates` supports `all`, `externalOnly`, or `none`, defaulting to `all` on create/update/delete/move operations where defined.
 
@@ -122,69 +125,36 @@ These are part of the Action contract's descriptive operating model. They are no
 
 ## Gmail data model
 
-### Profile
+`getGmailProfile` can return the authenticated email address, total message count, total thread count, and history ID.
 
-`getGmailProfile` can return:
+`searchGmailMessages` supports Gmail search query `q`, repeated `labelIds`, optional spam/trash inclusion, pagination, and maximum result count. It returns message/thread IDs rather than full message bodies.
 
-- authenticated email address;
-- total message count;
-- total thread count;
-- history ID.
-
-### Search/list
-
-`searchGmailMessages` supports:
-
-- Gmail search query `q`;
-- repeated `labelIds`;
-- optional spam/trash inclusion;
-- pagination and maximum result count.
-
-It returns message/thread IDs rather than full message bodies.
-
-### Message retrieval
-
-`getGmailMessage` supports formats:
-
-- `full`;
-- `metadata`;
-- `minimal`;
-- `raw`.
-
-The response can expose labels, snippet, history/internal-date metadata, raw data, MIME headers, MIME body data, nested parts, filenames, and attachment IDs.
-
-### Attachments
+`getGmailMessage` supports `full`, `metadata`, `minimal`, and `raw` formats and can expose labels, snippet, history/internal-date metadata, raw data, MIME headers, MIME body data, nested parts, filenames, and attachment IDs.
 
 `getGmailAttachment` returns attachment metadata plus base64url-encoded attachment data.
 
-### Sending mail
-
-`sendGmailMessage` accepts:
-
-- `raw`: a complete RFC 2822 MIME message encoded as base64url without line breaks;
-- optional `threadId` when replying in an existing thread.
-
-The authoritative operation description requires the assistant to show **To, Cc, Bcc, Subject, and body and obtain explicit confirmation immediately before sending**.
+`sendGmailMessage` accepts a complete RFC 2822 MIME message encoded as base64url without line breaks plus optional `threadId` for replies. The authoritative operation description requires the assistant to show **To, Cc, Bcc, Subject, and body and obtain explicit confirmation immediately before sending**.
 
 ## Security and privacy boundaries
 
-Verified from this source:
+Verified from the complete Action/OAuth source set:
 
 - the integration acts on the authenticated Google account;
-- authentication is OAuth-based;
+- authentication is OAuth-based using Google's authorization and token endpoints;
+- four explicit OAuth scopes define read/send Gmail permissions plus calendar-event management and read-only calendar-list access;
 - Gmail operations can expose email address, message metadata/content, raw MIME data, and attachments;
 - Calendar operations can expose event descriptions, attendees, organizer addresses, locations, recurrence, and meeting links;
 - the Action includes write capabilities for sending email and creating/updating/deleting/moving calendar events;
-- confirmation requirements are embedded in descriptions for sensitive write actions.
+- confirmation requirements are embedded in descriptions for sensitive write actions;
+- the OAuth Client ID/Secret are separate credentials and are not published.
 
 Still unverified:
 
-- OAuth scopes;
-- OAuth authorization/token endpoint configuration;
-- OAuth client identity and secret handling;
-- token storage/refresh behavior;
+- OAuth client ownership/project identity;
+- token storage/refresh implementation inside the ChatGPT platform;
 - exact Google account connected at runtime;
 - whether domain-wide delegation or Workspace administrator controls are involved;
+- Google Cloud OAuth consent-screen configuration;
 - audit/logging configuration;
 - revocation/reconnect procedure.
 
@@ -208,15 +178,19 @@ servers:
 
 ## Sanitization record
 
-No secret values were present in the supplied schema. Publication retains the public Google API hostnames and all technically necessary operation/schema names.
+No secret values were present in the supplied OpenAPI schema or scope list. The OAuth screenshot showed Client ID and Client Secret as hidden; neither value was supplied or published.
 
-No OAuth client secret, token, authenticated Gmail address, calendar ID, event ID, message ID, attachment data, or personal account identifier is published.
+Publication retains the public Google API/OAuth endpoints, OAuth scope names, and all technically necessary operation/schema names. No token, authenticated Gmail address, calendar ID, event ID, message ID, attachment data, or personal account identifier is published.
 
 ## Verification record
 
 - Verified: `2026-08-06`
-- Source: user-supplied GPT Action authentication selection and full OpenAPI schema text
+- Source: user-supplied GPT Action OpenAPI schema, OAuth configuration screenshot, and complete scope text
 - Authentication: OAuth
+- Authorization URL: `https://accounts.google.com/o/oauth2/v2/auth`
+- Token URL: `https://oauth2.googleapis.com/token`
+- Token exchange: Default POST request
+- Configured scopes: 4
 - Schema title/version: `Google Workspace API` / `1.2.0`
 - Operations verified: 12
 - Secret values published: none
