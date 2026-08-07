@@ -50,10 +50,10 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | --- | --- | --- |
 | 1 | Irish Politics Analytics umbrella architecture | complete and published |
 | 2 | `eirepolitic-data-pipeline` repository | complete and published |
-| 3 | Unified Oireachtas Data Platform | draft on `docs/ipa-oireachtas-platform` |
-| 4 | Oireachtas canonical data-product catalogue | discovery in progress |
-| 5 | Oireachtas refresh/validation orchestration | discovery in progress |
-| 6 | Oireachtas write policies and downstream contracts | discovery in progress |
+| 3 | Unified Oireachtas Data Platform | complete and published |
+| 4 | Oireachtas canonical data-product catalogue | draft on `docs/ipa-oireachtas-catalogue` |
+| 5 | Oireachtas refresh/validation orchestration | discovery complete enough to draft |
+| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft |
 
 ## Discovery checklist
 
@@ -69,20 +69,24 @@ Use this evidence order: current implementation/configuration; observed runtime 
 - [x] current Oireachtas API/schema/storage/batch/write-policy/contract core
 - [x] current production orchestrator, reusable refresh and reusable validation
 - [x] exact cadence table sets, modes, windows and page-size defaults
-- [x] representative silver and gold builders and their DQ/storage patterns
+- [x] all 31 registry definitions, PKs, columns, cadences, endpoints, statuses and builder locations
+- [x] configured write strategy and selected relationship metadata for all 31 products
+- [x] representative silver and gold builder DQ/storage behavior
 - [x] current compatibility-adapter and executable contract behavior
+- [x] batch control, promotion and rollback guard behavior
 - [x] member metrics and reusable LLM entry points at repository-map depth
-- [ ] per-table Oireachtas builder lineage/DQ reconciliation for the canonical catalogue
 - [ ] detailed maintenance/backfill utility status for P2
 - [ ] detailed retained legacy/editorial successor/status audit for P3
 
 ## Current verified discovery notes
 
-- Registry: 31 confirmed products — 23 silver, 3 control, 5 gold.
+- Registry: 31 confirmed products — 23 silver, 3 control, 5 gold. Registry columns are authoritative names/order but do not encode formal types/nullability.
 - API client performs complete offset pagination, retries HTTP 429/5xx, detects repeated pages and fails incomplete production pagination.
 - Production publication uses immutable batches and production/previous pointers; candidate logical reads resolve to the active batch during validation.
 - Weekly defaults: incremental, 35-day rolling window, page size 100. Monthly: incremental, previous month plus seven-day leading overlap, page size 200. Yearly: full, previous calendar year, page size 200.
+- Write strategies: snapshot replacement for core dimensions/current manifest, upsert for history/facts, append for run/DQ audit streams, rebuild for all gold products.
 - Compatibility contracts resolve through candidate/production state and enforce readability, columns, row minimum, PK integrity and freshness; comparison thresholds add key/row/join tolerances.
+- Batch pointer mutation requires both `OIREACHTAS_PUBLISH_ENABLED=true` and `OIREACHTAS_PUBLISH_LATEST=true` in the batch-control CLI.
 - **Observed runtime:** scheduled orchestrator run `30740881592` on 2026-08-02 completed refresh, validation, promotion and pointer verification successfully.
 - July packet-status pending-observation statements are historical where contradicted by August runtime evidence.
 - Repository legacy/trial workflow enablement alone is not evidence of production intent.
@@ -94,17 +98,17 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | Workstream plan | `docs/ipa-workstream-plan` / PR #62 | `31219424981` success | `31219454738` success; SHA `e25a90677d11c732bfe86a87616aa25191827cff` | complete |
 | P0 umbrella architecture | `docs/ipa-architecture` / PR #64 | `31219706244` success | `31219726250` success; SHA `307441a2479cda507589bf77a796a54f6c0042ac` | complete |
 | P0 repository page | `docs/ipa-repository` / PR #66 | `31219954893` success | `31219991624` success; SHA `49c130d88cf84418be3f15a17848f8d50f3112e1` | complete |
-| P0 Unified Oireachtas platform | `docs/ipa-oireachtas-platform` | pending | pending | draft in progress |
-| P0 data-product catalogue | pending | pending | pending | pending |
+| P0 Unified Oireachtas platform | `docs/ipa-oireachtas-platform` / PR #68 | `31220172926` success | `31220199307` success; SHA `74aa6405164440b62d28e6ac64d76f01388a7957` | complete |
+| P0 data-product catalogue | `docs/ipa-oireachtas-catalogue` | pending | pending | draft in progress |
 | P0 orchestration | pending | pending | pending | pending |
 | P0 policies/contracts | pending | pending | pending | pending |
 
 ## Unknowns to resolve
 
-- Complete per-product extraction/normalization lineage and product-specific DQ behavior.
-- Detailed status of every legacy, repair, patch and experimental workflow.
 - Exact live IAM/S3/Glue/Athena configuration where checked-in source cannot establish deployed state.
+- Detailed status of every legacy, repair, patch and experimental workflow, reserved for P2/P3.
+- Formal data types/nullability for canonical columns are not declared by the registry and should not be invented without typed source/observed schema evidence.
 
 ## Next action
 
-Validate and publish the Unified Oireachtas Data Platform page. After its exact Pages deployment succeeds, create the canonical data-product catalogue from current `main` and reconcile registry entries against their builders. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
+Validate and publish the canonical data-product catalogue. After its exact Pages deployment succeeds, create the refresh/validation orchestration runbook from current `main`, then complete the P0 write-policy/downstream-contract reference. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
