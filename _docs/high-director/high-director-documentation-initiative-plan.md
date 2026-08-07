@@ -34,26 +34,26 @@ Inference must never be presented as verified implementation.
 - **Phase 0:** complete. PR #29 validated/merged; resulting Pages deployment succeeded.
 - **Phase 1:** complete. PR #30 validated/merged; Pages deployment #137 succeeded.
 - **Phase 2:** complete. PR #31 validated/merged; Pages deployment #138 succeeded.
-- **Phase 3:** complete. PR #32 validated/merged; Pages deployment #139 succeeded.
-- **Phase 4 — First external authoritative source:** ready to begin; blocked only on user retrieval of the High Director ChatGPT configuration and instructions.
-- **Phases 5–10:** not started.
+- **Phase 3:** complete. PR #32 validated/merged; Pages deployment #139 succeeded; closure PR #33 validated/merged; Pages #140 succeeded.
+- **Phase 4 — First external authoritative source:** source received and documentation content complete on the working branch; validation, merge, and Pages verification are pending.
+- **Phase 5:** next source will be the High Director ChatGPT Action/OpenAPI schema(s), but only after Phase 4 deploys successfully.
+- **Phases 6–10:** not started.
 
 ## Canonical evidence pages
 
+- `_docs/high-director/gpt-configuration.md` — sanitized authoritative GPT configuration and complete user-authored Instructions field.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
 - `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
 - `_docs/high-director/github-integration.md` — configured/observed GitHub operation surface and repository workflow behavior.
-
-Repository and directly observed GitHub integration evidence are now exhausted for the first documentation block. They still do not verify the complete High Director runtime implementation, action-schema source, AWS implementation, authentication model, runtime data flows, external configuration, or external supporting code.
 
 ## Prioritized sources requiring user retrieval
 
 Request only one coherent source at a time:
 
-1. High Director ChatGPT configuration and instructions
-2. High Director ChatGPT Action/OpenAPI schema
+1. High Director ChatGPT configuration and instructions — **received and documented in Phase 4**
+2. High Director ChatGPT Action/OpenAPI schema(s) — **next source after Phase 4 deployment succeeds**
 3. AWS Lambda source for actions confirmed by the schema
-4. API Gateway configuration/export for confirmed endpoints
+4. API Gateway configuration/export if confirmed by implementation
 5. IAM/authentication configuration for confirmed components
 6. supporting external repository source/list
 7. non-secret environment/configuration metadata
@@ -80,67 +80,73 @@ Canonical pages will cover overview, architecture, capabilities, components, too
 
 **Status:** complete
 
-Established the initiative, evidence model, missing-source discipline, phased plan, and publication gates. PR #29 validated/merged and the resulting Pages deployment succeeded.
+Established the initiative, evidence model, missing-source discipline, phased plan, and publication gates.
 
 ### Phase 1 — Repository-verifiable documentation inventory
 
 **Status:** complete
 
-Inventoried High Director documentation/supporting sources, established canonical ownership, corrected unsupported overview claims, and added the repository evidence inventory. PR #30 validated/merged; Pages #137 succeeded.
+Inventoried High Director documentation/supporting sources, established canonical ownership, corrected unsupported overview claims, and added the repository evidence inventory.
 
 ### Phase 2 — Capability and component inventory
 
 **Status:** complete
 
-Separated directly exercised GitHub capabilities from unknown implementation details, defined component boundaries, and created the prioritized missing-source register. PR #31 validated/merged; Pages #138 succeeded.
+Separated directly exercised GitHub capabilities from unknown implementation details, defined component boundaries, and created the prioritized missing-source register.
 
 ### Phase 3 — GitHub integration and repository workflows
 
 **Status:** complete
 
-- documented exact configured GitHub operation names;
-- classified operations as exercised or configured-but-not-exercised;
-- documented the backend repository-addressing rule;
-- documented `.github/workflows/validate-documentation.yml` and `scripts/validate_docs.py`;
-- documented the GitHub-managed Pages workflow;
-- documented branch → PR → validation → merge → matching Pages deployment behavior;
-- documented failure handling and security/access boundaries;
-- preserved connector authentication, hosting, Action/OpenAPI source, Lambda/API Gateway, and IAM details as unknown/unverified;
-- added `_docs/high-director/github-integration.md`;
-- PR #32 validated/merged;
-- Pages deployment #139 succeeded.
+Documented the configured GitHub operation surface, repository-addressing rule, validation workflow, validator, Pages workflow, branch/PR/validation/deployment sequence, failure handling, and current access boundaries.
 
 ### Phase 4 — First external authoritative source
 
-**Status:** awaiting user-supplied authoritative source
+**Status:** in progress — source received, content complete, exit gate pending
 
-Required source:
+Received from the system owner on 2026-08-06:
 
-**High Director ChatGPT configuration and instructions**
+- GPT name: `High Director`
+- GPT description: `Concise assistant for data pipelines and cloud build work.`
+- complete user-authored Instructions field
+- four populated conversation starters
+- recommended model: `Thinking 5.6`
+- visible Knowledge state: no uploaded files visible/configured
+- visible Actions count: 2
+- one visible public Action target: `www.googleapis.com`
+- one visible private AWS Lambda URL-backed Action
 
-Why first:
+Sanitization performed:
 
-- establishes authoritative purpose and responsibilities;
-- establishes behavioral rules and operating model;
-- identifies configured tools/actions and limitations;
-- determines which lower-level external integration sources are actually required;
-- prevents later architecture documentation from being based on historical or inferred capability claims.
+- private AWS Lambda hostname removed from publication;
+- screenshots not published because they expose that hostname;
+- public hostname and non-secret configuration retained;
+- no secret values were present in the supplied instruction text.
 
-When supplied:
+Documentation changes on the working branch:
 
-1. inspect the material;
-2. remove or replace sensitive/personal information before publication;
-3. preserve technically important structure and exact non-secret names;
-4. document provenance and evidence classification;
-5. add the sanitized source/reference to the site;
-6. update affected High Director pages;
-7. validate, merge through a focused PR, and confirm Pages deployment.
+- added `_docs/high-director/gpt-configuration.md`;
+- updated `_docs/high-director/overview.md` with authoritative purpose and behavioral rules;
+- updated `_docs/high-director/capability-component-inventory.md` with authoritative GPT scope, visible Action existence, and revised missing-source ordering;
+- capability toggle settings remain unverified because they were not visible in the supplied screenshots.
+
+Exit gate:
+
+- documentation validation passes;
+- PR merges;
+- resulting Pages deployment succeeds.
 
 ### Phase 5 — Remaining external integration sources
 
 **Status:** planned
 
-Repeat the one-source-at-a-time process for required Action/OpenAPI, Lambda, API Gateway, IAM/authentication, external repository, and configuration sources.
+Next coherent source after Phase 4 deployment succeeds:
+
+**High Director ChatGPT Action/OpenAPI schema(s)**
+
+The schema(s) are required before requesting Lambda/API Gateway/IAM details because they establish the configured action names, operations, request/response structures, server targets, and authentication declarations.
+
+After schema documentation, continue one source at a time for confirmed Lambda, API Gateway, IAM/authentication, external repository, and non-secret configuration sources.
 
 ### Phase 6 — Architecture and data flows
 
@@ -201,10 +207,11 @@ Evidence strength, highest first:
 
 ## Outstanding work
 
-- Validate and merge this Phase 3 closure update.
+- Validate the Phase 4 GPT-configuration branch.
+- Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Request only the High Director ChatGPT configuration and instructions.
+- Then request only the High Director Action/OpenAPI schema(s).
 
 ## Next safe development action
 
-After this plan update passes validation, merges, and deploys successfully, request the High Director ChatGPT configuration and instructions with explicit click-by-click retrieval steps.
+Complete the Phase 4 validation/merge/deployment gate. After it succeeds, request the High Director ChatGPT Action/OpenAPI schema(s) with explicit retrieval steps.
