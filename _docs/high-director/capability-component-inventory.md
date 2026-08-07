@@ -27,8 +27,10 @@ This page is the canonical capability/component inventory for the High Director 
 | Single-owner GitHub scoping | User-supplied GPT instructions + Lambda source + live AWS config | `GITHUB_OWNER` backend env var present; slash-containing repo names rejected | Current owner value intentionally unpublished |
 | GitHub REST authentication | User-supplied Lambda source + live AWS config | `GITHUB_TOKEN` environment-variable key present; code sends Bearer token | Actual PAT permissions/rotation unknown |
 | Public Lambda Function URL transport | User-supplied live AWS config | `Auth type: NONE`, `BUFFERED`, CORS not enabled | App-level API key remains the effective request gate |
+| Gmail profile/search/read/attachment/send operations | User-supplied Google Workspace Action schema | Five Gmail operation IDs; OAuth selected | OAuth scopes/endpoints and token lifecycle unverified |
+| Google Calendar list/read/create/update/delete/move operations | User-supplied Google Workspace Action schema | Seven Calendar operation IDs; OAuth selected | OAuth scopes/endpoints and token lifecycle unverified |
 | Inspect/update `eirepolitic.github.io` and manage PRs/workflows | Observable runtime evidence | Successfully exercised during initiative | Backend credential values remain private |
-| Verify GitHub Pages deployment | Observable runtime evidence | Pages deployments #136–#144 succeeded | GitHub Pages internals external |
+| Verify GitHub Pages deployment | Observable runtime evidence | Pages deployments #136–#146 succeeded | GitHub Pages internals external |
 
 ## Component inventory
 
@@ -43,7 +45,7 @@ This page is the canonical capability/component inventory for the High Director 
 | GitHub wrapper environment contract | Source + live AWS config | Live keys `APP_API_KEY`, `BRANCH_PREFIX`, `DEFAULT_BASE_BRANCH`, `GITHUB_OWNER`, `GITHUB_TOKEN` | Values intentionally unpublished; optional defaults not visible live |
 | GitHub wrapper execution role | User-supplied authoritative live IAM config | Role name `github-gpt-wrapper-GithubGptWrapperRole-6j2drFhUXMyo`; visible attached `AWSLambdaBasicExecutionRole`; trust principal `lambda.amazonaws.com` | Whether additional/inline policies exist beyond supplied view; full managed-policy JSON not supplied |
 | GitHub backend credential model | User-supplied authoritative source package | `GITHUB_TOKEN` used as Bearer token; template/README describe fine-grained GitHub PAT | Actual granted permissions, token storage/rotation |
-| `www.googleapis.com` Action | User-supplied authoritative existence evidence | One configured Action visibly targets `www.googleapis.com` | Exact schema/API product/operations/authentication/data flow |
+| Google Workspace Action | User-supplied authoritative Action configuration/schema | OpenAPI 3.1.0, `Google Workspace API` v1.2.0, OAuth selected, 12 Gmail/Calendar operations, public Google API servers | OAuth scopes, authorization/token URLs, client/token lifecycle configuration |
 | Documentation validation workflow | Verified implementation | `.github/workflows/validate-documentation.yml` and successful runs | GitHub-hosted runner internals |
 | GitHub Pages publication path | Verified operational behavior | Successful builds/deployments after merged PRs | GitHub-hosted platform internals |
 | API Gateway integration | Not established | GitHub Action and SAM/live configuration use Lambda Function URL directly | Whether used by any other High Director component |
@@ -57,7 +59,7 @@ This page is the canonical capability/component inventory for the High Director 
 - README says PR merge is unsupported, but Lambda v0.3.0 implements merge.
 - README says direct writes to the default branch should not occur, but apply endpoints do not technically enforce that restriction.
 
-The current GPT schema remains the canonical callable Action contract; Lambda source remains canonical for backend implementation.
+The current GPT schema remains the canonical callable GitHub Action contract; Lambda source remains canonical for backend implementation.
 
 ## Prioritized missing-source register
 
@@ -67,9 +69,10 @@ The current GPT schema remains the canonical callable Action contract; Lambda so
 | 2 | Private Lambda-backed GitHub Action OpenAPI schema | **Supplied and documented** |
 | 3 | GitHub wrapper Lambda source/deployment package | **Supplied and documented** |
 | 4 | Live Lambda/IAM configuration | **Supplied and documented** |
-| 5 | `www.googleapis.com` Action OpenAPI schema | **Next source** — required to identify exact Google API operations, authentication, scopes, and data flow |
-| 6 | Additional external repository source/list | Required only if implementation references external repositories |
-| 7 | Non-secret operational configuration/monitoring metadata | Required for deployment/runbook/troubleshooting completion |
+| 5 | Google Workspace Action OpenAPI schema | **Supplied and documented** |
+| 6 | Google Workspace OAuth configuration details | **Next source** — required to verify scopes plus authorization/token endpoints without requesting credentials |
+| 7 | Additional external repository source/list | Required only if implementation references external repositories |
+| 8 | Non-secret operational configuration/monitoring metadata | Required for deployment/runbook/troubleshooting completion where evidence shows it is used |
 
 ## Known limitations
 
@@ -77,12 +80,12 @@ The current GPT schema remains the canonical callable Action contract; Lambda so
 - Live Lambda memory and timeout remain unverified from the console, though the SAM template declares 512 MB and 30 seconds.
 - API-key and GitHub-token values are intentionally not requested/published.
 - Actual fine-grained PAT permissions are unverified.
-- The public Google Action remains identified only by hostname.
+- Google OAuth scopes and authorization/token endpoint configuration remain unverified.
 - The supplied IAM view verifies one managed policy but does not prove the absence of additional/inline policies.
 
 ## Verification record
 
-Verified on 2026-08-06 using repository evidence, successful GitHub integration operations, authoritative GPT configuration, current Action schema, the user-supplied GitHub wrapper Lambda source/deployment package, and live AWS Lambda/IAM configuration screenshots plus trust-policy JSON.
+Verified on 2026-08-06 using repository evidence, successful GitHub integration operations, authoritative GPT configuration, GitHub Action schema, GitHub wrapper Lambda package/live AWS configuration, and the user-supplied Google Workspace Action schema with OAuth authentication selection.
 
 ## Initiative status
 
