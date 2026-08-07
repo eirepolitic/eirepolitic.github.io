@@ -1,16 +1,19 @@
 ---
-layout: default
 title: "Irish Politics Analytics / Oireachtas documentation workstream plan"
-description: "Persistent execution plan for documenting the Irish Politics Analytics and eirepolitic-data-pipeline workstream."
-doc_type: high-director
+summary: "Persistent execution plan for the Irish Politics Analytics and eirepolitic-data-pipeline documentation workstream."
+section: high-director
+doc_type: agent
 status: active
+created: 2026-08-07
 updated: 2026-08-07
+last_verified: 2026-08-07
 owner: High Director
 systems:
   - irish-politics-analytics
 repositories:
   - eirepolitic.github.io
   - eirepolitic-data-pipeline
+permalink: /projects/high-director/ipa-oireachtas-documentation-workstream-plan/
 ---
 
 # Irish Politics Analytics / Oireachtas documentation workstream plan
@@ -109,7 +112,7 @@ Verified from the repository tree and `docs/oireachtas_packet_status.md` on 2026
 
 | Component | Branch / PR | Validation | Pages deployment | Result |
 | --- | --- | --- | --- | --- |
-| Workstream plan | `docs/ipa-workstream-plan` | pending | pending | in progress |
+| Workstream plan | `docs/ipa-workstream-plan` / PR #62 | retry pending | pending | in progress |
 | P0 umbrella architecture | pending | pending | pending | pending |
 | P0 repository page | pending | pending | pending | pending |
 | P0 Unified Oireachtas platform | pending | pending | pending | pending |
