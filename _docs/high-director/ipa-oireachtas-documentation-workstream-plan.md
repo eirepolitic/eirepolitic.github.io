@@ -51,9 +51,9 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | 1 | Irish Politics Analytics umbrella architecture | complete and published |
 | 2 | `eirepolitic-data-pipeline` repository | complete and published |
 | 3 | Unified Oireachtas Data Platform | complete and published |
-| 4 | Oireachtas canonical data-product catalogue | draft on `docs/ipa-oireachtas-catalogue` |
-| 5 | Oireachtas refresh/validation orchestration | discovery complete enough to draft |
-| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft |
+| 4 | Oireachtas canonical data-product catalogue | publication retry on `docs/ipa-oireachtas-catalogue-pages-retry` |
+| 5 | Oireachtas refresh/validation orchestration | discovery complete enough to draft; blocked on catalogue Pages gate |
+| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft; blocked on prior P0 gates |
 
 ## Discovery checklist
 
@@ -73,7 +73,8 @@ Use this evidence order: current implementation/configuration; observed runtime 
 - [x] configured write strategy and selected relationship metadata for all 31 products
 - [x] representative silver and gold builder DQ/storage behavior
 - [x] current compatibility-adapter and executable contract behavior
-- [x] batch control, promotion and rollback guard behavior
+- [x] batch control, candidate seeding/reassembly, promotion and rollback guard behavior
+- [x] write-policy merge/integrity tests and refresh-orchestration tests
 - [x] member metrics and reusable LLM entry points at repository-map depth
 - [ ] detailed maintenance/backfill utility status for P2
 - [ ] detailed retained legacy/editorial successor/status audit for P3
@@ -86,6 +87,7 @@ Use this evidence order: current implementation/configuration; observed runtime 
 - Weekly defaults: incremental, 35-day rolling window, page size 100. Monthly: incremental, previous month plus seven-day leading overlap, page size 200. Yearly: full, previous calendar year, page size 200.
 - Write strategies: snapshot replacement for core dimensions/current manifest, upsert for history/facts, append for run/DQ audit streams, rebuild for all gold products.
 - Compatibility contracts resolve through candidate/production state and enforce readability, columns, row minimum, PK integrity and freshness; comparison thresholds add key/row/join tolerances.
+- Auxiliary enrichment staging refuses source objects older than each contract maximum before copying them into a candidate and records candidate provenance.
 - Batch pointer mutation requires both `OIREACHTAS_PUBLISH_ENABLED=true` and `OIREACHTAS_PUBLISH_LATEST=true` in the batch-control CLI.
 - **Observed runtime:** scheduled orchestrator run `30740881592` on 2026-08-02 completed refresh, validation, promotion and pointer verification successfully.
 - July packet-status pending-observation statements are historical where contradicted by August runtime evidence.
@@ -99,9 +101,14 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | P0 umbrella architecture | `docs/ipa-architecture` / PR #64 | `31219706244` success | `31219726250` success; SHA `307441a2479cda507589bf77a796a54f6c0042ac` | complete |
 | P0 repository page | `docs/ipa-repository` / PR #66 | `31219954893` success | `31219991624` success; SHA `49c130d88cf84418be3f15a17848f8d50f3112e1` | complete |
 | P0 Unified Oireachtas platform | `docs/ipa-oireachtas-platform` / PR #68 | `31220172926` success | `31220199307` success; SHA `74aa6405164440b62d28e6ac64d76f01388a7957` | complete |
-| P0 data-product catalogue | `docs/ipa-oireachtas-catalogue` | pending | pending | draft in progress |
+| P0 data-product catalogue | `docs/ipa-oireachtas-catalogue` / PR #70 | `31220389309` success | `31220425800` cancelled for merge SHA `cc8d53cb4f96e5df40316d51e1ab7a1545b1db47` after a newer parallel `main` Pages run started; build did not report a content/Jekyll failure | publication retry in progress |
+| P0 catalogue Pages retry | `docs/ipa-oireachtas-catalogue-pages-retry` | pending | pending | in progress |
 | P0 orchestration | pending | pending | pending | pending |
 | P0 policies/contracts | pending | pending | pending | pending |
+
+## Publication-gate incident note
+
+The first Pages deployment for catalogue PR #70 was cancelled while Jekyll was running because a newer `main` commit started another Pages deployment. The newer run `31220463394` succeeded for SHA `eea476070d0d55594fa7e397e9ffe94321eafa31`, but it is not accepted as the catalogue publication proof because this workstream requires the matching merged SHA to succeed. A focused retry is therefore being published and validated from current `main` before P0 orchestration work begins.
 
 ## Unknowns to resolve
 
@@ -111,4 +118,4 @@ Use this evidence order: current implementation/configuration; observed runtime 
 
 ## Next action
 
-Validate and publish the canonical data-product catalogue. After its exact Pages deployment succeeds, create the refresh/validation orchestration runbook from current `main`, then complete the P0 write-policy/downstream-contract reference. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
+Complete the catalogue publication retry: validate, merge, and require Pages success for the retry merge SHA. Only after that exact gate succeeds, create the refresh/validation orchestration runbook from current `main`, then complete the P0 write-policy/downstream-contract reference. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
