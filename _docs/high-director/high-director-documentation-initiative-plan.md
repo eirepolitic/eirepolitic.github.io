@@ -1,9 +1,13 @@
 ---
 title: High Director Documentation Initiative Plan
-category: High Director
-order: 15
+summary: Persistent implementation plan for fully documenting the High Director agent, its integrations, security boundaries, operations, and authoritative source gaps.
+section: high-director
+doc_type: agent
 status: active
-last_reviewed: 2026-08-06
+created: 2026-08-06
+updated: 2026-08-06
+last_verified: 2026-08-06
+order: 15
 ---
 
 # High Director Documentation Initiative Plan
