@@ -9,6 +9,7 @@ on:
       - "_layouts/**"
       - "_includes/**"
       - "_data/**"
+      - "_templates/**"
       - "scripts/validate_docs.py"
       - ".github/workflows/validate-documentation.yml"
       - "DOCUMENTATION_STANDARD.md"
