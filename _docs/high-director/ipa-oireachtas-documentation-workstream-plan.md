@@ -51,9 +51,9 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | 1 | Irish Politics Analytics umbrella architecture | complete and published |
 | 2 | `eirepolitic-data-pipeline` repository | complete and published |
 | 3 | Unified Oireachtas Data Platform | complete and published |
-| 4 | Oireachtas canonical data-product catalogue | publication retry on `docs/ipa-oireachtas-catalogue-pages-retry` |
-| 5 | Oireachtas refresh/validation orchestration | discovery complete enough to draft; blocked on catalogue Pages gate |
-| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft; blocked on prior P0 gates |
+| 4 | Oireachtas canonical data-product catalogue | complete and published after exact-SHA Pages retry |
+| 5 | Oireachtas refresh/validation orchestration | draft on `docs/ipa-oireachtas-orchestration` |
+| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft |
 
 ## Discovery checklist
 
@@ -75,6 +75,7 @@ Use this evidence order: current implementation/configuration; observed runtime 
 - [x] current compatibility-adapter and executable contract behavior
 - [x] batch control, candidate seeding/reassembly, promotion and rollback guard behavior
 - [x] write-policy merge/integrity tests and refresh-orchestration tests
+- [x] batch-control workflow UI inputs and publication guards
 - [x] member metrics and reusable LLM entry points at repository-map depth
 - [ ] detailed maintenance/backfill utility status for P2
 - [ ] detailed retained legacy/editorial successor/status audit for P3
@@ -85,6 +86,7 @@ Use this evidence order: current implementation/configuration; observed runtime 
 - API client performs complete offset pagination, retries HTTP 429/5xx, detects repeated pages and fails incomplete production pagination.
 - Production publication uses immutable batches and production/previous pointers; candidate logical reads resolve to the active batch during validation.
 - Weekly defaults: incremental, 35-day rolling window, page size 100. Monthly: incremental, previous month plus seven-day leading overlap, page size 200. Yearly: full, previous calendar year, page size 200.
+- Only `Oireachtas Refresh Validation Orchestrator` is scheduled; cadence wrappers are manual. Scheduled runs force candidate publication, consumer validation, and automatic promotion after success.
 - Write strategies: snapshot replacement for core dimensions/current manifest, upsert for history/facts, append for run/DQ audit streams, rebuild for all gold products.
 - Compatibility contracts resolve through candidate/production state and enforce readability, columns, row minimum, PK integrity and freshness; comparison thresholds add key/row/join tolerances.
 - Auxiliary enrichment staging refuses source objects older than each contract maximum before copying them into a candidate and records candidate provenance.
@@ -101,14 +103,14 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | P0 umbrella architecture | `docs/ipa-architecture` / PR #64 | `31219706244` success | `31219726250` success; SHA `307441a2479cda507589bf77a796a54f6c0042ac` | complete |
 | P0 repository page | `docs/ipa-repository` / PR #66 | `31219954893` success | `31219991624` success; SHA `49c130d88cf84418be3f15a17848f8d50f3112e1` | complete |
 | P0 Unified Oireachtas platform | `docs/ipa-oireachtas-platform` / PR #68 | `31220172926` success | `31220199307` success; SHA `74aa6405164440b62d28e6ac64d76f01388a7957` | complete |
-| P0 data-product catalogue | `docs/ipa-oireachtas-catalogue` / PR #70 | `31220389309` success | `31220425800` cancelled for merge SHA `cc8d53cb4f96e5df40316d51e1ab7a1545b1db47` after a newer parallel `main` Pages run started; build did not report a content/Jekyll failure | publication retry in progress |
-| P0 catalogue Pages retry | `docs/ipa-oireachtas-catalogue-pages-retry` | pending | pending | in progress |
-| P0 orchestration | pending | pending | pending | pending |
+| P0 data-product catalogue | `docs/ipa-oireachtas-catalogue` / PR #70 | `31220389309` success | initial exact-SHA run `31220425800` cancelled by newer parallel Pages deployment | superseded by retry |
+| P0 catalogue Pages retry | `docs/ipa-oireachtas-catalogue-pages-retry` / PR #73 | `31220665186` success | `31220683272` success; SHA `6f5c9c1d9685addeed5ec75a05a6d701de04733d` | complete |
+| P0 orchestration | `docs/ipa-oireachtas-orchestration` | pending | pending | draft in progress |
 | P0 policies/contracts | pending | pending | pending | pending |
 
 ## Publication-gate incident note
 
-The first Pages deployment for catalogue PR #70 was cancelled while Jekyll was running because a newer `main` commit started another Pages deployment. The newer run `31220463394` succeeded for SHA `eea476070d0d55594fa7e397e9ffe94321eafa31`, but it is not accepted as the catalogue publication proof because this workstream requires the matching merged SHA to succeed. A focused retry is therefore being published and validated from current `main` before P0 orchestration work begins.
+The first Pages deployment for catalogue PR #70 was cancelled because a newer parallel `main` commit entered the Pages deployment lane while the catalogue build was running. A focused retry was required rather than accepting another SHA's success. Retry PR #73 passed validation and Pages succeeded for its exact merge SHA, satisfying the workstream gate before orchestration work began.
 
 ## Unknowns to resolve
 
@@ -118,4 +120,4 @@ The first Pages deployment for catalogue PR #70 was cancelled while Jekyll was r
 
 ## Next action
 
-Complete the catalogue publication retry: validate, merge, and require Pages success for the retry merge SHA. Only after that exact gate succeeds, create the refresh/validation orchestration runbook from current `main`, then complete the P0 write-policy/downstream-contract reference. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
+Validate and publish the Oireachtas refresh/validation orchestration runbook. After its exact Pages deployment succeeds, create the P0 write-policy/downstream-contract reference from current `main`. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
