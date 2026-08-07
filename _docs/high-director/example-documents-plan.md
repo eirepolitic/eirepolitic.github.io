@@ -35,8 +35,8 @@ Templates should be refined only when real usage exposes a concrete defect.
 
 - [x] Repository — `eirepolitic.github.io`; PR #20 merged, validation `31137389854` passed, Pages deployment `31137413142` succeeded.
 - [x] System — Eire Politic Documentation Site; PR #21 merged, validation `31137496390` passed, Pages deployment `31137516088` succeeded.
-- [x] Data & Schema — Documentation Search Index drafted from the committed generator and browser consumer.
-- [ ] Runbook
+- [x] Data & Schema — Documentation Search Index; PR #22 merged, validation `31137604054` passed, Pages deployment `31137621658` succeeded.
+- [x] Runbook — Publish a Documentation Change drafted from the verified PR-validation-merge-deployment workflow.
 - [ ] Architecture Decision
 - [ ] High Director
 - [ ] Note
@@ -44,15 +44,15 @@ Templates should be refined only when real usage exposes a concrete defect.
 
 ## Current Step
 
-Data & Schema example is in review on branch `high-director/example-data-search-index`.
+Runbook example is in review on branch `high-director/example-runbook-publish-documentation`.
 
 ## Next Safe Action
 
-Validate and merge the Data & Schema example, confirm Pages deployment, then review the existing Documentation Site Operations page against the runbook template and close only real gaps.
+Validate and merge the runbook example, confirm Pages deployment, then create the Architecture Decision example from an implemented documentation-site design choice.
 
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: PRs #20 and #21; validation runs `31137389854` and `31137496390`; Pages runs `31137413142` and `31137516088`; `search-index.json`; `assets/js/search.js`; `_templates/data-schema-template.md`
+- Verified against: PRs #20 through #22; validation runs `31137389854`, `31137496390`, and `31137604054`; Pages runs `31137413142`, `31137516088`, and `31137621658`; `_templates/runbook-template.md`; observed documentation publishing workflow
 - Verified by: High Director
-- Verification scope: repository and system example completion, search-index schema source material, validation requirement, and deployment requirement
+- Verification scope: repository, system, and data example completion; runbook source procedure; validation requirement; deployment requirement
