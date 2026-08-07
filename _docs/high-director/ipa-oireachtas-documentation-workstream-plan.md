@@ -61,12 +61,12 @@ Secrets, credentials, private keys, personal identifiers, private individual URL
 
 | Order | Component | Intended canonical output | State |
 | --- | --- | --- | --- |
-| 1 | Irish Politics Analytics umbrella architecture | system page describing the platform boundary, major subsystems, repositories, data flow, operational boundaries, and continuation map | discovery in progress |
-| 2 | `eirepolitic-data-pipeline` repository | repository page covering layout, entry points, dependencies, workflows, tests, operational controls, and safe change procedure | pending |
-| 3 | Unified Oireachtas Data Platform | system page covering extraction, canonical/silver/gold/control layers, compatibility outputs, orchestration, and consumers | pending |
-| 4 | Oireachtas canonical data-product catalogue | data/reference documentation derived from `configs/oireachtas/tables.yml` and implementation | pending |
-| 5 | Oireachtas refresh/validation orchestration | runbook/system documentation for weekly/monthly/yearly refresh, orchestrator behavior, triggers, validation, failure handling, and observed runtime state | pending |
-| 6 | Oireachtas write policies and downstream contracts | reference/runbook documentation derived from policy/contract configuration and enforcing code | pending |
+| 1 | Irish Politics Analytics umbrella architecture | system page describing the platform boundary, major subsystems, repositories, data flow, operational boundaries, and continuation map | draft on `docs/ipa-architecture` |
+| 2 | `eirepolitic-data-pipeline` repository | repository page covering layout, entry points, dependencies, workflows, tests, operational controls, and safe change procedure | discovery in progress |
+| 3 | Unified Oireachtas Data Platform | system page covering extraction, canonical/silver/gold/control layers, compatibility outputs, orchestration, and consumers | discovery in progress |
+| 4 | Oireachtas canonical data-product catalogue | data/reference documentation derived from `configs/oireachtas/tables.yml` and implementation | discovery in progress |
+| 5 | Oireachtas refresh/validation orchestration | runbook/system documentation for weekly/monthly/yearly refresh, orchestrator behavior, triggers, validation, failure handling, and observed runtime state | discovery in progress |
+| 6 | Oireachtas write policies and downstream contracts | reference/runbook documentation derived from policy/contract configuration and enforcing code | discovery in progress |
 
 ## Discovery checklist
 
@@ -83,37 +83,41 @@ Secrets, credentials, private keys, personal identifiers, private individual URL
 ### `eirepolitic-data-pipeline`
 
 - [x] full repository tree enumerated
-- [ ] root repository metadata and dependency definitions
-- [ ] `configs/oireachtas/`
-- [ ] `extract/oireachtas/`
-- [ ] `process/oireachtas/`
-- [ ] `.github/workflows/oireachtas_*.yml`
+- [x] root repository metadata and dependency definitions
+- [x] `configs/oireachtas/`
+- [ ] `extract/oireachtas/` — tree and core publication/policy entry points inspected; per-table builders still being reconciled
+- [ ] `process/oireachtas/` — operational helper tree enumerated; individual procedures still being inspected
+- [ ] `.github/workflows/oireachtas_*.yml` — complete workflow tree enumerated; production orchestrator/reusable refresh/reusable validation inspected
 - [x] `docs/oireachtas_packet_status.md`
-- [ ] `instagram/`
+- [ ] `instagram/` — complete tree enumerated; implementation detail remains for P1
 - [ ] `process/build_member_profile_metrics.py`
 - [ ] `process/llm_table_runner.py`
-- [ ] `tasks/`
+- [ ] `tasks/` — complete tree enumerated; task schema/content remains for P1
 - [ ] maintenance/backfill utilities
 - [ ] legacy enrichment/classification scripts
 - [ ] relevant tests and validation scripts
 
 ## Current verified discovery notes
 
-Verified from the repository tree and `docs/oireachtas_packet_status.md` on 2026-08-07:
+Verified on 2026-08-07 against current `eirepolitic-data-pipeline` source/configuration unless otherwise labelled:
 
-- The unified Oireachtas implementation is registry-driven and exposes `python -m extract.oireachtas.build_table` as a documented CLI entry point.
-- The checked-in registry path is `configs/oireachtas/tables.yml`.
-- The handoff records `ca-central-1`, S3 bucket `eirepolitic-data`, and unified output prefixes under `processed/oireachtas_unified/` as non-secret implementation facts; these remain subject to confirmation against current configuration/code before being promoted into canonical documentation.
-- The repository contains dedicated weekly, monthly, yearly, compatibility, comparison, and refresh-validation orchestration workflows.
-- The repository contains current compatibility outputs used by member-profile and Instagram consumers alongside legacy enrichment keys retained for rollback.
-- The July 2026 handoff identifies pending scheduled observations; because that note predates this workstream, current workflow-run state must be re-checked before documenting those observations as current runtime facts.
+- `configs/oireachtas/tables.yml` contains 31 confirmed canonical products: 23 silver, 3 control, and 5 gold tables.
+- The unified Oireachtas implementation is registry-driven and exposes `python -m extract.oireachtas.build_table` as its central table CLI.
+- Checked-in Oireachtas defaults are AWS region `ca-central-1`, S3 bucket `eirepolitic-data`, API base `https://api.oireachtas.ie/v1`, and source-data base `https://data.oireachtas.ie`.
+- Current production publication is immutable-batch based. Logical `processed/oireachtas_unified/latest/` and `processed/oireachtas_unified/compat/` keys resolve through `processed/oireachtas_unified/pointers/production.json`; candidate data is written under `processed/oireachtas_unified/batches/<batch_id>/`.
+- `configs/oireachtas/write_policies.yml` defines snapshot-replace, upsert, append, and rebuild strategies plus selected relationship metadata. `extract/oireachtas/io_s3.py` applies policy-aware merging for candidate latest-table writes.
+- `configs/oireachtas/downstream_contracts.yml` defines six compatibility datasets plus roster/member-vote comparison thresholds.
+- The current refresh-validation orchestrator has weekly, monthly, and yearly scheduled triggers. Scheduled runs publish candidates, run consumer validation, and request automatic promotion only after refresh and validation succeed.
+- **Observed runtime evidence:** scheduled orchestrator run `30740881592` on 2026-08-02 completed refresh, validation, promotion, pointer verification, and summary successfully.
+- The July 2026 `docs/oireachtas_packet_status.md` handoff is now stale where it describes scheduled observation as pending; it remains historical handoff evidence, not current runtime truth.
+- The repository also contains downstream member metrics, Instagram/content rendering, reusable LLM task execution, maintenance utilities, enrichment modules, retained legacy scripts, and editorial/experimental workflows. Detailed status classification remains in scope for P1-P3.
 
 ## PR ledger
 
 | Component | Branch / PR | Validation | Pages deployment | Result |
 | --- | --- | --- | --- | --- |
-| Workstream plan | `docs/ipa-workstream-plan` / PR #62 | retry pending | pending | in progress |
-| P0 umbrella architecture | pending | pending | pending | pending |
+| Workstream plan | `docs/ipa-workstream-plan` / PR #62 | run `31219424981` success | run `31219454738` success for merge SHA `e25a90677d11c732bfe86a87616aa25191827cff` | complete |
+| P0 umbrella architecture | `docs/ipa-architecture` | pending | pending | draft in progress |
 | P0 repository page | pending | pending | pending | pending |
 | P0 Unified Oireachtas platform | pending | pending | pending | pending |
 | P0 data-product catalogue | pending | pending | pending | pending |
@@ -122,13 +126,13 @@ Verified from the repository tree and `docs/oireachtas_packet_status.md` on 2026
 
 ## Unknowns to resolve from implementation or runtime evidence
 
-- Exact current table registry contents, schemas, source endpoints, and layer semantics.
-- Exact write-policy rules and the code paths that enforce them.
-- Exact downstream contract definitions and contract-check behavior.
-- Current schedule/run state after the July 2026 handoff, including the first scheduled orchestrator run and the August monthly run.
-- Current consumer cutover state versus compatibility/legacy rollback paths.
-- Exact current authentication/environment-variable boundaries required by workflows and scripts.
+- Exact cadence-specific table sets and date-window defaults used by `process/oireachtas_refresh_inputs.py`.
+- Complete per-table extraction/normalization lineage and all table-specific failure/DQ rules.
+- Exact current compatibility-adapter construction and enrichment staging behavior.
+- Current intent/status of every legacy, repair, patch, and experimental workflow still registered as active in GitHub Actions.
+- Exact current authentication/environment-variable boundaries for downstream OpenAI and external rendering paths.
+- Exact live IAM/S3/Glue/Athena account configuration where source code cannot establish deployed state.
 
 ## Next action
 
-Finish implementation/configuration discovery for P0, then update this page with verified facts and produce the umbrella architecture component first. No architecture, security, cost, access-control, or irreversible implementation change is authorized by this documentation workstream.
+Validate and publish the Irish Politics Analytics umbrella architecture. After the matching Pages deployment succeeds, start the `eirepolitic-data-pipeline` repository page from current `main` while continuing the implementation audit. No architecture, security, cost, access-control, or irreversible implementation change is authorized by this documentation workstream.
