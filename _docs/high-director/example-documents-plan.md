@@ -25,9 +25,9 @@ Create one real, verified documentation example for each top-level category and 
 
 ## Current State
 
-Six category examples are merged and deployed: Repository, System, Data & Schema, Runbook, Architecture Decision, and High Director. The Note example is being reviewed on branch `high-director/example-note-validation-findings`.
+Seven category examples are merged and deployed: Repository, System, Data & Schema, Runbook, Architecture Decision, High Director, and Note. The Archive example is being reviewed on branch `high-director/example-archive-member-images`.
 
-Archive is the only remaining category after the Note example.
+Archive is the final category before phase completion.
 
 ## Scope
 
@@ -69,6 +69,7 @@ Current repository state and merged pull requests take precedence over stale pro
 - Runbook — Publish a Documentation Change; PR #23, validation `31137737015`, Pages `31137754183`.
 - Architecture Decision — Use Metadata-Driven Static Documentation on GitHub Pages; PR #24, validation `31137849202`, Pages `31137870369`.
 - High Director — this persistent Example Documents Phase plan; PR #25, validation `31137946466`, Pages `31137960412`.
+- Note — Documentation Validation Compatibility Findings; PR #26, validation `31138059436`, Pages `31138080555`.
 
 ## Category Progress
 
@@ -78,8 +79,8 @@ Current repository state and merged pull requests take precedence over stale pro
 - [x] Runbook
 - [x] Architecture Decision
 - [x] High Director — this persistent phase plan is the real continuation example.
-- [x] Note — Documentation Validation Compatibility Findings drafted from observed validation failures and source files.
-- [ ] Archive
+- [x] Note — Documentation Validation Compatibility Findings.
+- [x] Archive — Member Images Pipeline refined as a historical record with unverified current-source state clearly marked.
 
 ## Current Implementation Details
 
@@ -115,7 +116,7 @@ For each category example:
 6. Confirm the resulting Pages build and deploy jobs succeed.
 7. Record PR, validation, and deployment evidence in this plan.
 
-Evidence through the High Director example is recorded in `Completed Work`.
+Evidence through the Note example is recorded in `Completed Work`. Archive validation and deployment evidence will be added after its PR is merged.
 
 ## Failure Modes and Recovery
 
@@ -130,20 +131,20 @@ Evidence through the High Director example is recorded in `Completed Work`.
 - The examples cover verified repository documentation work available in this site; they are not intended to represent every possible infrastructure pattern.
 - GitHub Pages and GitHub Actions are external dependencies.
 - Front-matter lifecycle vocabulary has no `complete` value.
+- The historical `eirepolitic` repository referenced by the Archive example is not accessible through the configured GitHub connection, so current source state is deliberately left unverified.
 
 ## Outstanding Work
 
-1. Validate, merge, and deploy the Note example.
-2. Refine one existing real archived document against the Archive template without inventing missing historical facts.
-3. Record final phase completion in this plan after all category examples are deployed.
+1. Validate, merge, and deploy the Archive example.
+2. Record final phase completion in this plan after the Archive deployment succeeds.
 
 ## Next Safe Development Action
 
-Validate and merge branch `high-director/example-note-validation-findings`, confirm the resulting Pages deployment, then inspect `_templates/archive-template.md` and one existing document under `_docs/archive/`. Change only factual gaps supported by the archived record.
+Validate and merge branch `high-director/example-archive-member-images`, confirm the resulting Pages deployment, then make a final plan-only update recording all eight examples as complete and the Example Documents phase as complete.
 
 ## Handoff Notes
 
-Always pass only `eirepolitic.github.io` to repository tools. Start each new documentation step from current `main`. Do not begin the next category until the previous merged documentation change has a successful Pages deployment. Keep this plan synchronized with actual PR and workflow evidence.
+Always pass only `eirepolitic.github.io` to repository tools. Start each new documentation step from current `main`. Do not begin the final phase-completion update until the Archive merged documentation change has a successful Pages deployment. Keep this plan synchronized with actual PR and workflow evidence.
 
 ## Related Documents
 
@@ -153,7 +154,7 @@ Always pass only `eirepolitic.github.io` to repository tools. Start each new doc
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: PRs #20 through #25; validation runs `31137389854`, `31137496390`, `31137604054`, `31137737015`, `31137849202`, and `31137946466`; Pages runs `31137413142`, `31137516088`, `31137621658`, `31137754183`, `31137870369`, and `31137960412`; `_templates/note-template.md`; current `main`
+- Verified against: PRs #20 through #26; validation runs `31137389854`, `31137496390`, `31137604054`, `31137737015`, `31137849202`, `31137946466`, and `31138059436`; Pages runs `31137413142`, `31137516088`, `31137621658`, `31137754183`, `31137870369`, `31137960412`, and `31138080555`; `_templates/archive-template.md`; `_docs/archive/member-images-pipeline.md`; current `main`
 - Verified by: High Director
-- Verification scope: category completion through High Director, Note source findings, validation/deployment gates, constraints, and next work
-- Unverified areas: Note is not yet merged; Archive example is not yet complete
+- Verification scope: category completion through Note, Archive historical record, validation/deployment gates, constraints, and final completion path
+- Unverified areas: Archive PR validation/deployment; current source repository for the historical Member Images Pipeline
