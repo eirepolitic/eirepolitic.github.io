@@ -1,6 +1,6 @@
 ---
 title: Example Documents Phase
-summary: Build one verified real-world documentation example for each top-level documentation category and refine templates only when real usage exposes defects.
+summary: Track verified real-world examples for every documentation category and preserve the exact continuation state for future High Director sessions.
 section: high-director
 doc_type: agent
 status: active
@@ -8,51 +8,152 @@ created: 2026-08-06
 updated: 2026-08-06
 last_verified: 2026-08-06
 owner: High Director
+repository: eirepolitic.github.io
+system: Eire Politic Documentation Site
 order: 40
 permalink: /projects/high-director/example-documents-plan/
 related:
   - /projects/high-director/documentation-section-template-plan/
+  - /projects/decisions/use-metadata-driven-static-documentation/
 ---
 
 # Example Documents Phase
 
 ## Purpose
 
-Create one real, verified documentation example for each top-level documentation category using existing repositories, systems, pipelines, datasets, operational procedures, architecture decisions, High Director work, notes, or archived work.
+Create one real, verified documentation example for each top-level category and give future High Director sessions an exact continuation point. Real usage should expose template defects; templates must not be changed merely to make examples look more complete.
 
-Templates should be refined only when real usage exposes a concrete defect.
+## Current State
 
-## Working Rules
+Five category examples are merged and deployed: Repository, System, Data & Schema, Runbook, and Architecture Decision. This plan itself is the real High Director example and is being reviewed on branch `high-director/example-high-director-plan`.
 
-- Use real implemented or historical work; do not invent artificial examples.
-- Work in small reviewable pull requests.
-- Run documentation validation before every merge.
-- Confirm GitHub Pages deployment after every merged documentation change.
-- Update this plan after every meaningful step.
-- Do not change information architecture, security boundaries, or cost-bearing infrastructure without a separate decision.
+Remaining categories after this review are Note and Archive.
+
+## Scope
+
+### Included
+
+- Repository: `eirepolitic.github.io`.
+- Technical documentation under `_docs/`.
+- Existing documentation templates under `_templates/` as reference material only.
+- Documentation validation workflow and GitHub Pages deployment evidence.
+- One real example for each of the eight top-level documentation categories.
+
+### Excluded
+
+- Artificial examples.
+- Unnecessary template revisions.
+- Information-architecture changes.
+- New security boundaries or cost-bearing infrastructure.
+- Changes to unrelated repositories or systems.
+
+## Source of Truth
+
+- Repository: `eirepolitic.github.io`
+- Default branch: `main`
+- This phase plan: `_docs/high-director/example-documents-plan.md`
+- Completed template initiative: `_docs/high-director/documentation-section-template-plan.md`
+- Templates: `_templates/`
+- Documentation standard: `DOCUMENTATION_STANDARD.md`
+- Validator: `scripts/validate_docs.py`
+- Validation workflow: `.github/workflows/validate-documentation.yml`
+- Publishing: GitHub Pages from `main`
+
+Current repository state and merged pull requests take precedence over stale progress text in this plan.
+
+## Completed Work
+
+- Repository — `eirepolitic.github.io`; PR #20, validation `31137389854`, Pages `31137413142`.
+- System — Eire Politic Documentation Site; PR #21, validation `31137496390`, Pages `31137516088`.
+- Data & Schema — Documentation Search Index; PR #22, validation `31137604054`, Pages `31137621658`.
+- Runbook — Publish a Documentation Change; PR #23, validation `31137737015`, Pages `31137754183`.
+- Architecture Decision — Use Metadata-Driven Static Documentation on GitHub Pages; PR #24, validation `31137849202`, Pages `31137870369`.
 
 ## Category Progress
 
-- [x] Repository — `eirepolitic.github.io`; PR #20 merged, validation `31137389854` passed, Pages deployment `31137413142` succeeded.
-- [x] System — Eire Politic Documentation Site; PR #21 merged, validation `31137496390` passed, Pages deployment `31137516088` succeeded.
-- [x] Data & Schema — Documentation Search Index; PR #22 merged, validation `31137604054` passed, Pages deployment `31137621658` succeeded.
-- [x] Runbook — Publish a Documentation Change; PR #23 merged, validation `31137737015` passed, Pages deployment `31137754183` succeeded.
-- [x] Architecture Decision — Use Metadata-Driven Static Documentation on GitHub Pages drafted from the implemented site architecture.
-- [ ] High Director
+- [x] Repository
+- [x] System
+- [x] Data & Schema
+- [x] Runbook
+- [x] Architecture Decision
+- [x] High Director — this persistent phase plan is the real continuation example.
 - [ ] Note
 - [ ] Archive
 
-## Current Step
+## Current Implementation Details
 
-Architecture Decision example is in review on branch `high-director/example-decision-static-documentation`.
+Each documentation change uses a branch from current `main`, a focused pull request, the documentation validator, merge only after validation succeeds, and post-merge GitHub Pages confirmation. Stable examples created by this phase live in their matching `_docs/` sections.
 
-## Next Safe Action
+The validator accepts only the documented site lifecycle vocabulary; `complete` is not an allowed front-matter status. Initiative or phase completion is therefore recorded explicitly in document content while valid lifecycle metadata is retained.
 
-Validate and merge the Architecture Decision example, confirm Pages deployment, then review this persistent phase plan against the High Director template and use it as the real High Director example.
+## Decisions and Constraints
+
+- Use real implemented or historical work only.
+- Keep pull requests small and reviewable.
+- Run documentation validation before every merge.
+- Confirm Pages deployment after every merged documentation change.
+- Update this plan after every meaningful step.
+- Do not modify templates unless real usage exposes a concrete defect.
+- Do not change architecture, security boundaries, or cost without a separate decision.
+
+The accepted static-site architecture is documented at `/projects/decisions/use-metadata-driven-static-documentation/`.
+
+## Security and Access
+
+The repository and GitHub Pages site are public. Do not commit credentials, tokens, private keys, session data, personal data, secret values, or confidential identifiers. Use repository, workflow, variable, and secret-object names only when documentation requires them.
+
+## Validation and Evidence
+
+For each category example:
+
+1. Review authoritative repository files or existing operational evidence.
+2. Draft the real example on a branch from `main`.
+3. Open a focused pull request.
+4. Require `Validate documentation` to succeed.
+5. Merge only after validation passes.
+6. Confirm the resulting Pages build and deploy jobs succeed.
+7. Record PR, validation, and deployment evidence in this plan.
+
+Evidence through the Architecture Decision example is recorded in `Completed Work`.
+
+## Failure Modes and Recovery
+
+- Outdated branch: recreate or update from current `main` before continuing.
+- Validation failure: fix the referenced document or valid rule; do not bypass the validator.
+- Failed Pages deployment: inspect the failed Pages job and correct the root cause in a small PR.
+- Stale plan state: verify merged PRs and workflow runs, then correct this plan.
+- Secret or confidential content discovered: stop normal publication work and use the appropriate security response rather than relying on a revert.
+
+## Known Limitations
+
+- The examples cover verified repository documentation work available in this site; they are not intended to represent every possible infrastructure pattern.
+- GitHub Pages and GitHub Actions are external dependencies.
+- Front-matter lifecycle vocabulary has no `complete` value.
+
+## Outstanding Work
+
+1. Complete and deploy this High Director example review.
+2. Create a real Note example from a verified operational finding.
+3. Refine one existing real archived document against the Archive template without inventing missing historical facts.
+4. Record final phase completion in this plan after all category examples are deployed.
+
+## Next Safe Development Action
+
+Validate and merge branch `high-director/example-high-director-plan`, confirm the resulting Pages deployment, then inspect `_templates/note-template.md` and create a Note example from a concrete documentation-validation finding. Do not modify the Note template unless the real example exposes a defect.
+
+## Handoff Notes
+
+Always pass only `eirepolitic.github.io` to repository tools. Start each new documentation step from current `main`. Do not begin the next category until the previous merged documentation change has a successful Pages deployment. Keep this plan synchronized with actual PR and workflow evidence.
+
+## Related Documents
+
+- [Documentation Section Template Initiative](/projects/high-director/documentation-section-template-plan/) records the completed template phase.
+- [Static Documentation Architecture Decision](/projects/decisions/use-metadata-driven-static-documentation/) records the implemented architecture choice.
 
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: PRs #20 through #23; validation runs `31137389854`, `31137496390`, `31137604054`, and `31137737015`; Pages runs `31137413142`, `31137516088`, `31137621658`, and `31137754183`; `_templates/decision-template.md`; implemented documentation-site architecture
+- Verified against: PRs #20 through #24; validation runs `31137389854`, `31137496390`, `31137604054`, `31137737015`, and `31137849202`; Pages runs `31137413142`, `31137516088`, `31137621658`, `31137754183`, and `31137870369`; `_templates/high-director-template.md`; current `main`
 - Verified by: High Director
-- Verification scope: repository, system, data, and runbook example completion; architecture decision source material; validation requirement; deployment requirement
+- Verification scope: category completion through Architecture Decision, continuation process, validation/deployment gates, constraints, and next work
+- Unverified areas: Note and Archive examples are not yet complete
