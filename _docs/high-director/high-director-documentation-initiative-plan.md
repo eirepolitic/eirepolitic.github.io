@@ -27,7 +27,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
-- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144 complete; live Lambda/IAM configuration content complete on the working branch and awaiting validation/merge/Pages verification.
+- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144 complete; live Lambda/IAM configuration complete in PR #38 / Pages #145.
 - **Phases 6–10:** not started.
 
 ## Canonical evidence pages
@@ -49,29 +49,11 @@ Implementation claims must be classified as verified implementation, user-suppli
 3. GitHub wrapper Lambda source/deployment package.
 4. Live Lambda/IAM configuration for the GitHub wrapper.
 
-The live AWS source verifies:
+The live AWS source verifies Python 3.13, handler `src.app.handler`, architecture `x86_64`, runtime update mode `Auto`, public Function URL with auth type `NONE`, invoke mode `BUFFERED`, CORS disabled, deployed environment-variable keys, the execution-role name, visible attached `AWSLambdaBasicExecutionRole`, and Lambda trust principal `lambda.amazonaws.com` with `sts:AssumeRole`.
 
-- Python 3.13 runtime;
-- handler `src.app.handler`;
-- architecture `x86_64`;
-- runtime update mode `Auto`;
-- public Lambda Function URL;
-- Function URL auth type `NONE`;
-- invoke mode `BUFFERED`;
-- CORS not enabled;
-- deployed environment-variable keys `APP_API_KEY`, `BRANCH_PREFIX`, `DEFAULT_BASE_BRANCH`, `GITHUB_OWNER`, `GITHUB_TOKEN`;
-- execution-role name `github-gpt-wrapper-GithubGptWrapperRole-6j2drFhUXMyo`;
-- visible attached managed policy `AWSLambdaBasicExecutionRole`;
-- trust principal `lambda.amazonaws.com` with `sts:AssumeRole`.
+Sanitization removed the private Function URL hostname and AWS account ID; environment-variable values and credentials were not supplied or published.
 
-Sanitization:
-
-- private Function URL hostname omitted;
-- AWS account ID omitted;
-- environment-variable values not supplied/published;
-- no API key, GitHub PAT, AWS access key, password, private key, or other credential value published.
-
-## Next authoritative source after current deployment gate
+## Next authoritative source
 
 **`www.googleapis.com` Action OpenAPI schema and authentication selection.**
 
@@ -105,9 +87,9 @@ Completed subphases:
 - authoritative GPT configuration/instructions;
 - current GitHub Action schema and API-key configuration;
 - GitHub wrapper Lambda source/deployment package;
-- live GitHub-wrapper Lambda/IAM configuration (content complete, deployment gate pending).
+- live GitHub-wrapper Lambda/IAM configuration.
 
-Next subphase after successful deployment:
+Next subphase:
 
 - `www.googleapis.com` Action OpenAPI schema and authentication selection.
 
@@ -164,11 +146,10 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the live Lambda/IAM configuration branch.
-- Merge only if validation passes.
+- Validate and merge this live-AWS closure update.
 - Confirm the resulting Pages deployment succeeds.
 - Then request only the `www.googleapis.com` Action schema/authentication configuration.
 
 ## Next safe development action
 
-Complete the live Lambda/IAM documentation validation/merge/deployment gate, then request the Google Action schema with explicit GPT Builder retrieval steps.
+After this closure update deploys successfully, request the Google Action schema with explicit GPT Builder retrieval steps.
