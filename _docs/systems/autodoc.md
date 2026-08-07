@@ -267,7 +267,7 @@ Publish this architecture foundation through the required documentation validati
 - [AutoDoc documentation workstream plan](/projects/high-director/autodoc-documentation-workstream-plan/)
 - [Repository scan — AutoDoc](/projects/high-director/repository-scan-autodoc/)
 - [Documentation site](/projects/systems/documentation-site/)
-- [Publish a documentation change](/docs/runbooks/publish-documentation-change/)
+- [Publish a documentation change](/projects/runbooks/publish-documentation-change/)
 
 ## Verification Record
 
