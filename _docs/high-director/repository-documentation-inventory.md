@@ -1,6 +1,6 @@
 ---
 title: High Director Repository Documentation Inventory
-summary: Repository-verifiable inventory of High Director documentation, canonical fact locations, evidence status, duplication, and source gaps.
+summary: Current inventory of High Director documentation, canonical fact locations, evidence status, historical records, supporting source assets, and unresolved evidence gaps.
 section: high-director
 doc_type: agent
 status: active
@@ -14,116 +14,142 @@ order: 16
 
 ## Purpose
 
-This page records what `eirepolitic.github.io` can and cannot currently prove about the High Director agent. It is the canonical repository-only inventory for the High Director documentation initiative.
+This page is the canonical map of High Director documentation now persisted in `eirepolitic.github.io`. It distinguishes repository implementation, sanitized user-supplied authoritative sources, observed runtime evidence, historical initiative records, and remaining unknowns.
 
-This inventory does not treat conversation history or inferred behavior as implementation evidence.
+Conversation history is not a source of truth when the relevant material has been persisted here.
 
-## Repository-verifiable High Director pages
+## Current High Director canonical pages
 
-| File | Current role | Evidence status | Canonical use |
-|---|---|---|---|
-| `_docs/high-director/overview.md` | High-level entry point for the agent documentation | Mixed; repository scope is verifiable, runtime implementation remains largely unverified | Agent documentation entry point only |
-| `_docs/high-director/site-architecture.md` | Architecture of the documentation site | Verified implementation for the documentation site | Documentation-site architecture |
-| `_docs/high-director/site-rebuild-plan.md` | Completed rebuild history and planning record | Historical behavior / completed work | Historical site-rebuild record |
-| `_docs/high-director/documentation-section-template-plan.md` | Completed documentation-template initiative | Historical behavior / verification record | Template initiative history |
-| `_docs/high-director/example-documents-plan.md` | Completed real-example documentation phase | Historical behavior / verification record | Example-document initiative history |
-| `_docs/high-director/high-director-documentation-initiative-plan.md` | Persistent plan for documenting the High Director agent | Planned work plus verified initiative progress | Initiative plan and next-action source of truth |
-| `_docs/high-director/repository-documentation-inventory.md` | Repository-only evidence inventory | Verified repository inspection | Canonical inventory of repository-verifiable High Director documentation |
-| `_docs/high-director/capability-component-inventory.md` | Evidence-classified capability/component inventory | Repository + observable runtime evidence | Canonical capability/component and missing-source register |
+| File | Canonical subject | Evidence basis |
+|---|---|---|
+| `_docs/high-director/overview.md` | High-level entry point and current verified scope | Links current canonical sources |
+| `_docs/high-director/gpt-configuration.md` | GPT identity, full user-authored Instructions, conversation starters, recommended model, visible Knowledge/Action state | User-supplied authoritative GPT Builder source |
+| `_docs/high-director/capability-component-inventory.md` | Capability/component inventory, boundaries, limitations, conditional source gaps | Authoritative sources + observed runtime evidence |
+| `_docs/high-director/github-integration.md` | GitHub Action behavior, repository rule, authentication boundary, docs workflow behavior | Action schema + Lambda source + observed operations |
+| `_docs/high-director/github-action-openapi-schema.md` | Current GitHub GPT Action OpenAPI contract v0.2.1 | User-supplied authoritative Action schema |
+| `_docs/high-director/github-wrapper-lambda.md` | GitHub wrapper Lambda application/deployment implementation | User-supplied authoritative source package |
+| `_docs/high-director/github-wrapper-live-aws-configuration.md` | Live Lambda runtime, Function URL, environment-key, execution-role/IAM evidence | User-supplied authoritative live AWS/IAM source |
+| `_docs/high-director/google-workspace-action.md` | Google Workspace Action contract and OAuth boundary | User-supplied authoritative Action/OAuth configuration |
+| `_docs/high-director/runtime-architecture.md` | Verified runtime architecture and trust boundaries | Consolidated authoritative implementation/configuration evidence |
+| `_docs/high-director/data-flows.md` | GitHub, AWS, Google Workspace, secret, failure, and documentation-control flows | Consolidated authoritative evidence |
+| `_docs/high-director/security-configuration-reference.md` | Authentication, authorization, IAM, OAuth, secrets, configuration, security limitations | Consolidated authoritative/live evidence |
+| `_docs/high-director/code-and-dependency-reference.md` | Source files, classes/functions/routes, dependencies, source assets, hashes, rebuild boundaries | Authoritative Lambda package + repository source assets |
+| `_docs/high-director/high-director-documentation-initiative-plan.md` | Initiative progress, verification gates, outstanding work, next safe action | Persistent project-state record |
+| `_docs/high-director/verification-record.md` | Consolidated initiative provenance, sanitization, PR/Pages verification, and closure evidence | Repository and workflow evidence |
+| `_docs/high-director/site-architecture.md` | Documentation-site architecture | Verified documentation-site implementation |
 
-## Supporting canonical documentation outside the High Director section
-
-The following files describe the documentation platform and publishing process. They support High Director documentation work but do not prove the High Director agent runtime implementation.
+## Canonical runbooks
 
 | File | Canonical subject |
 |---|---|
-| `DOCUMENTATION_STANDARD.md` | Repository-wide documentation rules and required metadata |
-| `_templates/high-director-template.md` | High Director document structure and evidence discipline |
-| `_docs/systems/documentation-site.md` | Current documentation-site system record |
-| `_docs/repositories/eirepolitic-github-io.md` | Documentation repository implementation record |
+| `_docs/runbooks/high-director-operations-and-deployment.md` | Normal operation, maintenance, deployment/update procedure, validation and rollback boundaries |
+| `_docs/runbooks/high-director-troubleshooting-and-handoff.md` | Failure diagnosis, evidence capture, safe recovery boundaries, handoff and continuation |
+| `_docs/runbooks/publish-documentation-change.md` | General repository documentation publishing procedure |
 | `_docs/runbooks/documentation-site-operations.md` | Documentation-site operations |
-| `_docs/runbooks/publish-documentation-change.md` | Documentation publishing procedure |
-| `_docs/decisions/use-metadata-driven-static-documentation.md` | Architecture decision for the documentation platform |
-| `_docs/notes/documentation-validation-findings.md` | Validation findings and known documentation-quality observations |
-| `.github/workflows/validate-documentation.yml` | Documentation validation workflow definition |
-| `_config.yml` | Jekyll collection, permalink, plugin, and site configuration |
-| `_data/docs_sections.yml` | Documentation navigation section definitions |
+
+## Historical initiative records
+
+These files remain useful as historical/verification records but are not current runtime sources of truth:
+
+| File | Historical role |
+|---|---|
+| `_docs/high-director/site-rebuild-plan.md` | Completed documentation-site rebuild plan |
+| `_docs/high-director/documentation-section-template-plan.md` | Completed documentation-template initiative |
+| `_docs/high-director/example-documents-plan.md` | Completed real Example Documents initiative |
+
+## Supporting repository implementation
+
+| File | Canonical subject |
+|---|---|
+| `DOCUMENTATION_STANDARD.md` | Repository-wide documentation rules/metadata |
+| `_templates/high-director-template.md` | High Director document structure/evidence discipline |
+| `_docs/systems/documentation-site.md` | Documentation-site system record |
+| `_docs/repositories/eirepolitic-github-io.md` | Documentation repository record |
+| `_docs/decisions/use-metadata-driven-static-documentation.md` | Documentation architecture decision |
+| `.github/workflows/validate-documentation.yml` | Documentation validation workflow |
+| `scripts/validate_docs.py` | Documentation validator implementation |
+| `_config.yml` | Jekyll collection/permalink/site configuration |
+| `_data/docs_sections.yml` | Documentation navigation definitions |
 | `docs/high-director.md` | High Director section landing route |
 
-## Facts directly verified from this repository
+## Sanitized supporting source assets
 
-The repository directly verifies that:
+The repository now contains sanitized first-party source/configuration material derived from the authoritative GitHub wrapper deployment package:
 
-- the High Director has a dedicated documentation section and landing page;
-- the documentation platform is a Jekyll/GitHub Pages knowledge base;
-- documentation navigation is metadata-driven;
-- the repository contains a validation workflow for documentation changes;
-- the repository has established templates, example documents, publishing runbooks, and architecture records;
-- prior documentation initiatives recorded successful validation and Pages deployment evidence;
-- the current High Director documentation initiative has a persistent build plan.
+```text
+assets/high-director/github-wrapper-source/README.md
+assets/high-director/github-wrapper-source/openapi.yaml
+assets/high-director/github-wrapper-source/requirements.txt
+assets/high-director/github-wrapper-source/samconfig.toml
+assets/high-director/github-wrapper-source/template.yaml
+assets/high-director/github-wrapper-source/src/app.py.part01
+assets/high-director/github-wrapper-source/src/app.py.part02
+assets/high-director/github-wrapper-source/src/app.py.part03
+assets/high-director/github-wrapper-source/src/app.py.part04
+```
 
-These facts describe the documentation system and documentation process. They do not by themselves establish the High Director runtime architecture.
+Sanitization and source hashes are canonicalized in `_docs/high-director/code-and-dependency-reference.md` and `_docs/high-director/github-wrapper-lambda.md`.
 
-## Runtime claims not verified by this repository
+## Evidence now established
 
-The repository does not currently provide authoritative implementation evidence for:
+The documentation repository now contains authoritative or verified records for:
 
-- the complete High Director system prompt or instruction set;
-- the complete capability catalogue;
-- Python execution capabilities or implementation details;
-- Power BI, Power Automate, Appsmith, or AWS integration behavior;
-- custom ChatGPT Actions;
-- OpenAPI action schemas;
-- API Gateway routes;
-- AWS Lambda functions or source code;
-- IAM roles, policies, or trust relationships;
-- authentication and authorization mechanisms;
-- external API connections;
-- runtime request/response data flows;
-- external supporting repositories;
-- production environment variables or configuration objects;
-- external deployment procedures;
-- runtime failure modes and recovery behavior.
+- High Director purpose, responsibilities, behavioral rules, and operating model encoded in the user-authored GPT instructions;
+- configured GitHub and Google Workspace Action contracts;
+- GitHub Action API-key authentication declaration;
+- Google OAuth endpoints, token exchange method, and four configured scopes;
+- GitHub wrapper Lambda source, dependencies, routes, failure handling, deployment template, and environment-variable contract;
+- live Lambda runtime/handler/architecture/Function URL settings and supplied IAM evidence;
+- GitHub and Google Workspace data flows/trust boundaries;
+- secret-handling behavior;
+- code/dependency references and persistent sanitized source assets;
+- operating/deployment runbook;
+- troubleshooting/recovery/handoff runbook;
+- documentation validation and Pages publication workflow.
 
-Until authoritative sources are inspected, these subjects must be documented as **unknown / unverified**, not as verified implementation.
+These facts are not all directly derivable from the repository's original implementation. Where external implementation/configuration was supplied by the system owner, the sanitized persisted copy/documentation is explicitly classified as **user-supplied authoritative source**.
 
-## Duplicate and overlapping material
+## Current unresolved evidence gaps
 
-No material duplicate source of truth was found among the current High Director pages, but several pages intentionally overlap at a high level:
+No external source is currently required to complete the documentation initiative. Remaining limitations are explicit known unknowns/private boundaries, including:
 
-- `overview.md` links the section together and should remain concise.
-- `site-architecture.md` is authoritative only for documentation-site architecture.
-- completed initiative plans are historical records and should not be reused as current runtime documentation.
-- the active initiative plan owns project status, phases, outstanding work, and next safe action.
-- this inventory owns repository-verifiable evidence classification and canonical file mapping.
-- `capability-component-inventory.md` owns capability/component classification and the prioritized missing-source register.
+- GPT Builder capability-toggle state;
+- secret/credential values and rotation procedures;
+- exact GitHub PAT permission grants;
+- complete execution-role policy inventory beyond the supplied visible IAM evidence;
+- live Lambda memory/timeout confirmation;
+- Function URL resource-policy and monitoring/alerting details;
+- Google OAuth token storage/refresh, connected-account identity, reconnect/revocation, and consent/admin configuration;
+- monitoring/perimeter controls not verified by authoritative source.
 
-Future pages should link to these sources rather than restating their details.
+Request a new external source only if a concrete future maintenance/troubleshooting task is blocked by one of these gaps.
 
-## Current canonical-source map
+## Canonical-source map
 
 | Subject | Canonical source |
 |---|---|
-| High Director documentation entry point | `_docs/high-director/overview.md` |
+| High Director entry point | `_docs/high-director/overview.md` |
+| GPT configuration/instructions | `_docs/high-director/gpt-configuration.md` |
+| Capability/component inventory | `_docs/high-director/capability-component-inventory.md` |
+| GitHub integration | `_docs/high-director/github-integration.md` |
+| GitHub Action schema | `_docs/high-director/github-action-openapi-schema.md` |
+| GitHub wrapper backend | `_docs/high-director/github-wrapper-lambda.md` |
+| Live AWS/IAM configuration | `_docs/high-director/github-wrapper-live-aws-configuration.md` |
+| Google Workspace Action/OAuth | `_docs/high-director/google-workspace-action.md` |
+| Runtime architecture | `_docs/high-director/runtime-architecture.md` |
+| Data flows | `_docs/high-director/data-flows.md` |
+| Security/configuration | `_docs/high-director/security-configuration-reference.md` |
+| Code/dependencies/source assets | `_docs/high-director/code-and-dependency-reference.md` |
+| Operations/deployment | `_docs/runbooks/high-director-operations-and-deployment.md` |
+| Troubleshooting/handoff | `_docs/runbooks/high-director-troubleshooting-and-handoff.md` |
+| Initiative status/next action | `_docs/high-director/high-director-documentation-initiative-plan.md` |
+| Initiative verification/provenance | `_docs/high-director/verification-record.md` |
 | Documentation-site architecture | `_docs/high-director/site-architecture.md` |
-| Documentation standard | `DOCUMENTATION_STANDARD.md` |
-| High Director page structure | `_templates/high-director-template.md` |
-| Documentation repository | `_docs/repositories/eirepolitic-github-io.md` |
-| Documentation publishing | `_docs/runbooks/publish-documentation-change.md` |
-| Initiative status and next action | `_docs/high-director/high-director-documentation-initiative-plan.md` |
-| Repository-only High Director evidence inventory | `_docs/high-director/repository-documentation-inventory.md` |
-| Capability/component inventory and missing-source register | `_docs/high-director/capability-component-inventory.md` |
-| High Director runtime implementation | Not yet established |
-| High Director action schema | Not yet established |
-| High Director AWS implementation | Not yet established |
-| High Director authentication model | Not yet established |
 
-## Missing-source boundary
+## Duplication rule
 
-Repository inspection is sufficient for the documentation platform, its workflow, and its historical documentation initiatives. It is insufficient for the High Director runtime implementation.
-
-The prioritized external-source dependency register is maintained in `_docs/high-director/capability-component-inventory.md`. Current initiative status and the next safe development action are maintained only in `_docs/high-director/high-director-documentation-initiative-plan.md`.
+Overview and inventory pages may summarize a subject only enough to navigate. Exact configuration, schemas, code behavior, security controls, data flows, procedures, and project state belong only to their canonical pages above.
 
 ## Verification record
 
-Verified on 2026-08-06 by direct inspection of the repository tree, High Director documents, documentation templates, repository standard, Jekyll configuration, section metadata, validation workflow, supporting system/repository/runbook records, completed initiative records, and Phase 2 capability/component evidence classification.
+Reviewed on 2026-08-06 against the current repository tree, authoritative source-derived pages/assets, runbooks, workflow history, and Phase 10 consistency audit.
