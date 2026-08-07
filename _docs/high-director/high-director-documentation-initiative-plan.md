@@ -23,15 +23,16 @@ Implementation claims must be classified as verified implementation, user-suppli
 ## Current status — 2026-08-06
 
 - **Phase 0:** complete — baseline/plan established; PR #29 merged and Pages succeeded.
-- **Phase 1:** complete — repository inventory; PR #30; Pages #137.
-- **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
-- **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
-- **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
+- **Phase 1:** complete — repository inventory; PR #30 / Pages #137.
+- **Phase 2:** complete — capability/component inventory; PR #31 / Pages #138.
+- **Phase 3:** complete — GitHub integration/workflows; PR #32 / Pages #139; closure PR #33 / Pages #140.
+- **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34 / Pages #141.
 - **Phase 5:** complete — external source collection; PRs #35–#42; Pages through #149.
 - **Phase 6:** complete — runtime architecture PR #43 / Pages #150; data flows PR #46 / Pages #152.
 - **Phase 7:** complete — security/configuration reference PR #47 / Pages #153.
-- **Phase 8 — Operations and runbooks:** operations/deployment runbook complete in PR #49 / Pages #155; troubleshooting/handoff runbook content complete on the working branch and awaiting validation/merge/Pages verification.
-- **Phases 9–10:** not started.
+- **Phase 8:** complete — operations/deployment runbook PR #49 / Pages #155; troubleshooting/handoff runbook PR #50 / Pages #156.
+- **Phase 9 — Code and dependency reference:** content complete on the working branch; validation/merge/Pages gate pending.
+- **Phase 10:** not started.
 
 ## Canonical evidence pages
 
@@ -45,6 +46,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - `_docs/high-director/runtime-architecture.md` — verified runtime architecture and trust boundaries.
 - `_docs/high-director/data-flows.md` — verified runtime, secret, Google Workspace, failure, and documentation-control flows.
 - `_docs/high-director/security-configuration-reference.md` — canonical security/configuration reference.
+- `_docs/high-director/code-and-dependency-reference.md` — canonical code, function/class, dependency, source-asset, and rebuild reference.
 - `_docs/runbooks/high-director-operations-and-deployment.md` — normal operation and deployment/update runbook.
 - `_docs/runbooks/high-director-troubleshooting-and-handoff.md` — troubleshooting, recovery boundaries, evidence capture, and continuation procedure.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
@@ -62,7 +64,7 @@ Verified source sets collected:
 5. Google Workspace Action OpenAPI schema and OAuth selection.
 6. Google OAuth authorization/token endpoints, token exchange method, and four configured scopes.
 
-No additional external source should be requested speculatively. Later phases may request another source only if a specific evidence gap blocks accurate documentation.
+No additional external source should be requested speculatively. Later work may request another source only if a specific evidence gap blocks accurate documentation.
 
 ## Security publication rule
 
@@ -76,49 +78,40 @@ Before supplied source material is committed:
 
 ## Remaining phases
 
-### Phase 8 — Operations and runbooks
-
-**Status:** in progress — second runbook content complete, exit gate pending
-
-Completed:
-
-- added `_docs/runbooks/high-director-operations-and-deployment.md`;
-- PR #49 validated/merged;
-- matching Pages deployment #155 succeeded;
-- documented normal documentation maintenance and publication flow;
-- documented GPT configuration and Action-schema update procedure;
-- documented source-derived SAM deployment procedure for the GitHub wrapper;
-- documented Google Workspace Action maintenance rules;
-- documented validation/success criteria, rollback boundaries, and security stop conditions.
-
-Troubleshooting/handoff working-branch deliverables:
-
-- added `_docs/runbooks/high-director-troubleshooting-and-handoff.md`;
-- documented triage order for GitHub/AWS/Google/documentation failures;
-- documented verified HTTP/application failure modes and safe responses;
-- documented direct-default-branch and preview/apply safety gaps;
-- documented Gmail/calendar duplicate-mutation avoidance;
-- documented evidence-capture checklist and handoff order;
-- documented recovery procedures that remain unknown/unverified rather than inventing them;
-- documented current monitoring/alerting gaps.
-
-Phase 8 exit gate:
-
-- troubleshooting/handoff documentation validation passes;
-- PR merges;
-- resulting Pages deployment succeeds.
-
 ### Phase 9 — Code and dependency reference
 
-**Status:** planned
+**Status:** in progress — content complete, exit gate pending
 
-Catalog supporting code, exact file/function names, dependencies, sanitized source references, and verified rebuild procedures.
+Working-branch deliverables:
+
+- added `_docs/high-director/code-and-dependency-reference.md`;
+- catalogued original Lambda package SHA-256 and `src/app.py` SHA-256;
+- published the complete sanitized `src/app.py` source as four ordered repository text assets under `assets/high-director/github-wrapper-source/src/`;
+- documented exact application-owned classes, helper functions, exception handlers, and route functions;
+- documented pinned Python dependencies and their roles;
+- documented SAM deployment assets, configuration variables, Action-contract dependencies, and Google Workspace direct-API dependency model;
+- documented documentation-supporting Python/workflow/configuration code;
+- documented rebuild boundaries and source/configuration drift.
+
+Phase 9 exit gate:
+
+- documentation validation passes;
+- PR merges;
+- resulting Pages deployment succeeds.
 
 ### Phase 10 — Final consistency review
 
 **Status:** planned
 
-Verify evidence classification, canonical ownership, links/navigation, limitations, missing-source status, overview consistency, validation, and final Pages deployment.
+Final review will:
+
+- verify canonical ownership and eliminate stale/duplicate source-of-truth claims;
+- verify all implementation claims are evidence-classified;
+- verify navigation/links and current High Director overview consistency;
+- verify known limitations and missing-source register are current;
+- verify source snapshots and hashes are documented accurately;
+- verify outstanding work/next safe action are accurate;
+- run final documentation validation and confirm final Pages deployment.
 
 ## Verification strategy
 
@@ -141,11 +134,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the troubleshooting/handoff runbook branch.
+- Validate the Phase 9 code/dependency branch.
 - Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then begin Phase 9 code/dependency reference from already collected authoritative source and repository evidence.
+- Then perform Phase 10 final consistency review as a separate focused PR.
 
 ## Next safe development action
 
-Complete the troubleshooting/handoff runbook validation/merge/deployment gate, then create the Phase 9 code/dependency reference as a separate focused PR.
+Complete the Phase 9 validation/merge/deployment gate, then perform the final consistency review across all High Director documentation and source assets.
