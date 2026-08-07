@@ -177,7 +177,7 @@ Complete the focused repository/system architecture PR on branch `docs/autodoc-f
 - [Repository documentation discovery plan](/projects/high-director/repository-documentation-discovery/)
 - [Repository scan — AutoDoc](/projects/high-director/repository-scan-autodoc/)
 - [Documentation site operations](/docs/runbooks/documentation-site-operations/)
-- [Publish a documentation change](/docs/runbooks/publish-documentation-change/)
+- [Publish a documentation change](/projects/runbooks/publish-documentation-change/)
 
 ## Verification Record
 
