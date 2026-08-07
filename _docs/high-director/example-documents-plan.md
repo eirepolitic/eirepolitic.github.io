@@ -33,8 +33,8 @@ Templates should be refined only when real usage exposes a concrete defect.
 
 ## Category Progress
 
-- [x] Repository — `eirepolitic.github.io` documentation drafted from the live repository and verified source files.
-- [ ] System
+- [x] Repository — `eirepolitic.github.io`; PR #20 merged, validation `31137389854` passed, Pages deployment `31137413142` succeeded.
+- [x] System — Eire Politic Documentation Site drafted from the live implementation and verified architecture.
 - [ ] Data & Schema
 - [ ] Runbook
 - [ ] Architecture Decision
@@ -44,15 +44,15 @@ Templates should be refined only when real usage exposes a concrete defect.
 
 ## Current Step
 
-Repository example is in review on branch `high-director/example-repository-eirepolitic-github-io`.
+System example is in review on branch `high-director/example-system-documentation-site`.
 
 ## Next Safe Action
 
-Validate and merge the repository example, confirm Pages deployment, then create the system-category example using the existing documentation-site architecture as the source of truth.
+Validate and merge the system example, confirm Pages deployment, then create the Data & Schema example from the real generated documentation search index or documentation metadata model.
 
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: completed template initiative, `main`, repository tree, `_templates/repository-template.md`, `_docs/high-director/site-architecture.md`, and `_docs/runbooks/documentation-site-operations.md`
+- Verified against: completed template initiative, PR #20, validation run `31137389854`, Pages run `31137413142`, `main`, repository tree, `_templates/system-template.md`, and `_docs/high-director/site-architecture.md`
 - Verified by: High Director
-- Verification scope: phase scope, repository example source material, validation requirement, and deployment requirement
+- Verification scope: repository example completion, system example source material, validation requirement, and deployment requirement
