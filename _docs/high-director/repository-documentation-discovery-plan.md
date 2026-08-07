@@ -38,9 +38,9 @@ autodoc
 | `eirepolitic.github.io` | Complete | Documentation platform/High Director already covered; AutoDoc/IPA plus historical pipeline candidates identified |
 | `eirepolitic-data-pipeline` | Complete | 13 major target groups across Oireachtas platform, data products, orchestration, media, LLM/member analytics, maintenance/legacy |
 | `bb-comp-prices` | Complete | 12 major target groups; detailed scan page published after PR #56 / Pages #162 |
-| `degenerate_investigator` | Complete; publication gate pending | 13 major target groups across UFC ingestion/history, odds/news enrichment, feature engineering, training, scoring, reports, storage/orchestration |
-| `Overlord` | Next after Pages gate | Pending |
-| `autodoc` | Pending | Pending |
+| `degenerate_investigator` | Complete | 13 major target groups; detailed scan page published after PR #57 / Pages #163 |
+| `Overlord` | Complete; publication gate pending | 4 real target groups: repository/task-record model, versioned templates, context partition; test tasks classified as fixtures |
+| `autodoc` | Next after Pages gate | Pending |
 
 ## Repository 1 — `eirepolitic.github.io`
 
@@ -80,8 +80,6 @@ Major targets:
 11. Member enrichment/image/summaries lineage.
 12. Data maintenance utilities.
 13. Experimental/editorial content generation workflows.
-
-Preliminary priority: Oireachtas platform/data contracts/orchestration P0; active media/member/LLM systems P1; utilities P2; retired lineage P3.
 
 ## Repository 3 — `bb-comp-prices`
 
@@ -124,12 +122,28 @@ Major targets:
 
 The repository explicitly states it does not include staking logic or bookmaker-targeted betting recommendations. Documentation should remain technical/analytical and preserve that boundary.
 
+## Repository 5 — `Overlord`
+
+Detailed scan: [Repository Scan — Overlord]({{ '/projects/high-director/repository-scan-overlord/' | relative_url }}).
+
+Current implementation is a lightweight Markdown task-record repository, not a deployed automation or agent platform.
+
+Real targets:
+
+1. **Repository/task-record system** — repository purpose, structure, lifecycle and maturity.
+2. **Markdown task-record schema** — front matter fields plus Overview/Notes/Next Actions/Open Questions/Changelog sections.
+3. **Versioned task/project/meeting template system** — current v1 templates are identical and should not be described as semantically distinct until implementation proves otherwise.
+4. **Work/personal context partition** — organizational convention only, not an independent access-control boundary.
+
+The eight `tasks/work/test-task-*` files are fixtures/examples, not eight documentation targets. No executable code, GitHub Actions, APIs, cloud infrastructure, or external integrations are present in the current tree.
+
 ## Cross-repository relationships discovered
 
 - `eirepolitic.github.io` is the documentation system and contains historical records for several `eirepolitic-data-pipeline` components.
 - `eirepolitic-data-pipeline` is the main Irish Politics Analytics data-platform implementation repository discovered so far.
 - `bb-comp-prices` reuses an AWS/S3 configuration pattern from `eirepolitic-data-pipeline` but is a distinct competitor-pricing system.
 - `degenerate_investigator` is a distinct AWS/S3 analytics/ML system with UFC Stats, The Odds API, OpenAI web search/reporting, and GitHub Actions dependencies.
+- `Overlord` currently has no verified integration relationship to High Director or other repositories; do not infer one from its name.
 - AutoDoc appears as both a site embed and a separately listed repository; its repository scan will determine the code/configuration boundary versus the external Appsmith application.
 
 ## Priority model
@@ -149,4 +163,4 @@ After each repository scan: update this plan and/or a linked scan page, run vali
 
 ## Current next safe action
 
-Complete the `degenerate_investigator` validation/merge/Pages gate. Then inspect `Overlord` completely and persist its target inventory in a separate focused PR.
+Complete the `Overlord` validation/merge/Pages gate. Then inspect `autodoc` completely and persist its target inventory in a separate focused PR. After all six scans are published, perform an owner-wide consolidation/prioritization review.
