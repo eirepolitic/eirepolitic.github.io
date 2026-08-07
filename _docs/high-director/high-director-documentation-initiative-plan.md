@@ -30,7 +30,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 5:** complete — external source collection; PRs #35–#42; Pages through #149.
 - **Phase 6:** complete — runtime architecture PR #43 / Pages #150; data flows PR #46 / Pages #152.
 - **Phase 7:** complete — security/configuration reference PR #47 / Pages #153.
-- **Phase 8 — Operations and runbooks:** operations/deployment runbook content complete on the working branch; validation/merge/Pages gate pending. Troubleshooting/handoff remains a separate follow-up PR.
+- **Phase 8 — Operations and runbooks:** operations/deployment runbook complete in PR #49 / Pages #155; troubleshooting/handoff runbook content complete on the working branch and awaiting validation/merge/Pages verification.
 - **Phases 9–10:** not started.
 
 ## Canonical evidence pages
@@ -46,6 +46,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - `_docs/high-director/data-flows.md` — verified runtime, secret, Google Workspace, failure, and documentation-control flows.
 - `_docs/high-director/security-configuration-reference.md` — canonical security/configuration reference.
 - `_docs/runbooks/high-director-operations-and-deployment.md` — normal operation and deployment/update runbook.
+- `_docs/runbooks/high-director-troubleshooting-and-handoff.md` — troubleshooting, recovery boundaries, evidence capture, and continuation procedure.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
 
 ## Source collection status
@@ -77,26 +78,35 @@ Before supplied source material is committed:
 
 ### Phase 8 — Operations and runbooks
 
-**Status:** in progress — first runbook content complete, exit gate pending
+**Status:** in progress — second runbook content complete, exit gate pending
 
-Operations/deployment working-branch deliverables:
+Completed:
 
 - added `_docs/runbooks/high-director-operations-and-deployment.md`;
+- PR #49 validated/merged;
+- matching Pages deployment #155 succeeded;
 - documented normal documentation maintenance and publication flow;
 - documented GPT configuration and Action-schema update procedure;
 - documented source-derived SAM deployment procedure for the GitHub wrapper;
 - documented Google Workspace Action maintenance rules;
-- documented validation/success criteria and rollback boundaries;
-- clearly marked fresh Lambda deployment, Lambda rollback, and Google OAuth reconnect/revocation as not fully re-executed/verified;
-- documented security stop conditions for changes to auth, IAM, scopes, credentials, access control, and architecture.
+- documented validation/success criteria, rollback boundaries, and security stop conditions.
 
-This runbook PR exit gate:
+Troubleshooting/handoff working-branch deliverables:
 
-- documentation validation passes;
+- added `_docs/runbooks/high-director-troubleshooting-and-handoff.md`;
+- documented triage order for GitHub/AWS/Google/documentation failures;
+- documented verified HTTP/application failure modes and safe responses;
+- documented direct-default-branch and preview/apply safety gaps;
+- documented Gmail/calendar duplicate-mutation avoidance;
+- documented evidence-capture checklist and handoff order;
+- documented recovery procedures that remain unknown/unverified rather than inventing them;
+- documented current monitoring/alerting gaps.
+
+Phase 8 exit gate:
+
+- troubleshooting/handoff documentation validation passes;
 - PR merges;
 - resulting Pages deployment succeeds.
-
-After that gate, create a separate troubleshooting/handoff runbook covering failure diagnosis, evidence collection, recovery boundaries, unresolved monitoring gaps, and continuation procedure.
 
 ### Phase 9 — Code and dependency reference
 
@@ -131,11 +141,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the operations/deployment runbook branch.
+- Validate the troubleshooting/handoff runbook branch.
 - Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then create the troubleshooting/handoff runbook as a separate focused PR.
+- Then begin Phase 9 code/dependency reference from already collected authoritative source and repository evidence.
 
 ## Next safe development action
 
-Complete the operations/deployment runbook validation/merge/deployment gate, then create the troubleshooting/handoff runbook from the verified failure modes and known limitations.
+Complete the troubleshooting/handoff runbook validation/merge/deployment gate, then create the Phase 9 code/dependency reference as a separate focused PR.
