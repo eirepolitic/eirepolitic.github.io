@@ -31,26 +31,24 @@ Inference must never be presented as verified implementation.
 
 ## Current status — 2026-08-06
 
-- **Phase 0 — Baseline and persistent plan:** complete. PR #29 validated, merged, and the resulting GitHub Pages deployment succeeded.
-- **Phase 1 — Repository-verifiable documentation inventory:** complete. PR #30 validated, merged, and Pages deployment #137 succeeded.
-- **Phase 2 — Capability and component inventory:** content complete on the working branch; validation, merge, and Pages verification are pending.
-- **Phases 3–10:** not started.
+- **Phase 0:** complete. PR #29 validated/merged; resulting Pages deployment succeeded.
+- **Phase 1:** complete. PR #30 validated/merged; Pages deployment #137 succeeded.
+- **Phase 2:** complete. PR #31 validated/merged; Pages deployment #138 succeeded.
+- **Phase 3 — GitHub integration and repository workflows:** content complete on the working branch; validation, merge, and Pages verification are pending.
+- **Phases 4–10:** not started.
 - No external High Director source material has been requested yet.
 
-## Repository evidence boundary
+## Canonical evidence pages
 
-The repository directly verifies the documentation platform, High Director documentation section, templates, standards, validation workflow, publishing process, completed documentation initiatives, and repository history exposed through available GitHub operations.
+- `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
+- `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
+- `_docs/high-director/github-integration.md` — configured/observed GitHub operation surface and repository workflow behavior.
 
-Canonical evidence pages:
-
-- `_docs/high-director/repository-documentation-inventory.md`
-- `_docs/high-director/capability-component-inventory.md`
-
-The repository does **not** currently provide enough authoritative evidence to verify the complete High Director runtime implementation, including its action schemas, external integrations, AWS implementation, authentication model, runtime data flows, external configuration, or supporting code outside this repository.
+The repository and directly observed GitHub integration behavior still do not verify the complete High Director runtime implementation, action-schema source, AWS implementation, authentication model, runtime data flows, external configuration, or external supporting code.
 
 ## Prioritized sources likely requiring user retrieval
 
-These will be requested only when repository and directly observable evidence confirm they are required, and only one coherent source at a time:
+Request only one coherent source at a time and only after the previous documentation gate succeeds:
 
 1. High Director ChatGPT configuration and instructions
 2. High Director ChatGPT Action/OpenAPI schema
@@ -59,8 +57,6 @@ These will be requested only when repository and directly observable evidence co
 5. IAM/authentication configuration for confirmed components
 6. supporting external repository source/list
 7. non-secret environment/configuration metadata
-
-The detailed dependency rationale is maintained in `_docs/high-director/capability-component-inventory.md`.
 
 Authoritative external code or configuration must not be guessed or reconstructed when the user can retrieve it.
 
@@ -76,7 +72,7 @@ Before supplied source material is committed:
 
 ## Planned documentation set
 
-The initiative will establish canonical pages, linking instead of duplicating facts, for overview, architecture, capabilities, components, tools/integrations, GitHub, AWS/Lambda, ChatGPT Actions/schemas, data flows, security/trust boundaries, configuration, code/dependencies, operations, troubleshooting, deployment/change procedures, architecture decisions, known limitations, outstanding work, handoff, and verification records.
+Canonical pages will cover overview, architecture, capabilities, components, tools/integrations, GitHub, AWS/Lambda, ChatGPT Actions/schemas, data flows, security/trust boundaries, configuration, code/dependencies, operations, troubleshooting, deployment/change procedures, architecture decisions, known limitations, outstanding work, handoff, and verification records.
 
 ## Implementation phases
 
@@ -84,35 +80,35 @@ The initiative will establish canonical pages, linking instead of duplicating fa
 
 **Status:** complete
 
-- inspected existing documentation, completed initiatives, template, standard, repository tree, and validation/deployment workflow;
-- established evidence and missing-source rules;
-- created this plan;
-- PR #29 validated and merged;
-- resulting Pages deployment succeeded.
+Established the initiative, evidence model, missing-source discipline, phased plan, and publication gates. PR #29 validated/merged and the resulting Pages deployment succeeded.
 
 ### Phase 1 — Repository-verifiable documentation inventory
 
 **Status:** complete
 
-- inventoried every High Director-section file and supporting canonical documentation;
-- classified existing material as current, historical, planned, or unverified;
-- established canonical fact locations;
-- corrected unsupported runtime capability claims in the overview;
-- added `_docs/high-director/repository-documentation-inventory.md`;
-- PR #30 validated and merged;
-- Pages deployment #137 succeeded.
+Inventoried High Director documentation/supporting sources, established canonical ownership, corrected unsupported overview claims, and added the repository evidence inventory. PR #30 validated/merged; Pages #137 succeeded.
 
 ### Phase 2 — Capability and component inventory
+
+**Status:** complete
+
+Separated directly exercised GitHub capabilities from unknown implementation details, defined component boundaries, and created the prioritized missing-source register. PR #31 validated/merged; Pages #138 succeeded.
+
+### Phase 3 — GitHub integration and repository workflows
 
 **Status:** in progress — content complete, exit gate pending
 
 Completed on the working branch:
 
-- documented directly exercised GitHub capabilities separately from implementation details;
-- defined verified, observable, and unknown component boundaries;
-- identified unverified runtime capability areas;
-- created a prioritized missing-source register based on documentation dependencies;
-- added `_docs/high-director/capability-component-inventory.md`.
+- documented exact configured GitHub operation names grouped by repository, PR/branch, workflow, and Actions variable/secret functions;
+- classified operations as exercised or configured-but-not-exercised;
+- documented the backend repository-addressing rule supplied by the user;
+- documented `.github/workflows/validate-documentation.yml` and `scripts/validate_docs.py`;
+- documented the GitHub-managed `pages-build-deployment` workflow and verified Pages IDs/status behavior;
+- documented the verified branch → PR → validation → merge → matching Pages deployment sequence;
+- documented validation, Pages, and integration-call failure handling;
+- preserved authentication, connector implementation, Action/OpenAPI source, Lambda/API Gateway, and IAM details as unknown/unverified;
+- added `_docs/high-director/github-integration.md`.
 
 Exit gate:
 
@@ -120,25 +116,15 @@ Exit gate:
 - PR merges;
 - resulting Pages deployment succeeds.
 
-### Phase 3 — GitHub integration and repository workflows
-
-**Status:** planned
-
-- document inspectable GitHub integration behavior;
-- document exact available repository operations supported by evidence;
-- document relevant workflow definitions and validation/deployment sequence;
-- identify connector implementation/authentication details still requiring authoritative external source.
-
 ### Phase 4 — First external authoritative source
 
 **Status:** planned
 
-- select the highest-value missing source after Phase 3;
-- request exactly one coherent source with explicit click-by-click retrieval instructions;
-- sanitize and preserve supplied material;
-- document provenance, interfaces, purpose, and limitations.
+After Phase 3 deploys successfully, request exactly one source: the **High Director ChatGPT configuration and instructions**.
 
-Current expected first source: High Director ChatGPT configuration and instructions.
+This source is first because it establishes purpose, responsibilities, behavioral rules, operating model, configured tools/actions, and limitations before lower-level integration implementation is documented.
+
+The request must include explicit click-by-click retrieval instructions and specify exactly what the user should copy or download.
 
 ### Phase 5 — Remaining external integration sources
 
@@ -186,7 +172,7 @@ Before every documentation merge:
 4. confirm the resulting GitHub Pages deployment succeeds;
 5. only then begin the next major documentation phase.
 
-Implementation evidence strength, highest first:
+Evidence strength, highest first:
 
 1. directly inspected authoritative implementation/configuration;
 2. user-supplied authoritative source;
@@ -205,11 +191,11 @@ Implementation evidence strength, highest first:
 
 ## Outstanding work
 
-- Validate the Phase 2 capability/component branch.
+- Validate the Phase 3 GitHub integration branch.
 - Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Do not request external source material yet.
+- Then request only the High Director ChatGPT configuration and instructions.
 
 ## Next safe development action
 
-Complete the Phase 2 validation/merge/deployment gate, then begin Phase 3 GitHub integration and repository workflow documentation using repository definitions plus directly observed GitHub integration behavior.
+Complete the Phase 3 validation/merge/deployment gate. After it succeeds, begin Phase 4 by requesting the High Director ChatGPT configuration and instructions with explicit retrieval steps.
