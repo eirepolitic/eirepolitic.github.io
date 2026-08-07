@@ -27,7 +27,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
-- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144; live Lambda/IAM configuration complete in PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action schema complete in PR #40 / Pages #147.
+- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144; live Lambda/IAM configuration complete in PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action schema complete in PR #40 / Pages #147; closure PR #41 / Pages #148; Google OAuth configuration content complete on the working branch and awaiting validation/merge/Pages verification.
 - **Phases 6–10:** not started.
 
 ## Canonical evidence pages
@@ -36,7 +36,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - `_docs/high-director/github-action-openapi-schema.md` — current sanitized GPT Action contract.
 - `_docs/high-director/github-wrapper-lambda.md` — authoritative Lambda source/deployment-package analysis.
 - `_docs/high-director/github-wrapper-live-aws-configuration.md` — live Lambda runtime, Function URL, environment-key, execution-role, managed-policy, and trust-policy configuration.
-- `_docs/high-director/google-workspace-action.md` — authoritative Google Workspace Action contract and OAuth boundary.
+- `_docs/high-director/google-workspace-action.md` — authoritative Google Workspace Action contract and complete non-secret OAuth boundary.
 - `_docs/high-director/github-integration.md` — GitHub integration behavior and authentication boundary.
 - `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
@@ -50,28 +50,25 @@ Implementation claims must be classified as verified implementation, user-suppli
 3. GitHub wrapper Lambda source/deployment package.
 4. Live Lambda/IAM configuration for the GitHub wrapper.
 5. Google Workspace Action OpenAPI schema and OAuth authentication selection.
+6. Google Workspace OAuth endpoints, token exchange method, and complete configured scope list.
 
-The Google source verifies OpenAPI `3.1.0`, API title `Google Workspace API`, API version `1.2.0`, OAuth authentication selection, Google Calendar/Gmail API servers, 12 operation IDs, Gmail profile/search/read/attachment/send capability, Calendar list/read/create/update/delete/move capability, and explicit confirmation requirements in write-sensitive operation descriptions.
+The Google OAuth source verifies:
 
-The pasted schema contained Markdown escaping/link formatting, so publication uses a normalized technical transcription rather than claiming byte-for-byte YAML preservation. No OAuth secret/token/account identifier was supplied or published.
+- authorization URL `https://accounts.google.com/o/oauth2/v2/auth`;
+- token URL `https://oauth2.googleapis.com/token`;
+- default POST token exchange;
+- scope `https://www.googleapis.com/auth/calendar.events`;
+- scope `https://www.googleapis.com/auth/calendar.calendarlist.readonly`;
+- scope `https://www.googleapis.com/auth/gmail.readonly`;
+- scope `https://www.googleapis.com/auth/gmail.send`.
 
-## Next authoritative source
+The OAuth Client ID and Client Secret were shown as hidden and were not supplied or published. No access token, refresh token, authorization code, or connected-account identifier was supplied.
 
-**Google Workspace OAuth configuration details only.**
+## External-source boundary after this subphase
 
-Required non-secret fields:
+After the current OAuth documentation deploys successfully, the two configured GPT Actions have authoritative contracts and authentication boundaries documented.
 
-- configured OAuth scope names;
-- authorization URL;
-- token URL.
-
-Why next:
-
-- closes the remaining authentication boundary for the second configured GPT Action;
-- determines the precise Gmail/Calendar permission grants rather than inferring them from operations;
-- supports later security/trust-boundary and data-flow documentation.
-
-Do not request or publish OAuth client IDs, client secrets, access tokens, refresh tokens, authorization codes, authenticated-account identifiers, or other credentials.
+Do **not** request additional external material speculatively. Move to Phase 6 architecture/data-flow work using the verified sources already collected. Request another external source only if that work exposes a specific unresolved dependency that blocks accurate documentation.
 
 ## Security publication rule
 
@@ -87,27 +84,30 @@ Before supplied source material is committed:
 
 ### Phase 5 — External integration sources
 
-**Status:** in progress
+**Status:** in progress — final known-source subphase content complete, exit gate pending
 
-Completed subphases:
+Completed source sets:
 
 - authoritative GPT configuration/instructions;
 - current GitHub Action schema and API-key configuration;
 - GitHub wrapper Lambda source/deployment package;
 - live GitHub-wrapper Lambda/IAM configuration;
-- Google Workspace Action schema/OAuth authentication selection.
+- Google Workspace Action schema/OAuth authentication selection;
+- Google OAuth authorization/token endpoints, token exchange method, and four scopes.
 
-Next subphase:
+Exit gate for Phase 5 source collection:
 
-- Google Workspace OAuth scope names and authorization/token endpoint URLs only.
+- documentation validation passes;
+- OAuth PR merges;
+- resulting Pages deployment succeeds.
 
-Subsequent sources will be requested only if verified evidence shows they are required, including external supporting repository source or non-secret monitoring/deployment configuration needed for runbooks.
+After that gate, begin Phase 6 without requesting more external source unless a concrete blocker appears.
 
 ### Phase 6 — Architecture and data flows
 
 **Status:** planned
 
-Document verified runtime architecture, trust boundaries, API routes, runtime/control/deployment flows, and architecture decisions.
+Document verified runtime architecture, trust boundaries, exact API/action routes, runtime/control/deployment flows, and architecture decisions. Keep GitHub and Google flows separate where their trust/authentication boundaries differ.
 
 ### Phase 7 — Security and configuration reference
 
@@ -154,10 +154,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate and merge this Google Action closure update.
+- Validate the Google OAuth configuration branch.
+- Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then request only the Google OAuth scope names and authorization/token endpoint URLs.
+- Then begin Phase 6 architecture/data-flow documentation from the now-documented source set.
 
 ## Next safe development action
 
-After this closure update deploys successfully, request the non-secret Google OAuth configuration details with explicit GPT Builder retrieval steps.
+Complete the Google OAuth validation/merge/deployment gate, then start a focused Phase 6 architecture PR without requesting additional external source unless an evidence gap blocks accuracy.
