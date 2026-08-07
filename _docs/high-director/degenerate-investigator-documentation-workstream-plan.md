@@ -1,6 +1,8 @@
 ---
 title: Degenerate Investigator Documentation Workstream Plan
-doc_type: high-director
+summary: Persistent execution plan, evidence baseline, sequencing, safety boundary, and merge/deployment gates for the degenerate_investigator documentation workstream.
+section: high-director
+doc_type: agent
 status: active
 owner: High Director
 created: 2026-08-07
