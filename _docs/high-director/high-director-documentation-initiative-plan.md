@@ -29,8 +29,9 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
 - **Phase 5:** complete — external source collection; PRs #35–#42; Pages through #149.
 - **Phase 6:** complete — runtime architecture PR #43 / Pages #150; data flows PR #46 / Pages #152.
-- **Phase 7 — Security and configuration reference:** content complete on the working branch; validation/merge/Pages gate pending.
-- **Phases 8–10:** not started.
+- **Phase 7:** complete — security/configuration reference PR #47 / Pages #153.
+- **Phase 8 — Operations and runbooks:** operations/deployment runbook content complete on the working branch; validation/merge/Pages gate pending. Troubleshooting/handoff remains a separate follow-up PR.
+- **Phases 9–10:** not started.
 
 ## Canonical evidence pages
 
@@ -44,6 +45,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - `_docs/high-director/runtime-architecture.md` — verified runtime architecture and trust boundaries.
 - `_docs/high-director/data-flows.md` — verified runtime, secret, Google Workspace, failure, and documentation-control flows.
 - `_docs/high-director/security-configuration-reference.md` — canonical security/configuration reference.
+- `_docs/runbooks/high-director-operations-and-deployment.md` — normal operation and deployment/update runbook.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
 
 ## Source collection status
@@ -73,33 +75,28 @@ Before supplied source material is committed:
 
 ## Remaining phases
 
-### Phase 7 — Security and configuration reference
+### Phase 8 — Operations and runbooks
 
-**Status:** in progress — content complete, exit gate pending
+**Status:** in progress — first runbook content complete, exit gate pending
 
-Working-branch deliverables:
+Operations/deployment working-branch deliverables:
 
-- added `_docs/high-director/security-configuration-reference.md`;
-- documented GitHub Action API-key authentication and public Function URL boundary;
-- documented GitHub Bearer-token and single-owner boundaries;
-- documented write-capability and secret-handling boundaries;
-- documented live Lambda/SAM configuration and environment-variable contract;
-- documented execution-role/trust evidence and its verification limits;
-- documented Google OAuth endpoints/scopes and Calendar/Gmail mutation confirmation rules;
-- established the configuration/source-of-truth hierarchy;
-- documented known security limitations and safe configuration-change rules.
+- added `_docs/runbooks/high-director-operations-and-deployment.md`;
+- documented normal documentation maintenance and publication flow;
+- documented GPT configuration and Action-schema update procedure;
+- documented source-derived SAM deployment procedure for the GitHub wrapper;
+- documented Google Workspace Action maintenance rules;
+- documented validation/success criteria and rollback boundaries;
+- clearly marked fresh Lambda deployment, Lambda rollback, and Google OAuth reconnect/revocation as not fully re-executed/verified;
+- documented security stop conditions for changes to auth, IAM, scopes, credentials, access control, and architecture.
 
-Phase 7 exit gate:
+This runbook PR exit gate:
 
 - documentation validation passes;
 - PR merges;
 - resulting Pages deployment succeeds.
 
-### Phase 8 — Operations and runbooks
-
-**Status:** planned
-
-Document normal operation, deployment/update, validation, failure modes, troubleshooting, rollback/recovery, and handoff/continuation procedures. Request additional external source only if a specific runbook/deployment fact cannot be verified from current evidence.
+After that gate, create a separate troubleshooting/handoff runbook covering failure diagnosis, evidence collection, recovery boundaries, unresolved monitoring gaps, and continuation procedure.
 
 ### Phase 9 — Code and dependency reference
 
@@ -134,11 +131,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the Phase 7 security/configuration branch.
+- Validate the operations/deployment runbook branch.
 - Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then begin Phase 8 operations/runbook documentation from the verified source set.
+- Then create the troubleshooting/handoff runbook as a separate focused PR.
 
 ## Next safe development action
 
-Complete the Phase 7 validation/merge/deployment gate, then create a focused Phase 8 operations/runbook PR without requesting external source unless a concrete evidence gap blocks accuracy.
+Complete the operations/deployment runbook validation/merge/deployment gate, then create the troubleshooting/handoff runbook from the verified failure modes and known limitations.
