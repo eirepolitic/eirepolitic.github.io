@@ -1,0 +1,350 @@
+@app.get("/repos/{repo}/workflow-runs/{run_id}")
+def get_workflow_run(
+    repo: str,
+    run_id: int,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/actions/runs/{run_id}")
+    run = resp.json()
+
+    return success(
+        message="workflow run fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "run_id": run.get("id"),
+            "name": run.get("name"),
+            "display_title": run.get("display_title"),
+            "status": run.get("status"),
+            "conclusion": run.get("conclusion"),
+            "event": run.get("event"),
+            "head_branch": run.get("head_branch"),
+            "head_sha": run.get("head_sha"),
+            "run_number": run.get("run_number"),
+            "workflow_id": run.get("workflow_id"),
+            "created_at": run.get("created_at"),
+            "updated_at": run.get("updated_at"),
+            "run_attempt": run.get("run_attempt"),
+            "url": run.get("html_url"),
+        },
+    )
+
+
+@app.get("/repos/{repo}/workflow-runs/{run_id}/jobs")
+def list_workflow_run_jobs(
+    repo: str,
+    run_id: int,
+    per_page: int = 100,
+    page: int = 1,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    resp = gh_request(
+        "GET",
+        f"/repos/{GITHUB_OWNER}/{repo}/actions/runs/{run_id}/jobs",
+        params={"per_page": per_page, "page": page},
+    )
+    data = resp.json()
+
+    return success(
+        message="workflow run jobs fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "run_id": run_id,
+            "total_count": data.get("total_count", 0),
+            "jobs": [
+                {
+                    "id": job.get("id"),
+                    "name": job.get("name"),
+                    "status": job.get("status"),
+                    "conclusion": job.get("conclusion"),
+                    "started_at": job.get("started_at"),
+                    "completed_at": job.get("completed_at"),
+                    "url": job.get("html_url"),
+                    "steps": [
+                        {
+                            "name": step.get("name"),
+                            "status": step.get("status"),
+                            "conclusion": step.get("conclusion"),
+                            "number": step.get("number"),
+                            "started_at": step.get("started_at"),
+                            "completed_at": step.get("completed_at"),
+                        }
+                        for step in job.get("steps", [])
+                    ],
+                }
+                for job in data.get("jobs", [])
+            ],
+        },
+    )
+
+
+@app.get("/repos/{repo}/workflow-runs/{run_id}/logs")
+def get_workflow_run_logs(
+    repo: str,
+    run_id: int,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+
+    try:
+        with gh_client(follow_redirects=False) as client:
+            response = client.get(f"/repos/{GITHUB_OWNER}/{repo}/actions/runs/{run_id}/logs")
+    except httpx.TimeoutException as exc:
+        raise AppError(504, "github_timeout", "Timed out fetching workflow run logs", {"exception": str(exc)}) from exc
+    except httpx.HTTPError as exc:
+        raise AppError(502, "github_transport_error", "Transport error fetching workflow run logs", {"exception": str(exc)}) from exc
+
+    if response.status_code not in (302, 307):
+        raise AppError(
+            response.status_code,
+            "github_error",
+            "GitHub did not return a log download redirect",
+            {
+                "github_status": response.status_code,
+                "github_response": parse_response_body(response),
+                "github_method": "GET",
+                "github_path": f"/repos/{GITHUB_OWNER}/{repo}/actions/runs/{run_id}/logs",
+            },
+        )
+
+    return success(
+        message="workflow run logs URL fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "run_id": run_id,
+            "download_url": response.headers.get("Location") or response.headers.get("location"),
+            "status": "ready",
+        },
+    )
+
+
+@app.get("/repos/{repo}/workflow-runs/{run_id}/artifacts")
+def list_workflow_run_artifacts(
+    repo: str,
+    run_id: int,
+    per_page: int = 100,
+    page: int = 1,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    resp = gh_request(
+        "GET",
+        f"/repos/{GITHUB_OWNER}/{repo}/actions/runs/{run_id}/artifacts",
+        params={"per_page": per_page, "page": page},
+    )
+    data = resp.json()
+
+    return success(
+        message="workflow run artifacts fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "run_id": run_id,
+            "total_count": data.get("total_count", 0),
+            "artifacts": [
+                {
+                    "id": artifact.get("id"),
+                    "name": artifact.get("name"),
+                    "size_in_bytes": artifact.get("size_in_bytes"),
+                    "expired": artifact.get("expired"),
+                    "created_at": artifact.get("created_at"),
+                    "updated_at": artifact.get("updated_at"),
+                    "expires_at": artifact.get("expires_at"),
+                    "archive_download_url": artifact.get("archive_download_url"),
+                }
+                for artifact in data.get("artifacts", [])
+            ],
+        },
+    )
+
+
+@app.get("/repos/{repo}/artifacts/{artifact_id}")
+def get_artifact_metadata(
+    repo: str,
+    artifact_id: int,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/actions/artifacts/{artifact_id}")
+    artifact = resp.json()
+
+    return success(
+        message="artifact metadata fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "artifact_id": artifact.get("id"),
+            "name": artifact.get("name"),
+            "size_in_bytes": artifact.get("size_in_bytes"),
+            "expired": artifact.get("expired"),
+            "created_at": artifact.get("created_at"),
+            "updated_at": artifact.get("updated_at"),
+            "expires_at": artifact.get("expires_at"),
+            "archive_download_url": artifact.get("archive_download_url"),
+            "workflow_run": artifact.get("workflow_run"),
+        },
+    )
+
+
+@app.post("/repos/{repo}/workflows/{workflow_id}/dispatch")
+def dispatch_workflow(repo: str, workflow_id: str, body: DispatchWorkflowRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    gh_request(
+        "POST",
+        f"/repos/{GITHUB_OWNER}/{repo}/actions/workflows/{workflow_id}/dispatches",
+        expected=(204,),
+        json={"ref": body.ref, "inputs": body.inputs},
+    )
+
+    return success(
+        message="workflow dispatched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "workflow_id": workflow_id,
+            "ref": body.ref,
+            "inputs": body.inputs,
+            "status": "dispatched",
+        },
+    )
+
+
+@app.post("/repos/{repo}/workflows/{workflow_id}/enable")
+def enable_workflow(repo: str, workflow_id: str, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    gh_request(
+        "PUT",
+        f"/repos/{GITHUB_OWNER}/{repo}/actions/workflows/{workflow_id}/enable",
+        expected=(204,),
+    )
+
+    return success(
+        message="workflow enabled",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "workflow_id": workflow_id,
+            "status": "enabled",
+        },
+    )
+
+
+@app.post("/repos/{repo}/workflows/{workflow_id}/disable")
+def disable_workflow(repo: str, workflow_id: str, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    gh_request(
+        "PUT",
+        f"/repos/{GITHUB_OWNER}/{repo}/actions/workflows/{workflow_id}/disable",
+        expected=(204,),
+    )
+
+    return success(
+        message="workflow disabled",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "workflow_id": workflow_id,
+            "status": "disabled",
+        },
+    )
+
+
+@app.put("/repos/{repo}/variables/{name}")
+def set_variable(repo: str, name: str, body: VariableSetRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+
+    try:
+        with gh_client() as client:
+            create_resp = client.post(
+                f"/repos/{GITHUB_OWNER}/{repo}/actions/variables",
+                json={"name": name, "value": body.value},
+            )
+            if create_resp.status_code == 409:
+                update_resp = client.patch(
+                    f"/repos/{GITHUB_OWNER}/{repo}/actions/variables/{name}",
+                    json={"name": name, "value": body.value},
+                )
+                if update_resp.status_code != 204:
+                    raise AppError(
+                        update_resp.status_code,
+                        "github_error",
+                        "Failed to update repository variable",
+                        {"github_response": parse_response_body(update_resp)},
+                    )
+                return success(
+                    message="variable updated",
+                    result={"repo": repo, "owner": GITHUB_OWNER, "name": name, "status": "updated"},
+                )
+
+            if create_resp.status_code != 201:
+                raise AppError(
+                    create_resp.status_code,
+                    "github_error",
+                    "Failed to create repository variable",
+                    {"github_response": parse_response_body(create_resp)},
+                )
+    except httpx.TimeoutException as exc:
+        raise AppError(504, "github_timeout", "Timed out setting repository variable", {"exception": str(exc)}) from exc
+    except httpx.HTTPError as exc:
+        raise AppError(502, "github_transport_error", "Transport error setting repository variable", {"exception": str(exc)}) from exc
+
+    return success(
+        message="variable created",
+        result={"repo": repo, "owner": GITHUB_OWNER, "name": name, "status": "created"},
+    )
+
+
+@app.delete("/repos/{repo}/variables/{name}")
+def remove_variable(repo: str, name: str, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    gh_request("DELETE", f"/repos/{GITHUB_OWNER}/{repo}/actions/variables/{name}", expected=(204,))
+
+    return success(
+        message="variable deleted",
+        result={"repo": repo, "owner": GITHUB_OWNER, "name": name, "status": "deleted"},
+    )
+
+
+@app.put("/repos/{repo}/secrets/{name}")
+def set_secret(repo: str, name: str, body: SecretSetRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    key_data = get_repo_public_key(repo)
+    encrypted_value = encrypt_secret(key_data["key"], body.plaintext_value)
+    gh_request(
+        "PUT",
+        f"/repos/{GITHUB_OWNER}/{repo}/actions/secrets/{name}",
+        expected=(201, 204),
+        json={"encrypted_value": encrypted_value, "key_id": key_data["key_id"]},
+    )
+
+    return success(
+        message="secret stored",
+        result={"repo": repo, "owner": GITHUB_OWNER, "name": name, "status": "set"},
+    )
+
+
+@app.delete("/repos/{repo}/secrets/{name}")
+def remove_secret(repo: str, name: str, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    gh_request("DELETE", f"/repos/{GITHUB_OWNER}/{repo}/actions/secrets/{name}", expected=(204,))
+
+    return success(
+        message="secret deleted",
+        result={"repo": repo, "owner": GITHUB_OWNER, "name": name, "status": "deleted"},
+    )
