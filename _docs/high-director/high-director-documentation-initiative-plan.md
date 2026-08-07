@@ -27,7 +27,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
-- **Phase 5:** in progress — current GitHub Action schema subphase completed in PR #35 / Pages #142; GitHub wrapper Lambda source subphase content complete on the working branch and awaiting validation/merge/Pages verification.
+- **Phase 5:** in progress — GitHub Action schema subphase complete in PR #35 / Pages #142; GitHub wrapper Lambda source subphase complete in PR #36 / Pages #143. Next subphase is live Lambda/IAM configuration.
 - **Phases 6–10:** not started.
 
 ## Canonical evidence pages
@@ -74,15 +74,15 @@ Sanitization:
 - no API key, PAT, AWS credential, password, private key, token, or personal email was found in first-party text files;
 - vendored third-party binaries/modules were not copied into the documentation repository.
 
-## Next authoritative source after current deployment gate
+## Next authoritative source
 
 **AWS Lambda live configuration and execution-role/IAM configuration for the GitHub wrapper.**
 
 Why next:
 
-- verifies the deployed runtime/handler against the SAM template;
-- verifies Function URL auth/configuration in the live environment;
-- verifies the execution-role name and attached/inline permissions;
+- verifies deployed runtime/handler against the SAM template;
+- verifies live Function URL authentication/configuration;
+- verifies execution-role name and attached/inline permissions;
 - verifies environment-variable names without exposing values;
 - closes the most important remaining security boundary before architecture/runbook work;
 - establishes whether CloudWatch or other AWS permissions/services are actually used.
@@ -105,15 +105,15 @@ Before supplied source material is committed:
 
 **Status:** in progress
 
-Current subphase deliverables:
+Completed subphases:
 
-- inspect supplied Lambda source/deployment package;
-- preserve sanitized first-party configuration/source metadata;
-- document Lambda code structure, dependencies, authentication, data flows, failure modes, and drift;
-- synchronize component inventory and this plan;
-- validate, merge, and verify Pages.
+- authoritative GPT configuration/instructions;
+- current GitHub Action schema and API-key configuration;
+- GitHub wrapper Lambda source/deployment package.
 
-Next subphase after successful deployment: live Lambda/IAM configuration only.
+Current next subphase:
+
+- live Lambda function configuration and execution-role/IAM configuration only.
 
 Subsequent likely sources:
 
@@ -172,11 +172,10 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the GitHub wrapper Lambda-source branch.
-- Merge only if validation passes.
+- Validate and merge this Lambda-source closure update.
 - Confirm the resulting Pages deployment succeeds.
 - Then request only the live Lambda/IAM configuration for the GitHub wrapper.
 
 ## Next safe development action
 
-Complete the Lambda-source documentation validation/merge/deployment gate, then request the live Lambda and execution-role configuration with explicit AWS Console retrieval steps.
+After this closure update deploys successfully, request the live Lambda and execution-role configuration with explicit AWS Console retrieval steps.
