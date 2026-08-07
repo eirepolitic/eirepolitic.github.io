@@ -1,20 +1,12 @@
 ---
 title: High Director Overview
-summary: Defines the purpose, scope, and operating principles of the High Director development agent.
+summary: Entry point for verified and planned technical documentation of the High Director agent.
 section: high-director
 doc_type: agent
 status: active
-technologies:
-  - GitHub
-  - Python
-  - YAML
-  - AWS
-  - Appsmith
-  - Power BI
-  - Power Automate
 created: 2026-08-05
-updated: 2026-08-05
-last_verified: 2026-08-05
+updated: 2026-08-06
+last_verified: 2026-08-06
 order: 10
 permalink: /projects/high-director/
 ---
@@ -23,41 +15,49 @@ permalink: /projects/high-director/
 
 ## Overview
 
-High Director is the AI agent used to design, document, troubleshoot, and implement the Eire Politic platform and its supporting infrastructure.
+High Director is the subject of this documentation section. The repository currently verifies the documentation framework and development process around the agent, but it does not yet contain enough authoritative source material to describe the complete runtime implementation.
 
-## Scope
+Detailed runtime claims must therefore be treated as **unknown / unverified** until implementation source, configuration, schemas, or other authoritative evidence is inspected.
 
-High Director supports:
+## Current verified scope
 
-- GitHub repositories and GitHub Actions
-- Python data pipelines
-- YAML configuration
-- AWS services, including S3 and Lambda
-- Appsmith applications
-- Power BI reporting
-- Power Automate workflows
-- Technical documentation and system design
+This repository directly verifies:
 
-## Working principles
+- a dedicated High Director documentation section;
+- a persistent High Director documentation initiative plan;
+- repository-based documentation change management through branches, pull requests, validation, and GitHub Pages deployment;
+- documentation templates, standards, architecture records, runbooks, and verification records used to maintain this section.
 
-High Director should:
+See [High Director Repository Documentation Inventory]({{ '/docs/high-director/repository-documentation-inventory/' | relative_url }}) for the canonical repository-only evidence map.
 
-- Prefer safe, simple implementations.
-- Make material repository changes through reviewable branches and pull requests.
-- Keep secrets out of source control and published documentation.
-- Document infrastructure, data lineage, configuration, and operational procedures.
-- Validate changes before deployment where practical.
-- Clearly distinguish completed work from recommendations.
-- Record enough context for development to continue in a future chat.
+## Runtime scope pending verification
 
-## Documentation roadmap
+The following subjects are planned for authoritative documentation but are not yet verified by this repository:
 
-This section will document:
+- purpose and complete responsibility boundaries;
+- capability catalogue and behavioral rules;
+- tools and external integrations;
+- GitHub integration implementation;
+- AWS, Lambda, API Gateway, and IAM integration;
+- ChatGPT Actions and OpenAPI schemas;
+- authentication and authorization;
+- runtime data flows;
+- configuration and dependencies;
+- supporting code;
+- runtime failure modes and troubleshooting;
+- deployment, rebuild, handoff, and continuation procedures.
 
-- Agent capabilities and available tools
-- Repository access and change-management workflow
-- AWS access and deployment patterns
-- Security and secret-management rules
-- Standard pipeline architecture
-- Operating guidance
-- Change history and major decisions
+## Documentation principles
+
+High Director documentation must:
+
+- distinguish verified implementation, user-supplied authoritative source, inference, historical behavior, planned work, and unknown state;
+- prefer real implementation over artificial examples;
+- keep secrets and unnecessary personal information out of published material;
+- use one canonical source for each fact and link instead of duplicating it;
+- validate every documentation PR before merge;
+- verify the resulting GitHub Pages deployment before starting the next major documentation phase.
+
+## Initiative status
+
+The current source of truth for implementation phases, missing sources, verification gates, and the next safe action is the [High Director Documentation Initiative Plan]({{ '/docs/high-director/high-director-documentation-initiative-plan/' | relative_url }}).
