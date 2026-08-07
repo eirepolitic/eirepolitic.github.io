@@ -1,0 +1,350 @@
+def get_commit_for_ref(repo: str, ref: str) -> Dict[str, Any]:
+    repo = normalize_repo_name(repo)
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/commits/{ref}")
+    return resp.json()
+
+
+def get_tree_sha_for_ref(repo: str, ref: str) -> str:
+    commit = get_commit_for_ref(repo, ref)
+    return commit["commit"]["tree"]["sha"]
+
+
+def build_diff(old_text: str, new_text: str, path: str) -> str:
+    diff = difflib.unified_diff(
+        old_text.splitlines(keepends=True),
+        new_text.splitlines(keepends=True),
+        fromfile=f"a/{path}",
+        tofile=f"b/{path}",
+        lineterm="",
+    )
+    rendered = "".join(diff)
+    return rendered or f"No textual differences for {path}.\n"
+
+
+def put_file(repo: str, branch: str, path: str, content: str, commit_message: str) -> Dict[str, Any]:
+    repo = normalize_repo_name(repo)
+    existing = get_file(repo, path, ref=branch)
+    payload: Dict[str, Any] = {
+        "message": commit_message,
+        "content": base64.b64encode(content.encode("utf-8")).decode("utf-8"),
+        "branch": branch,
+    }
+    if existing and existing.get("sha"):
+        payload["sha"] = existing["sha"]
+
+    resp = gh_request(
+        "PUT",
+        f"/repos/{GITHUB_OWNER}/{repo}/contents/{path}",
+        expected=(200, 201),
+        json=payload,
+    )
+    return resp.json()
+
+
+def delete_file_from_branch(repo: str, branch: str, path: str, commit_message: str) -> Dict[str, Any]:
+    repo = normalize_repo_name(repo)
+    existing = get_file(repo, path, ref=branch)
+    if not existing or not existing.get("sha"):
+        raise AppError(404, "not_found", "File does not exist on target branch", {"path": path, "branch": branch})
+
+    resp = gh_request(
+        "DELETE",
+        f"/repos/{GITHUB_OWNER}/{repo}/contents/{path}",
+        expected=(200,),
+        json={"message": commit_message, "sha": existing["sha"], "branch": branch},
+    )
+    return resp.json()
+
+
+def get_repo_public_key(repo: str) -> Dict[str, str]:
+    repo = normalize_repo_name(repo)
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/actions/secrets/public-key")
+    return resp.json()
+
+
+def encrypt_secret(public_key_b64: str, value: str) -> str:
+    key = public.PublicKey(public_key_b64.encode("utf-8"), encoding.Base64Encoder())
+    sealed_box = public.SealedBox(key)
+    encrypted = sealed_box.encrypt(value.encode("utf-8"))
+    return base64.b64encode(encrypted).decode("utf-8")
+
+
+@app.get("/health")
+def health() -> JSONResponse:
+    return success(
+        message="ok",
+        result={
+            "service": APP_NAME,
+            "version": APP_VERSION,
+            "owner": GITHUB_OWNER,
+        },
+    )
+
+
+@app.get("/repos/{repo}/files")
+def read_file(
+    repo: str,
+    path: str,
+    ref: Optional[str] = None,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    file_data = get_file(repo, path, ref=ref)
+    if not file_data:
+        raise AppError(404, "not_found", "File not found", {"path": path, "ref": ref})
+
+    return success(
+        message="file fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "path": path,
+            "ref": ref,
+            "sha": file_data.get("sha"),
+            "size": file_data.get("size"),
+            "content": file_data.get("decoded_content", ""),
+            "html_url": file_data.get("html_url"),
+            "download_url": file_data.get("download_url"),
+        },
+    )
+
+
+@app.get("/repos/{repo}/tree")
+def list_repo_tree(
+    repo: str,
+    ref: Optional[str] = None,
+    recursive: bool = True,
+    path_prefix: Optional[str] = None,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    target_ref = ref or get_default_branch(repo)
+    tree_sha = get_tree_sha_for_ref(repo, target_ref)
+    params = {"recursive": "1"} if recursive else None
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/git/trees/{tree_sha}", params=params)
+    data = resp.json()
+    items = data.get("tree", [])
+
+    if path_prefix:
+        prefix = path_prefix.strip("/")
+        items = [item for item in items if item.get("path", "").startswith(prefix)]
+
+    return success(
+        message="repository tree fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "ref": target_ref,
+            "recursive": recursive,
+            "truncated": data.get("truncated", False),
+            "count": len(items),
+            "items": [
+                {
+                    "path": item.get("path"),
+                    "mode": item.get("mode"),
+                    "type": item.get("type"),
+                    "sha": item.get("sha"),
+                    "size": item.get("size"),
+                    "url": item.get("url"),
+                }
+                for item in items
+            ],
+        },
+    )
+
+
+@app.get("/repos/{repo}/search")
+def search_repo_contents(
+    repo: str,
+    q: str,
+    per_page: int = 25,
+    page: int = 1,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    query = f"{q} repo:{GITHUB_OWNER}/{repo}"
+    resp = gh_request(
+        "GET",
+        "/search/code",
+        params={"q": query, "per_page": per_page, "page": page},
+    )
+    data = resp.json()
+
+    return success(
+        message="repository search complete",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "query": q,
+            "total_count": data.get("total_count", 0),
+            "incomplete_results": data.get("incomplete_results", False),
+            "items": [
+                {
+                    "name": item.get("name"),
+                    "path": item.get("path"),
+                    "sha": item.get("sha"),
+                    "url": item.get("html_url"),
+                    "repository": item.get("repository", {}).get("full_name"),
+                }
+                for item in data.get("items", [])
+            ],
+        },
+    )
+
+
+@app.post("/repos/{repo}/files/preview-upsert")
+def preview_upsert(repo: str, body: UpsertPreviewRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    base_branch = body.base_branch or get_default_branch(repo)
+    branch_name = sanitize_branch_name(body.branch_name or auto_branch_name(body.path))
+    existing = get_file(repo, body.path, ref=base_branch)
+    old_text = existing["decoded_content"] if existing else ""
+    diff = build_diff(old_text, body.content, body.path)
+    operation = "update" if existing else "create"
+
+    return success(
+        message="upsert preview ready",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "path": body.path,
+            "operation": operation,
+            "base_branch": base_branch,
+            "branch_name": branch_name,
+            "existing_sha": existing.get("sha") if existing else None,
+            "diff": diff,
+            "commit_message": body.commit_message,
+        },
+    )
+
+
+@app.post("/repos/{repo}/files/apply-upsert")
+def apply_upsert(repo: str, body: UpsertApplyRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    base_branch = body.base_branch or get_default_branch(repo)
+    branch_name = sanitize_branch_name(body.branch_name or auto_branch_name(body.path))
+    ensure_branch_exists(repo, branch_name, base_branch)
+    result = put_file(repo, branch_name, body.path, body.content, body.commit_message)
+    content = result.get("content") or {}
+    commit = result.get("commit") or {}
+
+    return success(
+        message="file upsert applied",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "path": body.path,
+            "base_branch": base_branch,
+            "branch_name": branch_name,
+            "content_sha": content.get("sha"),
+            "commit_sha": commit.get("sha"),
+            "commit_message": commit.get("message"),
+            "html_url": content.get("html_url"),
+        },
+    )
+
+
+@app.post("/repos/{repo}/files/preview-delete")
+def preview_delete(repo: str, body: DeletePreviewRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    base_branch = body.base_branch or get_default_branch(repo)
+    branch_name = sanitize_branch_name(body.branch_name or auto_branch_name(body.path))
+    existing = get_file(repo, body.path, ref=base_branch)
+    if not existing:
+        raise AppError(404, "not_found", "File not found on base branch", {"path": body.path, "base_branch": base_branch})
+
+    diff = build_diff(existing["decoded_content"], "", body.path)
+    return success(
+        message="delete preview ready",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "path": body.path,
+            "operation": "delete",
+            "base_branch": base_branch,
+            "branch_name": branch_name,
+            "existing_sha": existing["sha"],
+            "diff": diff,
+            "commit_message": body.commit_message,
+        },
+    )
+
+
+@app.post("/repos/{repo}/files/apply-delete")
+def apply_delete(repo: str, body: DeleteApplyRequest, x_api_key: Optional[str] = Header(default=None)) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    base_branch = body.base_branch or get_default_branch(repo)
+    branch_name = sanitize_branch_name(body.branch_name or auto_branch_name(body.path))
+    ensure_branch_exists(repo, branch_name, base_branch)
+    result = delete_file_from_branch(repo, branch_name, body.path, body.commit_message)
+    commit = result.get("commit") or {}
+    content = result.get("content") or {}
+
+    return success(
+        message="file deletion applied",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "path": body.path,
+            "base_branch": base_branch,
+            "branch_name": branch_name,
+            "commit_sha": commit.get("sha"),
+            "commit_message": commit.get("message"),
+            "deleted_path": content.get("path"),
+        },
+    )
+
+
+@app.get("/repos/{repo}/branches")
+def list_branches(
+    repo: str,
+    protected: Optional[bool] = None,
+    per_page: int = 100,
+    page: int = 1,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    params: Dict[str, Any] = {"per_page": per_page, "page": page}
+    if protected is not None:
+        params["protected"] = str(protected).lower()
+
+    resp = gh_request("GET", f"/repos/{GITHUB_OWNER}/{repo}/branches", params=params)
+    branches = resp.json()
+
+    return success(
+        message="branches fetched",
+        result={
+            "repo": repo,
+            "owner": GITHUB_OWNER,
+            "count": len(branches),
+            "branches": [
+                {
+                    "name": branch.get("name"),
+                    "protected": branch.get("protected"),
+                    "commit_sha": (branch.get("commit") or {}).get("sha"),
+                }
+                for branch in branches
+            ],
+        },
+    )
+
+
+@app.post("/repos/{repo}/branches")
+def create_branch_endpoint(
+    repo: str,
+    body: BranchCreateRequest,
+    x_api_key: Optional[str] = Header(default=None),
+) -> JSONResponse:
+    require_api_key(x_api_key)
+    repo = normalize_repo_name(repo)
+    from_branch = body.from_branch or get_default_branch(repo)
+    new_branch = sanitize_branch_name(body.new_branch)
+    create_branch(repo, new_branch, from_branch)
