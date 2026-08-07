@@ -34,9 +34,9 @@ Inference must never be presented as verified implementation.
 - **Phase 0:** complete. PR #29 validated/merged; resulting Pages deployment succeeded.
 - **Phase 1:** complete. PR #30 validated/merged; Pages deployment #137 succeeded.
 - **Phase 2:** complete. PR #31 validated/merged; Pages deployment #138 succeeded.
-- **Phase 3 — GitHub integration and repository workflows:** content complete on the working branch; validation, merge, and Pages verification are pending.
-- **Phases 4–10:** not started.
-- No external High Director source material has been requested yet.
+- **Phase 3:** complete. PR #32 validated/merged; Pages deployment #139 succeeded.
+- **Phase 4 — First external authoritative source:** ready to begin; blocked only on user retrieval of the High Director ChatGPT configuration and instructions.
+- **Phases 5–10:** not started.
 
 ## Canonical evidence pages
 
@@ -44,11 +44,11 @@ Inference must never be presented as verified implementation.
 - `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
 - `_docs/high-director/github-integration.md` — configured/observed GitHub operation surface and repository workflow behavior.
 
-The repository and directly observed GitHub integration behavior still do not verify the complete High Director runtime implementation, action-schema source, AWS implementation, authentication model, runtime data flows, external configuration, or external supporting code.
+Repository and directly observed GitHub integration evidence are now exhausted for the first documentation block. They still do not verify the complete High Director runtime implementation, action-schema source, AWS implementation, authentication model, runtime data flows, external configuration, or external supporting code.
 
-## Prioritized sources likely requiring user retrieval
+## Prioritized sources requiring user retrieval
 
-Request only one coherent source at a time and only after the previous documentation gate succeeds:
+Request only one coherent source at a time:
 
 1. High Director ChatGPT configuration and instructions
 2. High Director ChatGPT Action/OpenAPI schema
@@ -96,35 +96,45 @@ Separated directly exercised GitHub capabilities from unknown implementation det
 
 ### Phase 3 — GitHub integration and repository workflows
 
-**Status:** in progress — content complete, exit gate pending
+**Status:** complete
 
-Completed on the working branch:
-
-- documented exact configured GitHub operation names grouped by repository, PR/branch, workflow, and Actions variable/secret functions;
+- documented exact configured GitHub operation names;
 - classified operations as exercised or configured-but-not-exercised;
-- documented the backend repository-addressing rule supplied by the user;
+- documented the backend repository-addressing rule;
 - documented `.github/workflows/validate-documentation.yml` and `scripts/validate_docs.py`;
-- documented the GitHub-managed `pages-build-deployment` workflow and verified Pages IDs/status behavior;
-- documented the verified branch → PR → validation → merge → matching Pages deployment sequence;
-- documented validation, Pages, and integration-call failure handling;
-- preserved authentication, connector implementation, Action/OpenAPI source, Lambda/API Gateway, and IAM details as unknown/unverified;
-- added `_docs/high-director/github-integration.md`.
-
-Exit gate:
-
-- documentation validation passes;
-- PR merges;
-- resulting Pages deployment succeeds.
+- documented the GitHub-managed Pages workflow;
+- documented branch → PR → validation → merge → matching Pages deployment behavior;
+- documented failure handling and security/access boundaries;
+- preserved connector authentication, hosting, Action/OpenAPI source, Lambda/API Gateway, and IAM details as unknown/unverified;
+- added `_docs/high-director/github-integration.md`;
+- PR #32 validated/merged;
+- Pages deployment #139 succeeded.
 
 ### Phase 4 — First external authoritative source
 
-**Status:** planned
+**Status:** awaiting user-supplied authoritative source
 
-After Phase 3 deploys successfully, request exactly one source: the **High Director ChatGPT configuration and instructions**.
+Required source:
 
-This source is first because it establishes purpose, responsibilities, behavioral rules, operating model, configured tools/actions, and limitations before lower-level integration implementation is documented.
+**High Director ChatGPT configuration and instructions**
 
-The request must include explicit click-by-click retrieval instructions and specify exactly what the user should copy or download.
+Why first:
+
+- establishes authoritative purpose and responsibilities;
+- establishes behavioral rules and operating model;
+- identifies configured tools/actions and limitations;
+- determines which lower-level external integration sources are actually required;
+- prevents later architecture documentation from being based on historical or inferred capability claims.
+
+When supplied:
+
+1. inspect the material;
+2. remove or replace sensitive/personal information before publication;
+3. preserve technically important structure and exact non-secret names;
+4. document provenance and evidence classification;
+5. add the sanitized source/reference to the site;
+6. update affected High Director pages;
+7. validate, merge through a focused PR, and confirm Pages deployment.
 
 ### Phase 5 — Remaining external integration sources
 
@@ -191,11 +201,10 @@ Evidence strength, highest first:
 
 ## Outstanding work
 
-- Validate the Phase 3 GitHub integration branch.
-- Merge only if validation passes.
+- Validate and merge this Phase 3 closure update.
 - Confirm the resulting Pages deployment succeeds.
-- Then request only the High Director ChatGPT configuration and instructions.
+- Request only the High Director ChatGPT configuration and instructions.
 
 ## Next safe development action
 
-Complete the Phase 3 validation/merge/deployment gate. After it succeeds, begin Phase 4 by requesting the High Director ChatGPT configuration and instructions with explicit retrieval steps.
+After this plan update passes validation, merges, and deploys successfully, request the High Director ChatGPT configuration and instructions with explicit click-by-click retrieval steps.
