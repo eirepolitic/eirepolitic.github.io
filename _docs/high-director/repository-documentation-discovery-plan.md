@@ -59,148 +59,203 @@ For each repository:
 11. distinguish current implementation from historical/archived references;
 12. flag external source/configuration that will later require user retrieval.
 
-## Repository discovery limitation
+## Authoritative repository list
 
-The configured GitHub Action exposes repository-scoped operations but does **not** expose an operation that lists all repositories for the configured owner.
+Supplied by the system owner on 2026-08-07:
 
-Therefore complete owner-wide coverage requires an authoritative repository-name list from outside the current Action. Until that list is supplied, scanning proceeds with every repository name already known from persisted documentation or provided by the user.
+```text
+eirepolitic.github.io
+eirepolitic-data-pipeline
+bb-comp-prices
+degenerate_investigator
+Overlord
+autodoc
+```
 
-Do not guess repository names.
+This list is the discovery scope. Do not guess additional repository names.
 
 ## Repository scan status
 
 | Repository | Scan status | Result |
 |---|---|---|
-| `eirepolitic.github.io` | Tree/content discovery complete | 10 distinct documentation targets/groups identified; existing fully documented components separated from new/verification-required targets |
-| Other owner repositories | Awaiting authoritative repository-name list | Current GitHub Action cannot enumerate owner repositories |
+| `eirepolitic.github.io` | Complete | 10 real targets/groups identified; 8 new/verification-required and 2 already fully documented groups |
+| `eirepolitic-data-pipeline` | Complete | 13 major documentation targets/groups identified across the Oireachtas platform, data products, media generation, reusable LLM processing, member analytics, and legacy utilities |
+| `bb-comp-prices` | Next | Pending |
+| `degenerate_investigator` | Pending | Pending |
+| `Overlord` | Pending | Pending |
+| `autodoc` | Pending | Pending |
 
 ## Repository 1 — `eirepolitic.github.io`
 
 ### Already fully documented / maintenance-only
 
-These are real documentation targets, but the site already contains full current documentation and they do not require a new discovery-to-documentation initiative unless implementation changes:
+- `eirepolitic.github.io` repository and documentation site.
+- Documentation validation/publication subsystem.
+- Documentation search-index subsystem.
+- High Director and its GitHub/AWS/Google integrations.
 
-| Target | Category | Evidence |
-|---|---|---|
-| `eirepolitic.github.io` repository | Repository | `_docs/repositories/eirepolitic-github-io.md` |
-| Documentation site | System/application | `_docs/systems/documentation-site.md`, `_config.yml`, layouts/includes/assets |
-| Documentation validation/publication system | Automation/build infrastructure | `.github/workflows/validate-documentation.yml`, `scripts/validate_docs.py`, Pages workflow, runbooks |
-| Documentation search index | Data product/site subsystem | `_docs/data/documentation-search-index.md`, `search-index.json`, `assets/js/search.js` |
-| High Director | Agent/integration/system | complete High Director canonical documentation set |
+### New/verification-required targets
 
-These remain inventory items because they are real components, but their documentation status is **complete/current** rather than a new full-documentation target.
+1. **AutoDoc Appsmith application / public embed** — application, Appsmith integration, external connection, UI/embed, security/privacy boundary, deployment/runbook.
+   - Evidence: `autodoc.md`, `assets/projects/autodoc/`.
+   - External authoritative Appsmith configuration will be required when full documentation begins.
 
-### New full-documentation candidate — AutoDoc
+2. **Irish Politics Analytics umbrella architecture/index** — portfolio/system architecture, repository map, cross-system data flows.
+   - Evidence: `projects/ipa-overview.md`.
 
-**Target:** AutoDoc Appsmith application / public site embed.
+3. **Constituency Images Indexer** — historical pipeline, AWS S3, Glue/Athena, GitHub Actions.
+   - Historical source: `process/constituency_images_indexer.py`, `.github/workflows/constituency_images_index.yml`.
 
-**Categories:** application, Appsmith integration, external connection, UI/embed, security/privacy boundary, operating/deployment procedure.
+4. **Debate Issue Classifier** — historical Oireachtas/OpenAI pipeline, S3/Athena, GitHub Actions.
+   - Historical source: `extract/monthly_extract.py`, `extract/debates_xml_to_csv_s3.py`, `process/speech_issue_classifier.py`.
 
-Repository evidence:
+5. **LLM Column Creator** — reusable OpenAI/YAML/S3 processing framework.
+   - Historical source: `process/llm_table_runner.py`, `tasks/`, `.github/workflows/llm_task_controller_template.yml`.
 
-```text
-autodoc.md
-assets/projects/autodoc/
-```
+6. **Member Images Pipeline** — scraping/Oireachtas/S3 pipeline.
+   - Historical source: `process/members_photo_urls.py`, `.github/workflows/member_photo_urls.yml`.
 
-Verified from `autodoc.md`:
+7. **Member Summaries Table** — Oireachtas/OpenAI enrichment pipeline and S3/Glue/Athena data product.
 
-- public unlinked web page at `/autodoc/`;
-- embeds an Appsmith application in an iframe;
-- external host: `app.appsmith.com`;
-- iframe allows clipboard read/write and fullscreen;
-- page notes third-party cookie/tracking-protection dependencies.
+8. **S3 Column Deleter** — destructive maintenance utility for CSV/Parquet datasets.
 
-Full documentation should eventually cover:
+The six historical items above are matched against repository 2 below before deciding final current-vs-archived documentation treatment.
 
-- Appsmith application purpose and users;
-- Appsmith pages/widgets/queries/actions;
-- data sources/APIs;
-- authentication/access model;
-- environment variables/secrets;
-- data flows;
-- deployment/update process;
-- iframe/public exposure/security boundary;
-- failure modes/troubleshooting;
-- repository/source relationship.
+## Repository 2 — `eirepolitic-data-pipeline`
 
-**Current evidence gap:** authoritative Appsmith application configuration is external to this repository and will require user retrieval when full documentation begins.
+### Repository role
 
-### New umbrella documentation candidate — Irish Politics Analytics
+**Target:** `eirepolitic-data-pipeline` repository.
 
-**Target:** Irish Politics Analytics portfolio/project ecosystem.
+**Categories:** repository, central data platform, orchestration, data products, integrations, deployment/operations.
 
-**Categories:** system/portfolio architecture, repository map, data-platform overview, cross-system data flows.
+This repository is a major Irish Politics Analytics implementation repository and should receive its own repository page plus an umbrella system architecture page linking its subsystems.
 
-Repository evidence:
+### Target 1 — Unified Oireachtas Data Platform
+
+**Categories:** data platform, ETL/ELT framework, Oireachtas API integration, S3 lakehouse-style storage, schema/configuration framework, validation/orchestration.
+
+Key evidence:
 
 ```text
-projects/ipa-overview.md
+configs/oireachtas/tables.yml
+configs/oireachtas/api_params.yml
+configs/oireachtas/write_policies.yml
+configs/oireachtas/downstream_contracts.yml
+process/oireachtas/
+extract/oireachtas/
+.github/workflows/oireachtas_*.yml
+docs/oireachtas_packet_status.md
 ```
 
-The page currently states that the scope includes:
+The table registry defines the central canonical datasets, cadence, status, keys, source endpoints, and columns. The platform includes raw/extract, canonical/build, validation, backfill, and refresh orchestration behavior.
 
-- data pipelines;
-- speech classification;
-- dashboards;
-- analytical outputs.
+This is **P0 foundational** once owner-wide priorities are finalized.
 
-This should become an umbrella architecture/index document once the owner-wide repository inventory identifies the actual repositories and systems belonging to it.
+### Target 2 — Oireachtas Canonical Data Product Catalogue
 
-### Historical implementation candidates requiring authoritative source verification
+**Categories:** data products, schemas, contracts, update cadence, lineage.
 
-The repository contains six archived pipeline records. Each is a distinct technical implementation candidate that should be matched against the current/retired source repository before deciding whether to create current documentation, authoritative archive documentation, or a replacement/successor record.
+Canonical registry evidence: `configs/oireachtas/tables.yml`.
 
-All six historical records identify former repository name `eirepolitic`.
+Confirmed table groups include:
 
-#### Constituency Images Indexer
+- houses;
+- constituencies;
+- parties;
+- members;
+- memberships;
+- offices;
+- sources;
+- debates;
+- speeches;
+- votes;
+- questions;
+- legislation.
 
-**Categories:** pipeline, AWS S3, Glue/Athena data product, GitHub Actions.
+Each table should not automatically become a separate top-level page. Use one canonical data-product catalogue, with subordinate pages only for unusually complex tables or downstream contracts.
 
-Historical source paths:
+### Target 3 — Oireachtas Refresh/Validation Orchestration
+
+**Categories:** GitHub Actions, scheduler/orchestrator, validation, operational runbook, failure recovery.
+
+Evidence:
 
 ```text
-process/constituency_images_indexer.py
-.github/workflows/constituency_images_index.yml
+.github/workflows/oireachtas_refresh_validation_orchestrator.yml
+.github/workflows/oireachtas_*.yml
+docs/oireachtas_packet_status.md
 ```
 
-Historical outputs:
+Document scheduling/manual dispatch, dependency order, validation gates, packet/cutover process, and operational status evidence.
+
+### Target 4 — Oireachtas Write Policies and Downstream Contracts
+
+**Categories:** data-governance/configuration, write safety, downstream dependencies, compatibility contract.
+
+Evidence:
 
 ```text
-processed/constituencies/constituency_images.csv
-processed/constituencies/parquets/constituency_images.parquet
+configs/oireachtas/write_policies.yml
+configs/oireachtas/downstream_contracts.yml
 ```
 
-Archive source: `_docs/archive/constituency-images-indexer.md`.
+This should be documented as one shared control/configuration subsystem rather than duplicated across each pipeline page.
 
-#### Debate Issue Classifier
+### Target 5 — Instagram / Constituency Campaign Rendering System
 
-**Categories:** pipeline, OpenAI integration, Oireachtas API ingestion, S3/Athena data product, GitHub Actions.
+**Categories:** media-generation application, data-to-visual pipeline, external template-provider integration, local rendering fallback, GitHub Actions.
 
-Historical source paths:
+Evidence:
 
 ```text
-extract/monthly_extract.py
-extract/debates_xml_to_csv_s3.py
-process/speech_issue_classifier.py
-.github/workflows/monthly_extract.yml
-.github/workflows/speech_issue_classifier.yml
+instagram/
+instagram/README.md
+.github/workflows/instagram_campaign_render.yml
 ```
 
-Historical outputs:
+Verified characteristics:
+
+- YAML campaign/content specs;
+- constituency/member political data inputs;
+- external template-provider support;
+- local deterministic rendering fallback;
+- generated image outputs;
+- workflow-driven campaign rendering.
+
+This merits a full application/system page plus configuration/deployment/runbook coverage.
+
+### Target 6 — AI Member Profile / Instagram Content Workflow
+
+**Categories:** AI content-generation workflow, member analytics, media generation, GitHub Actions, external AI integration.
+
+Evidence:
 
 ```text
-processed/debates/debate_speeches_classified.csv
-processed/debates/parquets/debate_speeches_classified.parquet
+.github/workflows/instagram_option5_member_profile_ai.yml
+instagram/
 ```
 
-Archive source: `_docs/archive/debate-issue-classifier.md`.
+Keep separate from the general rendering engine if the AI-generation stage has distinct prompts/models/configuration/data flow.
 
-#### LLM Column Creator
+### Target 7 — Member Profile Metrics Builder
 
-**Categories:** reusable data-processing framework, OpenAI integration, YAML task configuration, S3 pipeline, GitHub Actions.
+**Categories:** analytics pipeline, member data product, GitHub Actions.
 
-Historical source paths:
+Evidence:
+
+```text
+process/build_member_profile_metrics.py
+.github/workflows/build_member_profile_metrics_2025.yml
+```
+
+Document metric definitions, input tables, output schema, period/year assumptions, scheduling, and downstream consumers.
+
+### Target 8 — Reusable LLM Task Runner Framework
+
+**Categories:** reusable processing framework, OpenAI integration, YAML task definitions, data enrichment, GitHub Actions.
+
+Evidence:
 
 ```text
 process/llm_table_runner.py
@@ -208,93 +263,98 @@ tasks/
 .github/workflows/llm_task_controller_template.yml
 ```
 
-Archive source: `_docs/archive/llm-column-creator.md`.
+This is the current authoritative match for the archived **LLM Column Creator** record in repository 1. Treat the archive page as historical context and this repository as the implementation source of truth.
 
-#### Member Images Pipeline
+### Target 9 — Debate / Speech Classification and Enrichment Pipelines
 
-**Categories:** web-scraping pipeline, Oireachtas integration, S3 data product, GitHub Actions.
+**Categories:** Oireachtas ingestion, NLP/LLM classification, speech/debate enrichment, GitHub Actions, data products.
 
-Historical source paths:
-
-```text
-process/members_photo_urls.py
-.github/workflows/member_photo_urls.yml
-```
-
-Historical outputs:
+Evidence includes historical/current files under:
 
 ```text
-processed/members/members_photo_urls.csv
-processed/members/parquets/members_photo_urls.parquet
+extract/
+process/
+.github/workflows/
 ```
 
-Archive source: `_docs/archive/member-images-pipeline.md`.
+This group includes the implementation lineage behind the archived **Debate Issue Classifier**. During full documentation, distinguish current unified-Oireachtas replacements from legacy scripts that remain in the repository.
 
-#### Member Summaries Table
+### Target 10 — Member Enrichment Pipelines
 
-**Categories:** extraction pipeline, OpenAI/web-search enrichment, S3/Glue/Athena data product, GitHub Actions.
+**Categories:** member extraction/enrichment, web/API integration, AI summarization, image URL processing, data products.
 
-Historical source paths:
+This group includes the source lineage for archived:
+
+- Member Images Pipeline;
+- Member Summaries Table.
+
+Do not document legacy scripts as separate current systems if they have been superseded by the unified Oireachtas/member platform. Preserve successor mapping.
+
+### Target 11 — Constituency Image/Asset Indexing
+
+**Categories:** constituency asset pipeline, S3/data product, GitHub Actions.
+
+Matches the archived **Constituency Images Indexer**. Verify current source/workflow files during full documentation and mark retired pieces explicitly.
+
+### Target 12 — Data Maintenance Utilities
+
+**Categories:** operational utilities, destructive mutation tooling, repair/backfill helpers.
+
+Includes the source lineage for archived **S3 Column Deleter** and other one-off/maintenance scripts under `process/`, `scripts/`, and workflow files.
+
+These should generally be grouped in an operational utilities/runbook page rather than each becoming a top-level system page unless a utility is independently scheduled or security-sensitive.
+
+### Target 13 — Experimental / Editorial Content Generation Workflows
+
+**Categories:** LLM/editorial automation, scheduled workflow, content product, experimentation.
+
+Evidence:
 
 ```text
-monthly_members_extract.py
-members_background_summarizer.py
-.github/workflows/members_background_summarizer.yml
+.github/workflows/ridiculous_sentences_weekly.yml
 ```
 
-Historical outputs:
+Document as a separate experimental/editorial automation only if still active. If experimental/retired, preserve as historical implementation rather than mixing with the core data platform.
 
-```text
-processed/members/members_summaries.csv
-processed/members/parquets/members_summaries.parquet
-```
+### Repository 2 cross-cutting documentation requirements
 
-Archive source: `_docs/archive/member-summaries-table.md`.
+Full documentation should also capture shared dependencies and boundaries evident from repository configuration/code:
 
-#### S3 Column Deleter
+- Python dependency stack from `requirements.txt`;
+- GitHub Actions secrets/variables **names only**, never values;
+- AWS/S3 storage conventions;
+- Oireachtas API endpoints/parameters;
+- OpenAI/LLM integrations where present;
+- table naming, write modes, and downstream contracts;
+- generated artifacts and output locations;
+- scheduled/manual workflow triggers;
+- validation/cutover/rollback procedures;
+- legacy-to-current successor mapping.
 
-**Categories:** destructive data-maintenance utility, S3 CSV/Parquet mutation, GitHub Actions.
+### Repository 2 priority candidates
 
-Historical source paths:
+Preliminary priority pending complete owner scan:
 
-```text
-process/delete_s3_column.py
-.github/workflows/column_deleter.yml
-```
+- **P0:** repository overview; Unified Oireachtas Data Platform; data-product catalogue; orchestration; write policies/downstream contracts.
+- **P1:** Instagram/media system; AI member profile workflow; member profile metrics; active LLM task framework.
+- **P2:** shared enrichment and maintenance utilities.
+- **P3:** retired/legacy scripts and archived pipeline lineage after successor mapping.
 
-Archive source: `_docs/archive/s3-column-deleter.md`.
+## Owner-wide target relationship discovered so far
 
-### Repository 1 target summary
-
-New/verification-required targets discovered in `eirepolitic.github.io`:
-
-1. AutoDoc Appsmith application.
-2. Irish Politics Analytics umbrella architecture/index.
-3. Constituency Images Indexer.
-4. Debate Issue Classifier.
-5. LLM Column Creator.
-6. Member Images Pipeline.
-7. Member Summaries Table.
-8. S3 Column Deleter.
-
-Existing fully documented real targets retained in inventory:
-
-9. `eirepolitic.github.io` repository/documentation site and its supporting validation/search/publication subsystems.
-10. High Director and its GitHub/AWS/Google integrations.
+The six archived pipeline pages from repository 1 are **not six unrelated unknown systems** anymore. Repository 2 contains their implementation lineage. Final documentation should avoid duplication by using current repository implementation as source of truth and linking archived pages as historical records/successor maps.
 
 ## Priority model
 
-Once all repositories are scanned, rank targets using:
+After all repositories are scanned, rank targets using:
 
 - **P0 — foundational:** umbrella architecture, repositories, shared infrastructure, security/authentication, central data platform components.
 - **P1 — active operational:** currently deployed applications, pipelines, APIs, automations, dashboards, agents.
 - **P2 — supporting:** shared libraries, maintenance utilities, data schemas/products, deployment tooling.
 - **P3 — historical:** retired/archived systems requiring authoritative preservation or successor mapping.
 
-Do not assign final owner-wide priorities until repository discovery is complete enough to identify dependencies between targets.
+Do not finalize owner-wide priority ordering until all six repositories are scanned.
 
 ## Current next safe action
 
-Obtain an authoritative list of repository names for the configured GitHub owner. Then inspect repositories one by one, updating this page after each repository scan through small validated PRs.
-
-Do not request source code manually for a repository that the GitHub Action can inspect directly.
+Validate/merge/deploy this repository-2 inventory. After the resulting Pages deployment succeeds, inspect `bb-comp-prices` completely and update this persistent inventory in a separate focused PR.
