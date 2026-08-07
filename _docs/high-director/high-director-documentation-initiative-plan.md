@@ -25,16 +25,17 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 0:** complete — baseline/plan established; PR #29 merged and Pages succeeded.
 - **Phase 1:** complete — repository inventory; PR #30; Pages #137.
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
-- **Phase 3:** complete — GitHub workflow/integration behavior; PR #32; Pages #139; closure PR #33; Pages #140.
-- **Phase 4:** complete — authoritative GPT configuration/instructions documented; PR #34; Pages #141.
-- **Phase 5 — External integration sources:** GitHub Action schema subphase content complete on working branch; validation/merge/Pages gate pending.
+- **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
+- **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
+- **Phase 5:** in progress — current GitHub Action schema subphase completed in PR #35 / Pages #142; GitHub wrapper Lambda source subphase content complete on the working branch and awaiting validation/merge/Pages verification.
 - **Phases 6–10:** not started.
 
 ## Canonical evidence pages
 
-- `_docs/high-director/gpt-configuration.md` — sanitized authoritative GPT configuration and complete user-authored Instructions field.
-- `_docs/high-director/github-action-openapi-schema.md` — sanitized authoritative GitHub Action OpenAPI schema.
-- `_docs/high-director/github-integration.md` — canonical GitHub integration behavior and authentication boundary.
+- `_docs/high-director/gpt-configuration.md` — authoritative GPT configuration/instructions.
+- `_docs/high-director/github-action-openapi-schema.md` — current sanitized GPT Action contract.
+- `_docs/high-director/github-wrapper-lambda.md` — authoritative Lambda source/deployment-package analysis.
+- `_docs/high-director/github-integration.md` — GitHub integration behavior and authentication boundary.
 - `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
 
@@ -43,52 +44,60 @@ Implementation claims must be classified as verified implementation, user-suppli
 ### Received and documented
 
 1. High Director GPT configuration and instructions.
-2. Private AWS Lambda Function URL-backed GitHub Action OpenAPI schema and GPT authentication selection.
+2. Current private Lambda-backed GitHub Action OpenAPI schema and API-key authentication selection.
+3. GitHub wrapper Lambda source/deployment package.
 
-The supplied GitHub Action schema verifies:
+The Lambda package verifies:
 
-- OpenAPI `3.1.0`;
-- API title `GitHub GPT Wrapper`;
-- API version `0.2.1`;
-- 28 GitHub operation IDs/routes;
-- shared success/error response models;
-- GPT Action authentication type `API Key`;
-- OpenAPI `ApiKeyAuth` using header `X-API-Key`;
-- server target is an AWS Lambda Function URL.
+- FastAPI/Mangum application `github-gpt-wrapper` version `0.3.0`;
+- GitHub REST API access with Bearer `GITHUB_TOKEN`;
+- application API-key validation against `APP_API_KEY` / `X-API-Key`;
+- backend owner enforcement through `GITHUB_OWNER` and rejection of `owner/repo` input;
+- 31 application routes;
+- AWS SAM handler `src.app.handler` and declared runtime `python3.13`;
+- 512 MB memory, 30-second timeout, Function URL `AuthType: NONE`, buffered invoke mode;
+- pinned dependencies: FastAPI, Mangum, HTTPX, PyNaCl, Pydantic;
+- repository secret encryption using GitHub's public key and PyNaCl `SealedBox`;
+- structured GitHub timeout/transport/API error handling.
+
+Verified drift:
+
+- Lambda app `0.3.0` > current GPT schema `0.2.1` > bundled OpenAPI `0.2.0`;
+- current GPT schema exposes 28 operations while Lambda implements 31 routes including health, branch deletion, and artifact metadata;
+- bundled v0.2.0 `openapi.yaml` is malformed as packaged;
+- README guidance is stale where it says PR merge is unavailable and implies direct-default-branch protection is enforced.
 
 Sanitization:
 
-- the private Lambda hostname is replaced with a non-routable redacted placeholder in publication;
-- no API-key value or other credential was supplied or published;
-- paths, operation IDs, request/response schemas, and security structure are preserved.
+- private Lambda URL removed from publication;
+- literal GitHub owner value redacted from `samconfig.toml`;
+- no API key, PAT, AWS credential, password, private key, token, or personal email was found in first-party text files;
+- vendored third-party binaries/modules were not copied into the documentation repository.
 
-### Next source after current deployment gate
+## Next authoritative source after current deployment gate
 
-**AWS Lambda source for the GitHub wrapper.**
+**AWS Lambda live configuration and execution-role/IAM configuration for the GitHub wrapper.**
 
 Why next:
 
-- verifies the actual server-side implementation behind the now-confirmed Action contract;
-- identifies the function name, runtime, handler, code structure, dependencies, and GitHub API calls;
-- establishes how the configured single-owner behavior is implemented;
-- reveals the real backend GitHub authentication mechanism and error handling without guessing;
-- determines which IAM and non-secret environment/configuration sources must be requested afterward.
+- verifies the deployed runtime/handler against the SAM template;
+- verifies Function URL auth/configuration in the live environment;
+- verifies the execution-role name and attached/inline permissions;
+- verifies environment-variable names without exposing values;
+- closes the most important remaining security boundary before architecture/runbook work;
+- establishes whether CloudWatch or other AWS permissions/services are actually used.
 
-Do not request API Gateway merely because AWS is involved. The supplied schema points directly to a Lambda Function URL. API Gateway should be requested only if authoritative implementation evidence shows it is used.
+Do not request or publish environment-variable values, API keys, GitHub PATs, secret ARNs containing sensitive identifiers, or credential material.
 
 ## Security publication rule
 
 Before supplied source material is committed:
 
-1. inspect it for sensitive or personal information;
+1. inspect it for sensitive/personal information;
 2. remove secrets, credentials, tokens, keys, session values, private personal URLs, personal email addresses, personal account identifiers, and nonessential personal names;
-3. retain technically necessary non-secret names such as repository names, Lambda names, workflow names, schema properties, action names, routes, service names, and configuration object names;
+3. retain technically necessary non-secret names such as repository names, Lambda names, workflow names, schema properties, action names, routes, AWS service names, IAM policy names, and configuration object names;
 4. stop for a user decision if publication safety is uncertain;
 5. record provenance and sanitization notes.
-
-## Planned documentation set
-
-Canonical pages will cover overview, architecture, capabilities, components, tools/integrations, GitHub, AWS/Lambda, ChatGPT Actions/schemas, data flows, security/trust boundaries, configuration, code/dependencies, operations, troubleshooting, deployment/change procedures, architecture decisions, known limitations, outstanding work, handoff, and verification records.
 
 ## Remaining phases
 
@@ -96,21 +105,21 @@ Canonical pages will cover overview, architecture, capabilities, components, too
 
 **Status:** in progress
 
-Current subphase:
+Current subphase deliverables:
 
-- authoritative GitHub Action schema received;
-- sanitized schema page added;
-- GitHub integration and component inventory updated;
-- validation/merge/Pages gate pending.
+- inspect supplied Lambda source/deployment package;
+- preserve sanitized first-party configuration/source metadata;
+- document Lambda code structure, dependencies, authentication, data flows, failure modes, and drift;
+- synchronize component inventory and this plan;
+- validate, merge, and verify Pages.
 
-After this subphase deploys successfully, request the GitHub wrapper Lambda source only.
+Next subphase after successful deployment: live Lambda/IAM configuration only.
 
-Subsequent sources will be selected from verified dependencies, likely:
+Subsequent likely sources:
 
-- IAM/backend authentication configuration for the confirmed Lambda/GitHub integration;
 - `www.googleapis.com` Action OpenAPI schema;
-- external supporting repository source/list if referenced by implementation;
-- non-secret environment/configuration metadata.
+- any external supporting repository source actually referenced by implementation;
+- non-secret monitoring/deployment configuration needed for runbooks.
 
 ### Phase 6 — Architecture and data flows
 
@@ -163,11 +172,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the GitHub Action schema branch.
+- Validate the GitHub wrapper Lambda-source branch.
 - Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then request only the AWS Lambda source for the GitHub wrapper.
+- Then request only the live Lambda/IAM configuration for the GitHub wrapper.
 
 ## Next safe development action
 
-Complete the schema documentation validation/merge/deployment gate, then request the GitHub wrapper Lambda source with explicit click-by-click AWS retrieval instructions.
+Complete the Lambda-source documentation validation/merge/deployment gate, then request the live Lambda and execution-role configuration with explicit AWS Console retrieval steps.
