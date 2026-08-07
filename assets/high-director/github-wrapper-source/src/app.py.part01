@@ -1,0 +1,243 @@
+import base64
+import difflib
+import os
+import re
+import uuid
+from typing import Any, Dict, Optional, Tuple
+
+import httpx
+from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from mangum import Mangum
+from nacl import encoding, public
+from pydantic import BaseModel, Field
+
+
+APP_NAME = "github-gpt-wrapper"
+APP_VERSION = "0.3.0"
+GITHUB_API = "https://api.github.com"
+GITHUB_API_VERSION = os.getenv("GITHUB_API_VERSION", "2022-11-28")
+GITHUB_OWNER = os.getenv("GITHUB_OWNER")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+APP_API_KEY = os.getenv("APP_API_KEY")
+BRANCH_PREFIX = os.getenv("BRANCH_PREFIX", "gpt")
+DEFAULT_BASE_BRANCH = os.getenv("DEFAULT_BASE_BRANCH", "").strip() or None
+REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT", "30"))
+
+if not GITHUB_OWNER or not GITHUB_TOKEN or not APP_API_KEY:
+    raise RuntimeError("Missing required env vars: GITHUB_OWNER, GITHUB_TOKEN, APP_API_KEY")
+
+app = FastAPI(title="GitHub GPT Wrapper", version=APP_VERSION)
+handler = Mangum(app)
+
+
+class UpsertPreviewRequest(BaseModel):
+    path: str = Field(..., description="Repository-relative file path")
+    content: str = Field(..., description="New full file contents")
+    commit_message: str = Field(..., description="Commit message to use when applying")
+    base_branch: Optional[str] = Field(default=None)
+    branch_name: Optional[str] = Field(default=None)
+
+
+class UpsertApplyRequest(UpsertPreviewRequest):
+    pass
+
+
+class DeletePreviewRequest(BaseModel):
+    path: str
+    commit_message: str
+    base_branch: Optional[str] = None
+    branch_name: Optional[str] = None
+
+
+class DeleteApplyRequest(DeletePreviewRequest):
+    pass
+
+
+class PullRequestCreateRequest(BaseModel):
+    title: str
+    body: Optional[str] = ""
+    head_branch: str
+    base_branch: Optional[str] = None
+    draft: bool = True
+
+
+class PullRequestMergeRequest(BaseModel):
+    commit_title: Optional[str] = None
+    commit_message: Optional[str] = None
+    merge_method: str = "merge"
+    sha: Optional[str] = None
+
+
+class PullRequestUpdateRequest(BaseModel):
+    title: Optional[str] = None
+    body: Optional[str] = None
+    base_branch: Optional[str] = None
+    state: Optional[str] = None
+
+
+class PullRequestCloseRequest(BaseModel):
+    state_reason: Optional[str] = "completed"
+
+
+class BranchCreateRequest(BaseModel):
+    new_branch: str
+    from_branch: Optional[str] = None
+
+
+class DispatchWorkflowRequest(BaseModel):
+    ref: str
+    inputs: Dict[str, Any] = Field(default_factory=dict)
+
+
+class VariableSetRequest(BaseModel):
+    value: str
+
+
+class SecretSetRequest(BaseModel):
+    plaintext_value: str
+
+
+class AppError(Exception):
+    def __init__(
+        self,
+        status_code: int,
+        error: str,
+        message: str,
+        details: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        super().__init__(message)
+        self.status_code = status_code
+        self.error = error
+        self.message = message
+        self.details = details or {}
+
+
+def success(message: str = "success", result: Optional[Dict[str, Any]] = None, status_code: int = 200) -> JSONResponse:
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "ok": True,
+            "message": message,
+            "result": result or {},
+        },
+    )
+
+
+def error_response(
+    status_code: int,
+    error: str,
+    message: str,
+    details: Optional[Dict[str, Any]] = None,
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "error": error,
+            "message": message,
+            "status": status_code,
+            "details": details or {},
+        },
+    )
+
+
+@app.exception_handler(AppError)
+async def app_error_handler(_: Request, exc: AppError) -> JSONResponse:
+    return error_response(exc.status_code, exc.error, exc.message, exc.details)
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(_: Request, exc: HTTPException) -> JSONResponse:
+    detail = exc.detail
+    if isinstance(detail, dict):
+        return error_response(
+            status_code=exc.status_code,
+            error=str(detail.get("error", "http_error")),
+            message=str(detail.get("message", "Request failed")),
+            details=detail.get("details") if isinstance(detail.get("details"), dict) else detail,
+        )
+    return error_response(exc.status_code, "http_error", str(detail), {})
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(_: Request, exc: RequestValidationError) -> JSONResponse:
+    return error_response(
+        status_code=422,
+        error="validation_error",
+        message="Request validation failed",
+        details={"errors": exc.errors()},
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(_: Request, exc: Exception) -> JSONResponse:
+    return error_response(
+        status_code=500,
+        error="internal_error",
+        message="Unexpected server error",
+        details={"exception_type": exc.__class__.__name__, "exception": str(exc)},
+    )
+
+
+def require_api_key(x_api_key: Optional[str]) -> None:
+    if x_api_key != APP_API_KEY:
+        raise AppError(401, "unauthorized", "Invalid API key")
+
+
+def normalize_repo_name(repo: str) -> str:
+    value = repo.strip()
+    if not value:
+        raise AppError(400, "bad_request", "repo is required")
+    if "/" in value:
+        raise AppError(
+            400,
+            "bad_request",
+            "repo must be the repository name only, not owner/repo",
+            details={"repo": value, "owner": GITHUB_OWNER},
+        )
+    return value
+
+
+def sanitize_branch_name(value: str) -> str:
+    cleaned = value.strip()
+    cleaned = re.sub(r"[^A-Za-z0-9._/-]+", "-", cleaned)
+    cleaned = re.sub(r"/{2,}", "/", cleaned)
+    cleaned = cleaned.strip("./-")
+    return cleaned[:200] or f"{BRANCH_PREFIX}/{uuid.uuid4().hex[:8]}"
+
+
+def auto_branch_name(path: str) -> str:
+    safe_path = re.sub(r"[^A-Za-z0-9._-]+", "-", path).strip("-")[:60] or "change"
+    return f"{BRANCH_PREFIX}/{safe_path}-{uuid.uuid4().hex[:8]}"
+
+
+def gh_headers() -> Dict[str, str]:
+    return {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "X-GitHub-Api-Version": GITHUB_API_VERSION,
+        "User-Agent": APP_NAME,
+    }
+
+
+def gh_client(*, follow_redirects: bool = False) -> httpx.Client:
+    return httpx.Client(
+        base_url=GITHUB_API,
+        headers=gh_headers(),
+        timeout=REQUEST_TIMEOUT,
+        follow_redirects=follow_redirects,
+    )
+
+
+def parse_response_body(response: httpx.Response) -> Any:
+    try:
+        return response.json()
+    except Exception:
+        text = response.text or ""
+        return text
+
+
+def gh_request(method: str, path: str, expected: Tuple[int, ...] = (200,), **kwargs: Any) -> httpx.Response:
+    try:
+        with gh_client() as client:
