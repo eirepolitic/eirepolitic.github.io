@@ -1,6 +1,6 @@
 ---
 title: High Director GPT Configuration
-summary: Sanitized authoritative record of the High Director GPT identity, instructions, conversation starters, recommended model, knowledge state, and visible action configuration.
+summary: Sanitized authoritative record of the High Director GPT identity, instructions, conversation starters, recommended model, knowledge state, and configured Action entries.
 section: high-director
 doc_type: agent
 status: active
@@ -16,13 +16,15 @@ permalink: /projects/high-director/gpt-configuration/
 
 ## Purpose
 
-This page preserves the sanitized authoritative GPT configuration supplied by the system owner on 2026-08-06. It is the source of truth for the High Director GPT identity, user-authored instructions, conversation starters, recommended model, visible Knowledge state, and visible Action entries until a newer authoritative configuration is supplied.
+This page preserves the sanitized authoritative GPT configuration supplied by the system owner on 2026-08-06. It is the source of truth for the High Director GPT identity, user-authored instructions, conversation starters, recommended model, visible Knowledge state, and configured Action entries until a newer authoritative configuration is supplied.
+
+Detailed Action contracts and backend implementation belong to their dedicated canonical pages and are linked below rather than duplicated here.
 
 ## Evidence classification
 
 **User-supplied authoritative source.**
 
-Source material consisted of screenshots of the GPT configuration UI plus a complete text copy of the Instructions field. The screenshots themselves are not published because one Action entry exposed a private AWS Lambda URL hostname.
+Source material consisted of screenshots of the GPT configuration UI plus a complete text copy of the Instructions field. The screenshots themselves are not published because one Action entry exposed a private AWS Lambda Function URL hostname.
 
 ## GPT identity
 
@@ -75,20 +77,20 @@ The authoritative instructions establish these current user-authored operating r
 - obtain a user decision before choosing among options that materially change architecture or implementation;
 - assume the user may be unfamiliar with the software, websites, and languages involved;
 - for build requests, plan first and obtain decisions affecting function, cost, or design before detailed implementation steps;
-- for the GitHub action, pass repository name only because owner is configured in the backend;
-- do not diagnose repository formatting as the cause of a failed GitHub action unless the returned API response says so;
-- do not ask the user for the GitHub owner name for that action.
+- for the GitHub Action, pass repository name only because owner is configured in the backend;
+- do not diagnose repository formatting as the cause of a failed GitHub Action unless the returned API response says so;
+- do not ask the user for the GitHub owner name for that Action.
 
-## Visible Action configuration
+## Configured Actions
 
-Two Action entries were visible in the supplied GPT configuration.
+Two Actions were visible in the supplied GPT configuration and have since been documented from authoritative configuration/source material.
 
-| Action | Publication status | Evidence |
+| Action | Authentication | Canonical documentation |
 |---|---|---|
-| Private AWS Lambda URL-backed action | Hostname intentionally redacted | User-supplied GPT configuration screenshot |
-| `www.googleapis.com` | Public hostname retained | User-supplied GPT configuration screenshot |
+| Private AWS Lambda Function URL-backed GitHub wrapper | API Key in `X-API-Key` | [GitHub Action OpenAPI Schema]({{ '/projects/high-director/github-action-openapi-schema/' | relative_url }}) and [GitHub Integration]({{ '/docs/high-director/github-integration/' | relative_url }}) |
+| Google Workspace Action using public Google API hosts | OAuth | [Google Workspace Action]({{ '/projects/high-director/google-workspace-action/' | relative_url }}) |
 
-The private Lambda hostname is not published because it is a private infrastructure URL tied to the implementation. Exact Action names, OpenAPI schemas, operation IDs, authentication declarations, and request/response structures are **not yet documented** because they were not part of this source request.
+The private Lambda hostname remains intentionally unpublished. The GitHub wrapper backend implementation and live AWS configuration are documented separately in [GitHub Wrapper Lambda]({{ '/projects/high-director/github-wrapper-lambda/' | relative_url }}) and [GitHub Wrapper Live AWS Configuration]({{ '/projects/high-director/github-wrapper-live-aws-configuration/' | relative_url }}).
 
 ## Knowledge configuration
 
@@ -98,49 +100,45 @@ No uploaded Knowledge files were visible in the supplied configuration screensho
 
 Sanitization performed before publication:
 
-- removed the private AWS Lambda URL hostname from the published record;
-- did not publish the supplied screenshots because they contain that hostname;
-- retained the public `www.googleapis.com` hostname;
+- removed the private AWS Lambda Function URL hostname from published records;
+- did not publish the supplied screenshots that contained that hostname;
+- retained public Google API/OAuth endpoint names where technically necessary;
 - retained all non-secret GPT instructions and configuration labels;
-- no tokens, API keys, passwords, credentials, personal email addresses, or personal account identifiers were present in the supplied text.
+- did not publish API keys, GitHub tokens, OAuth Client ID/Secret, OAuth tokens, AWS account IDs, credentials, personal email addresses, or personal account identifiers.
 
 ## What this source verifies
 
-This source now authoritatively verifies:
+This GPT-configuration source authoritatively verifies:
 
-- the GPT name and description;
-- the complete user-authored Instructions field supplied on 2026-08-06;
-- the intended purpose and behavioral operating rules encoded in those instructions;
-- the four populated conversation starters;
-- the recommended model value shown in configuration;
-- that no Knowledge files were visible/configured in the supplied screenshot;
-- that two Actions were configured;
-- that one visible Action target is `www.googleapis.com`;
-- that another visible Action uses a private AWS Lambda URL hostname.
+- GPT name and description;
+- complete user-authored Instructions field supplied on 2026-08-06;
+- intended purpose and behavioral operating rules encoded in those instructions;
+- four populated conversation starters;
+- recommended model value shown in configuration;
+- no Knowledge files visible/configured in the supplied screenshot;
+- two configured Actions and their visible server identities.
 
-## What remains unverified
+Later authoritative source sets verify the Action schemas, authentication modes, Lambda source/configuration, Google OAuth configuration, architecture, data flows, and operating procedures. Those facts are canonicalized on their dedicated pages rather than treated as part of this original GPT-configuration source.
 
-- capability toggle settings;
-- Action/OpenAPI schemas;
-- action operation IDs and endpoint paths;
-- Action authentication settings;
-- Lambda source code;
-- API Gateway configuration, if any;
-- IAM configuration;
-- environment/configuration metadata;
-- exact relationship between the two configured Actions and the operation surface already observed during GitHub work.
+## What remains unverified in GPT Builder
+
+- capability-toggle settings not visible in the supplied screenshots;
+- hidden/internal ChatGPT platform configuration not exposed by the supplied GPT Builder UI;
+- platform-managed storage/refresh behavior for Google OAuth tokens.
+
+Private credential values are intentionally undocumented rather than considered missing implementation facts.
 
 ## Verification record
 
 - Last verified: `2026-08-06`
 - Verified against: user-supplied GPT configuration screenshots and full Instructions text
 - Verified by: High Director documentation process
-- Verification scope: identity, description, instructions, conversation starters, recommended model, visible Knowledge state, visible Action entries
-- Unverified areas: capability toggles and all Action implementation/schema/authentication details
+- Verification scope: identity, description, instructions, conversation starters, recommended model, visible Knowledge state, configured Action entries
+- Remaining GPT-Builder gap: capability-toggle state and hidden platform internals
 
 ## Related Documents
 
-- [High Director overview]({{ '/projects/high-director/' | relative_url }})
-- [Capability and component inventory]({{ '/docs/high-director/capability-component-inventory/' | relative_url }})
-- [GitHub integration]({{ '/docs/high-director/github-integration/' | relative_url }})
-- [Documentation initiative plan]({{ '/docs/high-director/high-director-documentation-initiative-plan/' | relative_url }})
+- [High Director Overview]({{ '/projects/high-director/' | relative_url }})
+- [High Director Runtime Architecture]({{ '/projects/high-director/runtime-architecture/' | relative_url }})
+- [High Director Capability and Component Inventory]({{ '/docs/high-director/capability-component-inventory/' | relative_url }})
+- [High Director Documentation Initiative Plan]({{ '/docs/high-director/high-director-documentation-initiative-plan/' | relative_url }})
