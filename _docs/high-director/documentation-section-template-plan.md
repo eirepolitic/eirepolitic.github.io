@@ -89,7 +89,7 @@ Status: complete
 
 ### Step 2 — Core implementation templates
 
-Status: merged
+Status: complete
 
 - [x] Rebuild `_templates/repository-template.md`.
 - [x] Rebuild `_templates/system-template.md`.
@@ -97,47 +97,42 @@ Status: merged
 - [x] Rebuild `_templates/runbook-template.md`.
 - [x] Update `DOCUMENTATION_STANDARD.md` with shared template usage rules.
 - [x] Merge pull request #15 after validation.
-
-Deployment record: Pages run `31110810856` built successfully but its deployment job failed. A later deployment containing these changes must succeed before final completion.
+- [x] Confirm later successful Pages run `31134967087` contains these changes.
 
 ### Step 3 — Governance and agent templates
 
-Status: merged; deployment pending
+Status: complete
 
 - [x] Rebuild `_templates/decision-template.md`.
 - [x] Add `_templates/high-director-template.md`.
 - [x] Pass documentation validation run `31126187599`.
 - [x] Merge pull request #16.
-- [ ] Confirm Pages run `31128405609` or a later run succeeds for commit `9873d2fbe5c273bdca0a25c2d74b5130d74cac6b` or later.
+- [x] Confirm later successful Pages run `31134967087` contains these changes.
 
 ### Step 4 — Reference lifecycle templates
 
-Status: in review
+Status: complete
 
 - [x] Add `_templates/note-template.md`.
 - [x] Add `_templates/archive-template.md`.
-- [x] Update this plan.
-- [ ] Open the Step 4 pull request.
-- [ ] Pass documentation validation.
-- [ ] Merge after validation.
-- [ ] Confirm Pages deployment.
-
-Notes guidance emphasizes confidence, source, scope, assumptions, promotion criteria, verification, and next safe action.
-
-Archive guidance emphasizes archive reason, historical context, last known state, replacement guidance, verification, and warnings against treating archived material as current.
+- [x] Pass documentation validation run `31128483540`.
+- [x] Merge pull request #17.
+- [x] Confirm Pages run `31134967087` succeeded for merged commit `bcbc32a83790d84c1eae3c19a0277213540d6eb0`.
 
 ### Step 5 — Cross-template consistency review
 
-Status: not started
+Status: in review
 
-- Compare all eight templates for duplication, missing requirements, conflicting terminology, and validator incompatibility.
-- Verify filenames and metadata values match `_data/docs_sections.yml` and `DOCUMENTATION_STANDARD.md`.
-- Verify each template addresses source of truth, security, related documents, status, verification, subordinate pages, limitations, outstanding work, and next safe action where applicable.
-- Review whether workflow path filters should include `_templates/**` so template-only changes validate automatically.
-- Run documentation validation.
-- Merge the final consistency pull request.
-- Confirm Pages deployment.
-- Mark this plan complete.
+- [x] Compare all eight templates for duplication, missing requirements, conflicting terminology, and validator incompatibility.
+- [x] Verify filenames and metadata values match `_data/docs_sections.yml` and `DOCUMENTATION_STANDARD.md`.
+- [x] Verify each template addresses source of truth, security, related documents, status, verification, subordinate pages, limitations, outstanding work, and next safe action where applicable.
+- [x] Strengthen `_templates/archive-template.md` with explicit continuation, source-of-truth, security, and verification guidance.
+- [x] Update `.github/workflows/validate-documentation.yml` so `_templates/**` changes trigger validation automatically and manual `workflow_dispatch` remains available.
+- [ ] Open the final consistency-review pull request.
+- [ ] Pass documentation validation.
+- [ ] Merge the final consistency-review pull request.
+- [ ] Confirm Pages deployment.
+- [ ] Mark this plan complete in a final recorded update.
 
 Approval checkpoint: final template review. Do not begin example documents until this checkpoint is approved.
 
@@ -162,6 +157,8 @@ For each implementation pull request:
 4. Confirm the Pages build and deployment both succeed.
 5. Record the result in this plan.
 
+Template-only pull requests now trigger the documentation validation workflow automatically through the `_templates/**` path filter.
+
 ## Risks and Controls
 
 ### Secret exposure
@@ -174,11 +171,11 @@ Do not increase validator requirements for existing `_docs` pages solely to supp
 
 ### Deployment uncertainty
 
-Distinguish a successful Jekyll build from a successful Pages deployment. Do not mark a material step complete until deployment succeeds.
+Distinguish a successful Jekyll build from a successful Pages deployment. A later successful Pages deployment containing an earlier material change satisfies deployment confirmation for that earlier change.
 
 ### Premature example work
 
-The example phase remains blocked until Step 5 is approved.
+The example phase remains blocked until Step 5 is approved and this plan is marked complete.
 
 ## Completion Criteria
 
@@ -195,10 +192,10 @@ This initiative is complete only when:
 
 ## Next Safe Action
 
-Open the Step 4 pull request, run documentation validation, monitor Pages run `31128405609`, and merge Step 4 only after validation passes.
+Open the Step 5 consistency-review pull request, verify automatic documentation validation, merge after validation succeeds, confirm the Pages deployment, then record final completion without beginning the example phase.
 
 ## Verification Record
 
 - Last verified: 2026-08-06
-- Verified against: pull requests #14, #15, and #16; validation run `31126187599`; Pages runs `31110810856` and `31128405609`; Step 4 branch files
-- Verification scope: template files, validation state, merge state, and deployment state
+- Verified against: pull requests #14 through #17; validation runs `31126187599` and `31128483540`; successful Pages run `31134967087`; all eight templates; section metadata; documentation standard; validation workflow
+- Verification scope: template consistency, metadata vocabulary, validation triggers, merge state, and deployment state through Step 4
