@@ -27,7 +27,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
-- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144; live Lambda/IAM configuration complete in PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action schema content complete on the working branch and awaiting validation/merge/Pages verification.
+- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144; live Lambda/IAM configuration complete in PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action schema complete in PR #40 / Pages #147.
 - **Phases 6–10:** not started.
 
 ## Canonical evidence pages
@@ -51,21 +51,11 @@ Implementation claims must be classified as verified implementation, user-suppli
 4. Live Lambda/IAM configuration for the GitHub wrapper.
 5. Google Workspace Action OpenAPI schema and OAuth authentication selection.
 
-The Google source verifies:
-
-- OpenAPI `3.1.0`;
-- API title `Google Workspace API`;
-- API version `1.2.0`;
-- OAuth authentication selected in GPT Action settings;
-- Google Calendar and Gmail API servers;
-- 12 operation IDs total: seven Calendar operations and five Gmail operations;
-- Gmail profile/search/read/attachment/send capability;
-- Calendar list/read/create/update/delete/move capability;
-- explicit user-confirmation requirements in write-sensitive operation descriptions.
+The Google source verifies OpenAPI `3.1.0`, API title `Google Workspace API`, API version `1.2.0`, OAuth authentication selection, Google Calendar/Gmail API servers, 12 operation IDs, Gmail profile/search/read/attachment/send capability, Calendar list/read/create/update/delete/move capability, and explicit confirmation requirements in write-sensitive operation descriptions.
 
 The pasted schema contained Markdown escaping/link formatting, so publication uses a normalized technical transcription rather than claiming byte-for-byte YAML preservation. No OAuth secret/token/account identifier was supplied or published.
 
-## Next authoritative source after current deployment gate
+## Next authoritative source
 
 **Google Workspace OAuth configuration details only.**
 
@@ -79,7 +69,7 @@ Why next:
 
 - closes the remaining authentication boundary for the second configured GPT Action;
 - determines the precise Gmail/Calendar permission grants rather than inferring them from operations;
-- supports the later security/trust-boundary and data-flow documentation.
+- supports later security/trust-boundary and data-flow documentation.
 
 Do not request or publish OAuth client IDs, client secrets, access tokens, refresh tokens, authorization codes, authenticated-account identifiers, or other credentials.
 
@@ -105,9 +95,9 @@ Completed subphases:
 - current GitHub Action schema and API-key configuration;
 - GitHub wrapper Lambda source/deployment package;
 - live GitHub-wrapper Lambda/IAM configuration;
-- Google Workspace Action schema/OAuth authentication selection (content complete; deployment gate pending).
+- Google Workspace Action schema/OAuth authentication selection.
 
-Next subphase after successful deployment:
+Next subphase:
 
 - Google Workspace OAuth scope names and authorization/token endpoint URLs only.
 
@@ -164,11 +154,10 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the Google Workspace Action schema branch.
-- Merge only if validation passes.
+- Validate and merge this Google Action closure update.
 - Confirm the resulting Pages deployment succeeds.
 - Then request only the Google OAuth scope names and authorization/token endpoint URLs.
 
 ## Next safe development action
 
-Complete the Google Workspace Action documentation validation/merge/deployment gate, then request the non-secret OAuth configuration details with explicit GPT Builder retrieval steps.
+After this closure update deploys successfully, request the non-secret Google OAuth configuration details with explicit GPT Builder retrieval steps.
