@@ -1,6 +1,6 @@
 ---
 title: Repository Documentation Discovery Initiative
-summary: Persistent cross-repository inventory plan for identifying every system, pipeline, data product, integration, workflow, service, application, repository, and supporting component that merits full technical documentation.
+summary: Persistent completion and continuation record for the owner-wide repository documentation-target discovery initiative.
 section: high-director
 doc_type: agent
 status: active
@@ -16,11 +16,9 @@ permalink: /projects/high-director/repository-documentation-discovery/
 
 ## Purpose
 
-Inspect every repository in the authoritative owner repository list and identify concrete technical items that should receive full documentation on this site. Group related files into real systems/components rather than documenting every source file independently.
+Identify and isolate every real repository, system, pipeline, service, integration, workflow, data product, security boundary, operational subsystem, and historical implementation across the repositories supplied by the system owner that merits full technical documentation.
 
-## Authoritative repository list
-
-Supplied by the system owner on 2026-08-07:
+## Authoritative repository scope
 
 ```text
 eirepolitic.github.io
@@ -31,155 +29,96 @@ Overlord
 autodoc
 ```
 
-## Scan status
+All six repositories have been scanned.
 
-| Repository | Status | Result |
-|---|---|---|
-| `eirepolitic.github.io` | Complete | Documentation platform/High Director already covered; AutoDoc/IPA plus historical pipeline candidates identified |
-| `eirepolitic-data-pipeline` | Complete | 13 major target groups across Oireachtas platform, data products, orchestration, media, LLM/member analytics, maintenance/legacy |
-| `bb-comp-prices` | Complete | 12 major target groups; PR #56 / Pages #162 |
-| `degenerate_investigator` | Complete | 13 major target groups; PR #57 / Pages #163 |
-| `Overlord` | Complete | 4 real target groups; PR #58 / Pages #164 |
-| `autodoc` | Complete; publication gate pending | 11 major target groups across Appsmith intake, config/index, enrichment, LLM generation/review, orchestration, artifacts, publication/security |
+## Current status — 2026-08-07
 
-## Repository 1 — `eirepolitic.github.io`
+- `eirepolitic.github.io` scan: complete — PR #54 / Pages #160.
+- `eirepolitic-data-pipeline` scan: complete — PR #55 / Pages #161.
+- `bb-comp-prices` scan: complete — PR #56 / Pages #162.
+- `degenerate_investigator` scan: complete — PR #57 / Pages #163.
+- `Overlord` scan: complete — PR #58 / Pages #164.
+- `autodoc` scan: complete — PR #59 / Pages #165.
+- Owner-wide consolidation/prioritization: content complete on working branch; validation/merge/Pages gate pending.
 
-Already fully documented/maintenance-only real targets:
+## Canonical discovery outputs
 
-- documentation repository/site;
-- validation/publication/search subsystems;
-- High Director and GitHub/AWS/Google integrations.
+- `_docs/high-director/documentation-target-catalogue.md` — owner-wide deduplicated catalogue, priorities, documentation waves, external-source gaps and next recommended initiative.
+- `_docs/high-director/repository-scan-bb-comp-prices.md` — detailed `bb-comp-prices` evidence/target inventory.
+- `_docs/high-director/repository-scan-degenerate-investigator.md` — detailed `degenerate_investigator` evidence/target inventory.
+- `_docs/high-director/repository-scan-overlord.md` — detailed `Overlord` evidence/target inventory.
+- `_docs/high-director/repository-scan-autodoc.md` — detailed `autodoc` evidence/target inventory.
+- this page — scan history, completion state and continuation rule.
 
-New/verification-required targets:
+Repository 1 and repository 2 findings are summarized in the target catalogue and earlier revisions of this plan; their source implementation remains directly inspectable in their repositories.
 
-1. AutoDoc Appsmith application/public embed.
-2. Irish Politics Analytics umbrella architecture/index.
-3. Constituency Images Indexer — historical implementation lineage.
-4. Debate Issue Classifier — historical implementation lineage.
-5. LLM Column Creator — historical implementation lineage.
-6. Member Images Pipeline — historical implementation lineage.
-7. Member Summaries Table — historical implementation lineage.
-8. S3 Column Deleter — historical maintenance utility.
+## Consolidation result
 
-Repository 2 contains the current/legacy implementation lineage for the six historical pipeline records above.
+The owner-wide catalogue currently identifies:
 
-## Repository 2 — `eirepolitic-data-pipeline`
+- **16 P0 foundational initiatives**;
+- **21 P1 active operational initiatives**;
+- **9 P2 supporting initiatives**;
+- **10 P3 historical/status-verification initiatives**;
+- existing full documentation for the documentation site and High Director, which now move to maintenance-only status.
 
-Major targets:
+These counts represent documentation targets/initiatives, not file counts. Related files/components are intentionally grouped where a single canonical documentation source will prevent duplication.
 
-1. Repository overview / Irish Politics Analytics data platform.
-2. Unified Oireachtas Data Platform.
-3. Oireachtas canonical data-product catalogue.
-4. Oireachtas refresh/validation orchestration.
-5. Oireachtas write policies/downstream contracts.
-6. Instagram/constituency campaign rendering system.
-7. AI member-profile/Instagram content workflow.
-8. Member Profile Metrics Builder.
-9. Reusable LLM Task Runner Framework.
-10. Debate/speech classification and enrichment lineage.
-11. Member enrichment/image/summaries lineage.
-12. Data maintenance utilities.
-13. Experimental/editorial content generation workflows.
+## Key relationships resolved
 
-## Repository 3 — `bb-comp-prices`
+- Historical pipeline pages in `eirepolitic.github.io` and historical AutoDoc output are not independent current implementations; `eirepolitic-data-pipeline` contains their source lineage.
+- `bb-comp-prices` is a distinct competitor-pricing platform despite sharing an AWS/S3 pattern with `eirepolitic-data-pipeline`.
+- `degenerate_investigator` is a distinct UFC analytics/ML system.
+- `Overlord` is currently only a Markdown task-record/template repository and has no verified integration with High Director or the other repositories.
+- `autodoc` links Appsmith, GitHub, OpenAI and website publication; current backend source is in the repository while the live Appsmith UI remains an external verification source.
+- AutoDoc's current direct website-push workflow differs from the newer PR/validation/Pages documentation discipline and is explicitly retained as a future architecture/operations decision candidate.
 
-Detailed scan: [Repository Scan — bb-comp-prices]({{ '/projects/high-director/repository-scan-bb-comp-prices/' | relative_url }}).
+## Documentation waves
 
-Major targets:
+### Wave 0 — complete/maintenance
 
-1. Repository overview.
-2. Competitor Pricing Platform architecture.
-3. Best Buy Marketplace category discovery.
-4. Best Buy product/Marketplace-offer extraction.
-5. Amazon.ca competitor acquisition/recovery.
-6. Walmart.ca competitor acquisition/probes.
-7. Product matching/confidence-scoring engine.
-8. End-to-end orchestrator/CLI.
-9. S3 historical storage/data-product model.
-10. Probe/diagnostics/extraction-research framework.
-11. Validation/data-quality framework.
-12. Python package/CLI/configuration/developer layer.
+- `eirepolitic.github.io` documentation site/repository.
+- High Director and configured integrations.
 
-## Repository 4 — `degenerate_investigator`
+### Wave 1 — foundations and control boundaries
 
-Detailed scan: [Repository Scan — degenerate_investigator]({{ '/projects/high-director/repository-scan-degenerate-investigator/' | relative_url }}).
+Start with Irish Politics Analytics umbrella architecture and the `eirepolitic-data-pipeline`/Oireachtas foundation, then AutoDoc architecture/control boundaries, then repository/platform foundations for `bb-comp-prices` and `degenerate_investigator`.
 
-Major targets:
+### Wave 2 — active operational components
 
-1. Repository overview / UFC analytics system.
-2. Current UFC event/fighter ingestion.
-3. Historical fight/fighter-profile ingestion.
-4. Current MMA odds ingestion.
-5. Fighter recent-news OpenAI/web-search enrichment.
-6. Matchup feature engineering.
-7. Historical training-dataset builder.
-8. UFC winner-model training.
-9. Target-event scoring with trained-model/heuristic fallback distinction.
-10. Fight analysis report generator.
-11. S3-to-repository report publication workflow.
-12. S3 storage/shared I/O/data-product conventions.
-13. GitHub Actions pipeline orchestration and security/configuration boundary.
+Document active media/member/LLM, competitor-pricing, UFC analytics/model/reporting, and AutoDoc generation stages.
 
-The repository explicitly states it does not include staking logic or bookmaker-targeted betting recommendations. Documentation should remain technical/analytical and preserve that boundary.
+### Wave 3 — supporting components
 
-## Repository 5 — `Overlord`
+Document diagnostics, validation, developer/configuration references, maintenance utilities, manual recovery workflows, publication helpers and Overlord.
 
-Detailed scan: [Repository Scan — Overlord]({{ '/projects/high-director/repository-scan-overlord/' | relative_url }}).
+### Wave 4 — archival reconciliation
 
-Real targets:
+Resolve predecessor/successor status for historical political-data pipelines, experiments, superseded probes and generated historical artifacts.
 
-1. Repository/task-record system.
-2. Markdown task-record schema.
-3. Versioned task/project/meeting template system.
-4. Work/personal context partition.
+## External-source rule
 
-The eight `tasks/work/test-task-*` files are fixtures/examples, not separate documentation targets. No executable code, workflows, APIs, cloud infrastructure, or external integrations are present in the current tree.
+Do not request external material speculatively. Repository-inspectable source must be inspected directly.
 
-## Repository 6 — `autodoc`
+Likely future external gaps are limited to live configuration that repositories cannot prove, especially:
 
-Detailed scan: [Repository Scan — autodoc]({{ '/projects/high-director/repository-scan-autodoc/' | relative_url }}).
+- current AutoDoc Appsmith application export/configuration;
+- live AWS/IAM/S3/Glue/Athena configuration when exact deployed state is required for political-data, competitor-pricing or UFC systems;
+- user status confirmation when source cannot establish whether an old pipeline/experiment is retired or active.
 
-Major targets:
+Request one coherent source at a time only when the relevant full-documentation initiative reaches that evidence gap.
 
-1. `autodoc` repository/system overview.
-2. AutoDoc Appsmith intake/configuration application.
-3. GitHub-backed configuration schema and project index registry.
-4. Asset enrichment/source-resolution stage.
-5. LLM section-fact extraction stage.
-6. Template and Markdown rendering system.
-7. LLM review/concision stage.
-8. Automatic AutoDoc creation-pipeline orchestrator plus manual recovery workflows.
-9. Generated/reviewed documentation artifact lifecycle.
-10. Reviewed-document website publication workflow.
-11. AutoDoc security/credential/trust boundaries.
+## Publication gate
 
-Important verified control boundary: `publish_to_website.yml` currently clones `eirepolitic.github.io` using `WEBSITE_PAT` and pushes a reviewed Markdown file directly. That is not equivalent to the newer website discipline requiring a focused PR, documentation validation, merge, and matching Pages verification. This is a future architecture/operations decision candidate, not a discovery-time implementation change.
+The consolidation phase is complete only when:
 
-The Appsmith technical handoff persisted in `doc_configs/autodoc/autodoc_app.json` provides detailed configuration evidence, but the live external Appsmith application remains a later verification source for exact current widget/query/action state.
+1. documentation validation passes;
+2. the catalogue PR merges;
+3. the matching GitHub Pages deployment succeeds;
+4. this plan is updated once more to mark the discovery initiative closed.
 
-## Cross-repository relationships discovered
+## Next safe development action
 
-- `eirepolitic.github.io` is the persistent documentation site/source of truth.
-- `eirepolitic-data-pipeline` is the principal Irish Politics Analytics/Oireachtas data-platform repository and contains implementation lineage for historical pages in the documentation repo and AutoDoc artifact corpus.
-- `bb-comp-prices` reuses an AWS/S3 pattern from `eirepolitic-data-pipeline` but is a distinct competitor-pricing platform.
-- `degenerate_investigator` is a distinct UFC analytics/ML system using AWS/S3, UFC Stats, The Odds API, OpenAI, and GitHub Actions.
-- `Overlord` currently has no verified integration relationship to High Director or other repositories.
-- `autodoc` connects the external Appsmith intake UI, GitHub configuration/content, OpenAI-backed generation, and `eirepolitic.github.io` publication.
-- Historical AutoDoc-generated `docs/eirepolitic/pipeline/*` files are documentation artifacts, not source implementations; current/legacy source in `eirepolitic-data-pipeline` is stronger implementation evidence.
+Complete the catalogue validation/merge/Pages gate. Then make one small closure update marking owner-wide discovery complete.
 
-## Priority model
-
-Owner-wide consolidation will assign final priorities using:
-
-- **P0 — foundational:** umbrella architecture, repositories, shared infrastructure, security/authentication, central data platforms, unsafe/outdated publication boundaries.
-- **P1 — active operational:** deployed applications, pipelines, APIs, automations, dashboards, agents.
-- **P2 — supporting:** libraries, maintenance utilities, schemas/data products, diagnostics, deployment tooling.
-- **P3 — historical:** retired/archived systems and experiments requiring preservation/successor mapping.
-
-## Publication discipline
-
-After each repository scan: update this plan and/or a linked scan page, run validation, merge only after success, confirm the matching Pages deployment, then move to the next repository or consolidation step.
-
-## Current next safe action
-
-Complete the `autodoc` validation/merge/Pages gate. Then perform one owner-wide consolidation/prioritization review that deduplicates all discovered targets, assigns final P0–P3 priorities, defines documentation waves, and lists any external authoritative source required for each future full-documentation initiative.
+After closure, the next full-documentation initiative should begin with the **Irish Politics Analytics umbrella architecture and `eirepolitic-data-pipeline`/Unified Oireachtas foundation**, unless the system owner chooses another target from the catalogue.
