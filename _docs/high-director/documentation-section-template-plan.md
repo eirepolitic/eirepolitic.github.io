@@ -33,10 +33,9 @@ The templates are guidance rather than rigid forms. Authors may omit sections th
 
 ### Included
 
-- Review the current documentation standard, layouts, navigation metadata, templates, validation rules, and existing `_docs` content.
 - Define required and optional front matter for each category using the current metadata vocabulary.
 - Define recommended title, summary, heading order, section purpose, source-of-truth details, security guidance, related-document guidance, verification expectations, and subordinate-page criteria.
-- Add useful placeholders and examples that do not encourage secret values or fabricated state.
+- Add useful placeholders that do not encourage secret values or fabricated state.
 - Keep templates compatible with current navigation, search, generated indexes, related-document links, layouts, and validation.
 - Update this plan after each implementation step.
 - Run documentation validation before each merge.
@@ -45,19 +44,9 @@ The templates are guidance rather than rigid forms. Authors may omit sections th
 ### Excluded
 
 - Creating real example documents for the eight categories.
-- Changing the documentation information architecture unless template implementation exposes a blocking defect.
-- Adding new metadata values without a separately reviewed standards change.
-- Adding secrets, credentials, account identifiers, or environment-specific confidential values.
-
-## Current-State Findings
-
-- `_docs` is the canonical documentation collection and existing pages rely on the current required metadata vocabulary.
-- Section navigation is driven by `_data/docs_sections.yml`.
-- `_layouts/docs.html` and `_layouts/docs-section.html` consume the established metadata and stable document URLs; category templates do not require layout changes.
-- Existing templates cover several categories but do not fully address development continuity, verification, failure modes, security, outstanding work, next safe action, or subordinate-page guidance.
-- Existing archive documents are intentionally concise and must remain valid without retroactive expansion.
-- `scripts/validate_docs.py` is the local and workflow validation authority for documentation metadata and links.
-- Pull request #13 completed the initial rebuild and is the baseline for this initiative.
+- Changing the information architecture unless template implementation exposes a blocking defect.
+- Adding metadata values without a separately reviewed standards change.
+- Adding secrets, credentials, account identifiers, or confidential values.
 
 ## Design Principles
 
@@ -72,17 +61,19 @@ The templates are guidance rather than rigid forms. Authors may omit sections th
 
 ## Standard Template Contract
 
-Every category template will include:
+Every category template must include:
 
-- A commented front-matter example distinguishing required and optional fields.
-- Guidance for a specific, searchable title and a one-sentence summary describing purpose and scope.
-- A recommended heading sequence with concise instructions beneath each heading.
-- Source-of-truth guidance covering repositories, file paths, systems, datasets, schemas, dashboards, workflows, or decisions as applicable.
-- Current implementation state, dependencies, inputs, outputs, deployment or operation, validation, failure modes, limitations, outstanding work, next safe action, and last verification guidance where relevant.
-- Security notes that name configuration keys and access boundaries without exposing values.
-- Related-document guidance using stable internal document links and clear parent/child relationships.
-- Criteria for moving detailed material into subordinate pages.
-- Placeholder text that authors must replace or remove.
+- Required and optional front-matter guidance.
+- Title and one-sentence summary guidance.
+- Recommended heading order and section purpose.
+- Source-of-truth guidance.
+- Current implementation or lifecycle state.
+- Security guidance without secret values.
+- Related-document guidance.
+- Status and verification expectations.
+- Useful placeholders.
+- Criteria for subordinate pages.
+- Outstanding work and next safe action where relevant.
 
 ## Implementation Steps
 
@@ -90,76 +81,63 @@ Every category template will include:
 
 Status: complete
 
-- [x] Review the required standards, architecture, operations runbook, rebuild plan, section metadata, layouts, existing templates, validation script, current `_docs` documents, repository tree, and recent merged pull requests.
-- [x] Confirm the template initiative can proceed without layout or navigation changes.
-- [x] Commit the persistent plan on a dedicated branch.
-- [x] Pass validation and merge pull request #14.
-- [x] Confirm the GitHub Pages deployment for the merged change.
-
-Result: pull request #14 merged successfully; documentation validation and Pages deployment completed successfully.
+- [x] Review standards, architecture, operations, layouts, templates, validation, current documents, repository tree, and recent merged work.
+- [x] Confirm no layout or navigation changes are required.
+- [x] Merge pull request #14.
+- [x] Pass documentation validation.
+- [x] Confirm Pages deployment.
 
 ### Step 2 — Core implementation templates
 
-Status: merged; deployment requires retry
+Status: merged
 
 - [x] Rebuild `_templates/repository-template.md`.
 - [x] Rebuild `_templates/system-template.md`.
 - [x] Add `_templates/data-schema-template.md`.
 - [x] Rebuild `_templates/runbook-template.md`.
 - [x] Update `DOCUMENTATION_STANDARD.md` with shared template usage rules.
-- [x] Open and validate pull request #15.
-- [x] Merge pull request #15.
-- [ ] Obtain a successful Pages deployment for merged commit `ef60fec607d07d1ed180375d11f8041d510066ae` or a later commit containing the same changes.
+- [x] Merge pull request #15 after validation.
 
-Deployment record: Pages run `31110810856` built the Jekyll site successfully, but the deployment job failed after ten minutes. The templates passed documentation validation and the Pages build stage; the deployment state is not yet confirmed successful.
+Deployment record: Pages run `31110810856` built successfully but its deployment job failed. A later deployment containing these changes must succeed before final completion.
 
 ### Step 3 — Governance and agent templates
 
-Status: in review
+Status: merged; deployment pending
 
 - [x] Rebuild `_templates/decision-template.md`.
 - [x] Add `_templates/high-director-template.md`.
-- [x] Update this persistent plan.
-- [ ] Open and pass validation for the Step 3 pull request.
-- [ ] Merge only after validation passes and the outstanding Pages deployment state is resolved.
-- [ ] Confirm the resulting Pages deployment.
-
-Emphasis:
-
-- Decision context, alternatives, consequences, supersession, implementation state, reversal, and verification.
-- Agent-assisted development context, exact actions taken, constraints, evidence, security boundaries, safe continuation, and unresolved work.
-
-Approval checkpoint: review decision-record and High Director continuation guidance.
+- [x] Pass documentation validation run `31126187599`.
+- [x] Merge pull request #16.
+- [ ] Confirm Pages run `31128405609` or a later run succeeds for commit `9873d2fbe5c273bdca0a25c2d74b5130d74cac6b` or later.
 
 ### Step 4 — Reference lifecycle templates
 
-Status: not started
+Status: in review
 
-Create or revise templates for:
+- [x] Add `_templates/note-template.md`.
+- [x] Add `_templates/archive-template.md`.
+- [x] Update this plan.
+- [ ] Open the Step 4 pull request.
+- [ ] Pass documentation validation.
+- [ ] Merge after validation.
+- [ ] Confirm Pages deployment.
 
-- Notes
-- Archive
+Notes guidance emphasizes confidence, source, scope, assumptions, promotion criteria, verification, and next safe action.
 
-Emphasis:
-
-- Notes must state purpose, confidence, source, scope, and promotion criteria without pretending to be authoritative documentation.
-- Archive pages must preserve historical value, explain why the item is inactive, identify the last known state, warn against treating it as current, and point to replacements where known.
-
-Deliverables follow the same branch, pull request, validation, plan-update, merge, and deployment checks as earlier steps.
-
-Approval checkpoint: review lifecycle and historical-state guidance.
+Archive guidance emphasizes archive reason, historical context, last known state, replacement guidance, verification, and warnings against treating archived material as current.
 
 ### Step 5 — Cross-template consistency review
 
 Status: not started
 
-- Compare all eight templates for unnecessary duplication, missing requirements, conflicting terminology, and validator incompatibility.
-- Verify every template addresses source of truth, security, related documents, status, verification, subordinate pages, known limitations, outstanding work, and next safe action where applicable.
-- Verify filenames and references match `_data/docs_sections.yml` and the documented section vocabulary.
-- Run local validation and the GitHub Actions documentation workflow.
+- Compare all eight templates for duplication, missing requirements, conflicting terminology, and validator incompatibility.
+- Verify filenames and metadata values match `_data/docs_sections.yml` and `DOCUMENTATION_STANDARD.md`.
+- Verify each template addresses source of truth, security, related documents, status, verification, subordinate pages, limitations, outstanding work, and next safe action where applicable.
+- Review whether workflow path filters should include `_templates/**` so template-only changes validate automatically.
+- Run documentation validation.
 - Merge the final consistency pull request.
-- Confirm GitHub Pages deployment.
-- Mark this plan complete with final pull request and deployment references.
+- Confirm Pages deployment.
+- Mark this plan complete.
 
 Approval checkpoint: final template review. Do not begin example documents until this checkpoint is approved.
 
@@ -174,48 +152,33 @@ Approval checkpoint: final template review. Do not begin example documents until
 - `_templates/note-template.md`
 - `_templates/archive-template.md`
 
-Existing general-purpose templates will be retained only where they remain useful and non-conflicting.
-
 ## Validation and Deployment
 
 For each implementation pull request:
 
-1. Run `python scripts/validate_docs.py` against the branch contents.
-2. Review the pull request diff for metadata, internal links, placeholder safety, and category consistency.
-3. Confirm the repository documentation workflow succeeds.
-4. Merge only after validation passes.
-5. Confirm the GitHub Pages deployment associated with the merged commit reaches a successful state when the change affects published documentation.
-6. Record completion and references in this plan.
+1. Run `python scripts/validate_docs.py` or the documentation validation workflow.
+2. Review metadata, internal links, placeholder safety, and category consistency.
+3. Merge only after validation passes.
+4. Confirm the Pages build and deployment both succeed.
+5. Record the result in this plan.
 
 ## Risks and Controls
 
-### Template duplication
-
-Control: keep shared guidance in the documentation standard where practical, while retaining category-specific instructions in each template.
-
-### Overly rigid forms
-
-Control: mark headings as recommended and explicitly permit omission when a section adds no value.
-
-### False verification claims
-
-Control: require authors to use `last_verified` only after checking the implementation or authoritative source; unknown state must be labelled unknown.
-
 ### Secret exposure
 
-Control: show configuration names and storage locations only. Never include secret values, tokens, credentials, private keys, or confidential identifiers.
+Document configuration object names and storage locations only. Never include credentials, tokens, private keys, connection strings, secret values, or confidential identifiers.
 
 ### Breaking existing documents
 
-Control: do not increase validator requirements for existing `_docs` pages solely to support richer templates.
+Do not increase validator requirements for existing `_docs` pages solely to support richer templates.
 
 ### Deployment uncertainty
 
-Control: distinguish a successful Jekyll build from a successful Pages deployment and do not mark a material step complete until the deployment job succeeds.
+Distinguish a successful Jekyll build from a successful Pages deployment. Do not mark a material step complete until deployment succeeds.
 
 ### Premature example work
 
-Control: the example phase remains blocked until Step 5 is approved.
+The example phase remains blocked until Step 5 is approved.
 
 ## Completion Criteria
 
@@ -223,19 +186,19 @@ This initiative is complete only when:
 
 - All eight templates exist and satisfy the requested guidance.
 - Existing documents remain compatible.
-- The documentation standard clearly explains how templates should be used.
-- This plan records every completed step and pull request.
-- Documentation validation and relevant GitHub Actions pass.
-- Material merged changes have successful GitHub Pages deployments.
+- The documentation standard explains template usage.
+- This plan records completed steps and pull requests.
+- Documentation validation passes.
+- Material changes have successful Pages deployments.
 - The final template review is approved.
 - No real category examples have been created.
 
 ## Next Safe Action
 
-Open the Step 3 pull request, pass documentation validation, resolve the outstanding Pages deployment state, and merge only after both checks are satisfactory.
+Open the Step 4 pull request, run documentation validation, monitor Pages run `31128405609`, and merge Step 4 only after validation passes.
 
 ## Verification Record
 
 - Last verified: 2026-08-06
-- Verified against: merged pull requests #14 and #15; Pages run `31110810856`; Step 3 branch files
-- Verification scope: template commits, documentation validation state, Jekyll Pages build result, failed deployment result, and Step 3 implementation status
+- Verified against: pull requests #14, #15, and #16; validation run `31126187599`; Pages runs `31110810856` and `31128405609`; Step 4 branch files
+- Verification scope: template files, validation state, merge state, and deployment state
