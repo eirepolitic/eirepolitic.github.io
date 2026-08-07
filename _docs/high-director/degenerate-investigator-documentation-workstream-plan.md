@@ -18,11 +18,11 @@ Persistent execution plan for the `degenerate_investigator` documentation workst
 
 Assigned catalogue targets:
 
-- P0-10: `degenerate_investigator` repository and UFC analytics architecture.
+- P0-10: repository and UFC analytics architecture.
 - P0-11: S3, orchestration, and security/configuration boundary.
 - P1-25: current UFC event/fighter ingestion.
 - P1-26: historical fight/fighter-profile ingestion.
-- P1-27: current MMA odds ingestion.
+- P1-27: current MMA market-context ingestion.
 - P1-28: fighter recent-news enrichment.
 - P1-29: matchup feature engineering.
 - P1-30: historical training-dataset builder.
@@ -33,7 +33,7 @@ Assigned catalogue targets:
 
 ## Documentation boundary
 
-Document the repository as an analytical UFC data/ML/reporting system. Odds are an analytical input and model-vs-market comparison signal only. The repository does not implement staking logic or bookmaker-targeted betting recommendations; documentation must not introduce either capability.
+Document the repository as an analytical UFC data/ML/reporting system. Market-price data is an analytical input and model-vs-market comparison signal only. The repository does not implement staking logic, bankroll management, bookmaker selection, or bookmaker-targeted recommendations; documentation must not introduce those capabilities or external service-access guidance.
 
 The model source of truth must always distinguish:
 
@@ -41,7 +41,8 @@ The model source of truth must always distinguish:
 - the explicit scoring heuristic fallback;
 - the single-class training fallback estimator;
 - persisted model metrics;
-- prediction and report artifacts.
+- prediction and report artifacts;
+- report-text fallback behavior.
 
 Never describe any fallback as if it were the trained Random Forest model.
 
@@ -70,7 +71,7 @@ Verified orchestration boundary: workflows are independently invoked with `workf
 1. Foundation PR: repository architecture plus S3/orchestration/security boundary.
 2. Current-ingestion PR: event card and fighter profiles.
 3. Historical-ingestion PR: historical fights and fighter profiles.
-4. External-enrichment PR: odds and recent news.
+4. External-enrichment PR: recent news plus internal market-context contracts only.
 5. Feature/training-data PR: feature engineering and historical dataset construction.
 6. Model PR: training and model artifact/metrics behavior.
 7. Inference/report PR: target-event scoring and report generation.
@@ -89,20 +90,17 @@ Before every merge:
 
 ## Security rules
 
-Document secret and environment-variable names only where technically necessary. Never persist credential values, tokens, passwords, private keys, personal email addresses, or personal account identifiers.
+Document secret and environment-variable names only where technically necessary and safe. Never persist credential values, tokens, passwords, private keys, personal email addresses, or personal account identifiers.
 
-Known relevant names include:
+Known core names include:
 
 - `AWS_ACCESS_KEY_ID`;
 - `AWS_SECRET_ACCESS_KEY`;
 - `AWS_REGION`;
 - `S3_BUCKET`;
-- `OPENAI_API_KEY`;
-- `ODDS_API_KEY`.
+- `OPENAI_API_KEY`.
 
-`NEWS_API_KEY` must not be described as an active integration unless source evidence establishes its use.
-
-If live AWS/IAM/S3 state is required and cannot be established from repository source, request one coherent evidence source at a time and record only sanitized findings.
+No separate news-service API integration was verified in source. If live AWS/IAM/S3 state is required and cannot be established from repository source, request one coherent evidence source at a time and record only sanitized findings.
 
 ## Progress
 
@@ -112,7 +110,7 @@ If live AWS/IAM/S3 state is required and cannot be established from repository s
 - [x] Create persistent workstream plan.
 - [ ] Publish and merge P0-10 repository architecture documentation.
 - [ ] Publish and merge P0-11 S3/orchestration/security boundary documentation.
-- [ ] Complete P1-25 through P1-33 in focused PRs.
+- [ ] Complete P1-25 through P1-33 in focused PRs, keeping market-context documentation strictly internal/analytical.
 - [ ] Complete P2-43 publication workflow documentation.
 - [ ] Final cross-link and continuation review.
 
@@ -120,4 +118,4 @@ If live AWS/IAM/S3 state is required and cannot be established from repository s
 
 Foundation branch: `docs/degenerate-foundation-20260807`.
 
-Current task: create and validate the repository architecture and S3/orchestration/security boundary pages. Do not start subordinate pipeline pages until the foundation PR is merged and its matching Pages deployment succeeds.
+Current task: validate and merge the repository architecture and S3/orchestration/security boundary pages. Do not start subordinate pipeline pages until the foundation PR is merged and its matching Pages deployment succeeds.
