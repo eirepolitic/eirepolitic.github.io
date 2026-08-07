@@ -20,7 +20,7 @@ technologies:
   - Python
   - GitHub Actions
 related:
-  - /projects/high-director/site-architecture/
+  - /docs/high-director/site-architecture/
   - /docs/runbooks/documentation-site-operations/
 ---
 
@@ -158,7 +158,7 @@ Create the system-category example for the documentation site using the verified
 
 ## Related Documents
 
-- [Documentation Site Architecture](/projects/high-director/site-architecture/) describes the system-level design and rendering model.
+- [Documentation Site Architecture](/docs/high-director/site-architecture/) describes the system-level design and rendering model.
 - [Documentation Site Operations](/docs/runbooks/documentation-site-operations/) contains operating and troubleshooting procedures.
 
 ## Verification Record
