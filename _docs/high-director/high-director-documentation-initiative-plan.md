@@ -27,48 +27,36 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
-- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144; live Lambda/IAM configuration complete in PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action schema complete in PR #40 / Pages #147; closure PR #41 / Pages #148; Google OAuth configuration content complete on the working branch and awaiting validation/merge/Pages verification.
-- **Phases 6–10:** not started.
+- **Phase 5:** complete — GitHub Action schema PR #35 / Pages #142; Lambda source PR #36 / Pages #143; closure PR #37 / Pages #144; live Lambda/IAM PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action PR #40 / Pages #147; closure PR #41 / Pages #148; Google OAuth PR #42 / Pages #149.
+- **Phase 6 — Architecture and data flows:** architecture content complete on the working branch; validation/merge/Pages gate pending. Data-flow documentation will follow as a separate focused PR after architecture deploys successfully.
+- **Phases 7–10:** not started.
 
 ## Canonical evidence pages
 
 - `_docs/high-director/gpt-configuration.md` — authoritative GPT configuration/instructions.
-- `_docs/high-director/github-action-openapi-schema.md` — current sanitized GPT Action contract.
+- `_docs/high-director/github-action-openapi-schema.md` — current sanitized GitHub GPT Action contract.
 - `_docs/high-director/github-wrapper-lambda.md` — authoritative Lambda source/deployment-package analysis.
 - `_docs/high-director/github-wrapper-live-aws-configuration.md` — live Lambda runtime, Function URL, environment-key, execution-role, managed-policy, and trust-policy configuration.
-- `_docs/high-director/google-workspace-action.md` — authoritative Google Workspace Action contract and complete non-secret OAuth boundary.
+- `_docs/high-director/google-workspace-action.md` — authoritative Google Workspace Action contract and OAuth boundary.
 - `_docs/high-director/github-integration.md` — GitHub integration behavior and authentication boundary.
-- `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
+- `_docs/high-director/capability-component-inventory.md` — capability/component inventory and missing-source register.
+- `_docs/high-director/runtime-architecture.md` — verified High Director runtime architecture and trust boundaries.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
 
-## External-source progress
+## Source collection status
 
-### Received and documented
+The two configured GPT Actions now have authoritative contracts and authentication boundaries documented.
 
-1. High Director GPT configuration and instructions.
-2. Current private Lambda-backed GitHub Action OpenAPI schema and API-key authentication selection.
+Verified source sets collected:
+
+1. High Director GPT configuration/instructions.
+2. GitHub GPT Action OpenAPI schema and API-key configuration.
 3. GitHub wrapper Lambda source/deployment package.
-4. Live Lambda/IAM configuration for the GitHub wrapper.
+4. Live GitHub-wrapper Lambda/IAM configuration.
 5. Google Workspace Action OpenAPI schema and OAuth authentication selection.
-6. Google Workspace OAuth endpoints, token exchange method, and complete configured scope list.
+6. Google OAuth authorization/token endpoints, token exchange method, and four configured scopes.
 
-The Google OAuth source verifies:
-
-- authorization URL `https://accounts.google.com/o/oauth2/v2/auth`;
-- token URL `https://oauth2.googleapis.com/token`;
-- default POST token exchange;
-- scope `https://www.googleapis.com/auth/calendar.events`;
-- scope `https://www.googleapis.com/auth/calendar.calendarlist.readonly`;
-- scope `https://www.googleapis.com/auth/gmail.readonly`;
-- scope `https://www.googleapis.com/auth/gmail.send`.
-
-The OAuth Client ID and Client Secret were shown as hidden and were not supplied or published. No access token, refresh token, authorization code, or connected-account identifier was supplied.
-
-## External-source boundary after this subphase
-
-After the current OAuth documentation deploys successfully, the two configured GPT Actions have authoritative contracts and authentication boundaries documented.
-
-Do **not** request additional external material speculatively. Move to Phase 6 architecture/data-flow work using the verified sources already collected. Request another external source only if that work exposes a specific unresolved dependency that blocks accurate documentation.
+No additional external source should be requested speculatively. Later phases may request another source only if a specific evidence gap blocks accurate architecture, security, runbook, or deployment documentation.
 
 ## Security publication rule
 
@@ -82,32 +70,26 @@ Before supplied source material is committed:
 
 ## Remaining phases
 
-### Phase 5 — External integration sources
-
-**Status:** in progress — final known-source subphase content complete, exit gate pending
-
-Completed source sets:
-
-- authoritative GPT configuration/instructions;
-- current GitHub Action schema and API-key configuration;
-- GitHub wrapper Lambda source/deployment package;
-- live GitHub-wrapper Lambda/IAM configuration;
-- Google Workspace Action schema/OAuth authentication selection;
-- Google OAuth authorization/token endpoints, token exchange method, and four scopes.
-
-Exit gate for Phase 5 source collection:
-
-- documentation validation passes;
-- OAuth PR merges;
-- resulting Pages deployment succeeds.
-
-After that gate, begin Phase 6 without requesting more external source unless a concrete blocker appears.
-
 ### Phase 6 — Architecture and data flows
 
-**Status:** planned
+**Status:** in progress — architecture content complete, exit gate pending
 
-Document verified runtime architecture, trust boundaries, exact API/action routes, runtime/control/deployment flows, and architecture decisions. Keep GitHub and Google flows separate where their trust/authentication boundaries differ.
+Architecture working-branch deliverables:
+
+- added `_docs/high-director/runtime-architecture.md`;
+- documented High Director GPT, GitHub Action, public Lambda Function URL, FastAPI/Mangum Lambda application, GitHub REST API boundary, Google Workspace Action, OAuth boundary, IAM role boundary, and documentation control plane;
+- documented the verified authentication mechanisms: `X-API-Key`, `GITHUB_TOKEN` Bearer auth, Lambda execution-role trust, and Google OAuth;
+- documented data classifications crossing GitHub and Google trust boundaries;
+- documented architecture drift between Lambda v0.3.0, configured GitHub schema v0.2.1, and bundled schema v0.2.0;
+- preserved platform-managed/unverified areas as limitations rather than inferred implementation.
+
+Architecture exit gate:
+
+- documentation validation passes;
+- PR merges;
+- resulting Pages deployment succeeds.
+
+After that gate, create a separate focused PR for exact GitHub and Google data-flow sequences.
 
 ### Phase 7 — Security and configuration reference
 
@@ -154,11 +136,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate the Google OAuth configuration branch.
+- Validate the runtime-architecture branch.
 - Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then begin Phase 6 architecture/data-flow documentation from the now-documented source set.
+- Then document exact GitHub and Google data flows in a separate Phase 6 PR.
 
 ## Next safe development action
 
-Complete the Google OAuth validation/merge/deployment gate, then start a focused Phase 6 architecture PR without requesting additional external source unless an evidence gap blocks accuracy.
+Complete the runtime-architecture validation/merge/deployment gate, then create the focused data-flow documentation PR using the already verified Action contracts and implementation sources.
