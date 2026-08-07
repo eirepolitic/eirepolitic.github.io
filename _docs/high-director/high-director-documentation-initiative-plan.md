@@ -27,7 +27,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - **Phase 2:** complete — capability/component inventory; PR #31; Pages #138.
 - **Phase 3:** complete — GitHub integration/workflows; PR #32; Pages #139; closure PR #33; Pages #140.
 - **Phase 4:** complete — authoritative GPT configuration/instructions; PR #34; Pages #141.
-- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144 complete; live Lambda/IAM configuration complete in PR #38 / Pages #145.
+- **Phase 5:** in progress — GitHub Action schema complete in PR #35 / Pages #142; Lambda source complete in PR #36 / Pages #143; Lambda-source closure PR #37 / Pages #144; live Lambda/IAM configuration complete in PR #38 / Pages #145; closure PR #39 / Pages #146; Google Workspace Action schema content complete on the working branch and awaiting validation/merge/Pages verification.
 - **Phases 6–10:** not started.
 
 ## Canonical evidence pages
@@ -36,6 +36,7 @@ Implementation claims must be classified as verified implementation, user-suppli
 - `_docs/high-director/github-action-openapi-schema.md` — current sanitized GPT Action contract.
 - `_docs/high-director/github-wrapper-lambda.md` — authoritative Lambda source/deployment-package analysis.
 - `_docs/high-director/github-wrapper-live-aws-configuration.md` — live Lambda runtime, Function URL, environment-key, execution-role, managed-policy, and trust-policy configuration.
+- `_docs/high-director/google-workspace-action.md` — authoritative Google Workspace Action contract and OAuth boundary.
 - `_docs/high-director/github-integration.md` — GitHub integration behavior and authentication boundary.
 - `_docs/high-director/capability-component-inventory.md` — capability/component inventory and prioritized missing-source register.
 - `_docs/high-director/repository-documentation-inventory.md` — repository-only evidence map.
@@ -48,23 +49,39 @@ Implementation claims must be classified as verified implementation, user-suppli
 2. Current private Lambda-backed GitHub Action OpenAPI schema and API-key authentication selection.
 3. GitHub wrapper Lambda source/deployment package.
 4. Live Lambda/IAM configuration for the GitHub wrapper.
+5. Google Workspace Action OpenAPI schema and OAuth authentication selection.
 
-The live AWS source verifies Python 3.13, handler `src.app.handler`, architecture `x86_64`, runtime update mode `Auto`, public Function URL with auth type `NONE`, invoke mode `BUFFERED`, CORS disabled, deployed environment-variable keys, the execution-role name, visible attached `AWSLambdaBasicExecutionRole`, and Lambda trust principal `lambda.amazonaws.com` with `sts:AssumeRole`.
+The Google source verifies:
 
-Sanitization removed the private Function URL hostname and AWS account ID; environment-variable values and credentials were not supplied or published.
+- OpenAPI `3.1.0`;
+- API title `Google Workspace API`;
+- API version `1.2.0`;
+- OAuth authentication selected in GPT Action settings;
+- Google Calendar and Gmail API servers;
+- 12 operation IDs total: seven Calendar operations and five Gmail operations;
+- Gmail profile/search/read/attachment/send capability;
+- Calendar list/read/create/update/delete/move capability;
+- explicit user-confirmation requirements in write-sensitive operation descriptions.
 
-## Next authoritative source
+The pasted schema contained Markdown escaping/link formatting, so publication uses a normalized technical transcription rather than claiming byte-for-byte YAML preservation. No OAuth secret/token/account identifier was supplied or published.
 
-**`www.googleapis.com` Action OpenAPI schema and authentication selection.**
+## Next authoritative source after current deployment gate
+
+**Google Workspace OAuth configuration details only.**
+
+Required non-secret fields:
+
+- configured OAuth scope names;
+- authorization URL;
+- token URL.
 
 Why next:
 
-- it is the only remaining configured GPT Action whose contract is still unknown;
-- it identifies the exact Google API product(s), operations, request/response structures, and authentication mode;
-- it establishes any OAuth scopes or API-key declaration needed for the security/data-flow model;
-- it determines whether Gmail, Calendar, or another Google service is actually part of the High Director design rather than inferred from hostname alone.
+- closes the remaining authentication boundary for the second configured GPT Action;
+- determines the precise Gmail/Calendar permission grants rather than inferring them from operations;
+- supports the later security/trust-boundary and data-flow documentation.
 
-Request only the Action schema/authentication configuration; do not request tokens, OAuth client secrets, API keys, refresh tokens, or user account identifiers.
+Do not request or publish OAuth client IDs, client secrets, access tokens, refresh tokens, authorization codes, authenticated-account identifiers, or other credentials.
 
 ## Security publication rule
 
@@ -72,7 +89,7 @@ Before supplied source material is committed:
 
 1. inspect it for sensitive/personal information;
 2. remove secrets, credentials, tokens, keys, session values, private personal URLs, personal email addresses, personal account identifiers, and nonessential personal names;
-3. retain technically necessary non-secret names such as repository names, Lambda names, workflow names, schema properties, action names, routes, AWS service names, IAM policy names, and configuration object names;
+3. retain technically necessary non-secret names such as repository names, Lambda names, workflow names, schema properties, action names, routes, AWS/Google service names, IAM policy names, OAuth scope names, and configuration object names;
 4. stop for a user decision if publication safety is uncertain;
 5. record provenance and sanitization notes.
 
@@ -87,13 +104,14 @@ Completed subphases:
 - authoritative GPT configuration/instructions;
 - current GitHub Action schema and API-key configuration;
 - GitHub wrapper Lambda source/deployment package;
-- live GitHub-wrapper Lambda/IAM configuration.
+- live GitHub-wrapper Lambda/IAM configuration;
+- Google Workspace Action schema/OAuth authentication selection (content complete; deployment gate pending).
 
-Next subphase:
+Next subphase after successful deployment:
 
-- `www.googleapis.com` Action OpenAPI schema and authentication selection.
+- Google Workspace OAuth scope names and authorization/token endpoint URLs only.
 
-Subsequent sources will be requested only if verified evidence shows they are required, including any external supporting repository source or non-secret monitoring/deployment configuration needed for runbooks.
+Subsequent sources will be requested only if verified evidence shows they are required, including external supporting repository source or non-secret monitoring/deployment configuration needed for runbooks.
 
 ### Phase 6 — Architecture and data flows
 
@@ -105,7 +123,7 @@ Document verified runtime architecture, trust boundaries, API routes, runtime/co
 
 **Status:** planned
 
-Document authentication/authorization, secret boundaries, IAM/service trust, safe configuration objects, and unresolved security assumptions.
+Document authentication/authorization, secret boundaries, IAM/service trust, OAuth permission boundaries, safe configuration objects, and unresolved security assumptions.
 
 ### Phase 8 — Operations and runbooks
 
@@ -146,10 +164,11 @@ Before every documentation merge:
 
 ## Outstanding work
 
-- Validate and merge this live-AWS closure update.
+- Validate the Google Workspace Action schema branch.
+- Merge only if validation passes.
 - Confirm the resulting Pages deployment succeeds.
-- Then request only the `www.googleapis.com` Action schema/authentication configuration.
+- Then request only the Google OAuth scope names and authorization/token endpoint URLs.
 
 ## Next safe development action
 
-After this closure update deploys successfully, request the Google Action schema with explicit GPT Builder retrieval steps.
+Complete the Google Workspace Action documentation validation/merge/deployment gate, then request the non-secret OAuth configuration details with explicit GPT Builder retrieval steps.
