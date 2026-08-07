@@ -36,23 +36,23 @@ Templates should be refined only when real usage exposes a concrete defect.
 - [x] Repository — `eirepolitic.github.io`; PR #20 merged, validation `31137389854` passed, Pages deployment `31137413142` succeeded.
 - [x] System — Eire Politic Documentation Site; PR #21 merged, validation `31137496390` passed, Pages deployment `31137516088` succeeded.
 - [x] Data & Schema — Documentation Search Index; PR #22 merged, validation `31137604054` passed, Pages deployment `31137621658` succeeded.
-- [x] Runbook — Publish a Documentation Change drafted from the verified PR-validation-merge-deployment workflow.
-- [ ] Architecture Decision
+- [x] Runbook — Publish a Documentation Change; PR #23 merged, validation `31137737015` passed, Pages deployment `31137754183` succeeded.
+- [x] Architecture Decision — Use Metadata-Driven Static Documentation on GitHub Pages drafted from the implemented site architecture.
 - [ ] High Director
 - [ ] Note
 - [ ] Archive
 
 ## Current Step
 
-Runbook example is in review on branch `high-director/example-runbook-publish-documentation`.
+Architecture Decision example is in review on branch `high-director/example-decision-static-documentation`.
 
 ## Next Safe Action
 
-Validate and merge the runbook example, confirm Pages deployment, then create the Architecture Decision example from an implemented documentation-site design choice.
+Validate and merge the Architecture Decision example, confirm Pages deployment, then review this persistent phase plan against the High Director template and use it as the real High Director example.
 
 ## Verification Record
 
 - Last verified: `2026-08-06`
-- Verified against: PRs #20 through #22; validation runs `31137389854`, `31137496390`, and `31137604054`; Pages runs `31137413142`, `31137516088`, and `31137621658`; `_templates/runbook-template.md`; observed documentation publishing workflow
+- Verified against: PRs #20 through #23; validation runs `31137389854`, `31137496390`, `31137604054`, and `31137737015`; Pages runs `31137413142`, `31137516088`, `31137621658`, and `31137754183`; `_templates/decision-template.md`; implemented documentation-site architecture
 - Verified by: High Director
-- Verification scope: repository, system, and data example completion; runbook source procedure; validation requirement; deployment requirement
+- Verification scope: repository, system, data, and runbook example completion; architecture decision source material; validation requirement; deployment requirement
