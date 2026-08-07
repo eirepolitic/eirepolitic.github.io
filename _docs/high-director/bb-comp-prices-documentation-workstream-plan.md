@@ -159,10 +159,10 @@ From current `eirepolitic.github.io` `main`, create a new focused branch named `
 ## Related Documents
 
 - [Documentation target catalogue](/projects/high-director/documentation-target-catalogue/)
-- [Repository documentation discovery plan](/projects/high-director/repository-documentation-discovery-plan/)
+- [Repository documentation discovery plan](/projects/high-director/repository-documentation-discovery/)
 - [bb-comp-prices repository scan](/projects/high-director/repository-scan-bb-comp-prices/)
-- [Documentation site](/systems/documentation-site/)
-- [Documentation site operations](/runbooks/documentation-site-operations/)
+- [Documentation site](/projects/systems/documentation-site/)
+- [Documentation site operations](/docs/runbooks/documentation-site-operations/)
 
 ## Verification Record
 
