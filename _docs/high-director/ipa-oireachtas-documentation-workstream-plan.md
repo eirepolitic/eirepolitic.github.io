@@ -18,69 +18,104 @@ permalink: /projects/high-director/ipa-oireachtas-documentation-workstream-plan/
 
 # Irish Politics Analytics / Oireachtas documentation workstream plan
 
-## Purpose
+## Final state
 
-Mutable execution plan for the Irish Politics Analytics / `eirepolitic-data-pipeline` documentation workstream. The owner-wide target catalogue remains the read-only scope contract.
+The assigned Irish Politics Analytics / `eirepolitic-data-pipeline` documentation workstream is complete.
 
-## Scope and publication rule
+All assigned P0, P1, P2 and P3 components have been discovered, reconciled, documented, validated, merged, and published through the required exact-SHA GitHub Pages gate.
 
-P0 covers the current Oireachtas platform; P1 covers Instagram/member metrics/LLM systems; P2 covers maintenance/repair/backfill; P3 reconciles assigned legacy enrichment/classification/media/destructive/editorial targets against current successors.
+The owner-wide target catalogue remains the read-only scope contract for any future documentation initiatives outside this completed workstream.
 
-Current implementation/configuration outranks runtime evidence, handoffs, archive material, and labelled inference. Each major component must pass documentation validation, merge, and then receive a successful `pages-build-deployment` for that exact merge SHA before the next component begins.
+## Completed scope
 
-## Priority execution state
+### P0 — foundational
 
-- **P0:** complete and published.
-- **P1:** complete and published.
-- **P2 target 38:** complete and published.
+- Irish Politics Analytics umbrella architecture.
+- `eirepolitic-data-pipeline` repository.
+- Unified Oireachtas Data Platform.
+- Oireachtas canonical data-product catalogue.
+- Oireachtas refresh/validation orchestration.
+- Oireachtas write policies and downstream contracts.
 
-### P3
+### P1 — active operational
 
-| Order | Component | State |
-| --- | --- | --- |
-| 47 | Constituency Images Indexer | complete and published |
-| 48 | Debate Issue Classifier | complete and published |
-| 49 | LLM Column Creator | complete and published |
-| 50 | Member Images Pipeline | complete and published |
-| 51 | Member Summaries Table | complete and published |
-| 52 | S3 Column Deleter | complete and published |
-| 53 | Retained debate/member enrichment and classification scripts | complete and published |
-| 54 | Experimental/editorial content-generation workflows | draft on `docs/ipa-experimental-editorial-workflows` |
+- Instagram / constituency campaign rendering system.
+- AI member-profile / Instagram visual content workflow.
+- Member Profile Metrics Builder.
+- Reusable LLM Task Runner Framework.
 
-## Verified P3 findings
+### P2 — supporting
 
-- Targets 47/48/50/51 reveal a common transitional pattern: retained producer → legacy mutable S3 output → newer Unified Oireachtas enrichment/review adapter → compatibility product → current contracts/consumers.
-- **47 Constituency Images Indexer:** newer Oireachtas code consumes the legacy image index and does not discover/create images.
-- **48 Debate Issue Classifier:** newer Oireachtas code consumes existing classified speech output and does not call OpenAI.
-- **49 LLM Column Creator:** historical concept is superseded by the current reusable LLM task runner; no separate current implementation remains.
-- **50 Member Images Pipeline:** newer Oireachtas member-photo enrichment consumes retained legacy photo-index output and does not scrape member pages.
-- **51 Member Summaries Table:** newer Oireachtas summaries enrichment consumes the retained summary table and does not generate summaries; that legacy table is also shared by generic LLM tasks.
-- **52 S3 Column Deleter:** retained destructive implementation remains manually dispatchable; current operational/safety guidance belongs to the P2 maintenance reference.
-- **53 cross-cutting lineage:** the four `extract/oireachtas/enrichment_*` modules are adapter/review/compatibility layers, not complete upstream replacements. Full retirement is not established for the corresponding legacy producers. Older scheduled debate/member extraction also coexists with the canonical Oireachtas platform and still feeds parts of the legacy enrichment lineage.
-- **54 experimental/editorial workflows:** the retained ridiculous-sentences family is manual-only, reads legacy debate speech data, calls the OpenAI Responses API, writes direct legacy S3 CSV/Parquet outputs, and has no publishing/approval/canonical Oireachtas integration. Weekly has two observed successful April 2026 runs; experiments has one failed then one successful April run. Current classification is retained manual editorial experiment, not production system.
+- Data maintenance, repair, and backfill utilities.
 
-## Discovery state
+### P3 — historical/status reconciliation
 
-- [x] P0 complete
-- [x] P1 complete
-- [x] P2 target 38 complete
-- [x] P3 targets 47–53 complete
-- [x] P3 target 54 experimental/editorial workflow status audit drafted
+- Constituency Images Indexer.
+- Debate Issue Classifier.
+- LLM Column Creator.
+- Member Images Pipeline.
+- Member Summaries Table.
+- S3 Column Deleter.
+- Retained debate/member enrichment and classification lineage.
+- Experimental/editorial content-generation workflows.
 
-## PR ledger
+## Persistent architectural findings
 
-| Component | PR | Validation | Pages | Result |
+- The Unified Oireachtas platform is the canonical current political-data foundation where equivalent canonical products exist.
+- Four retained enrichment producer lineages remain transitional dependencies: constituency image indexing, member-photo discovery, member-summary generation, and speech issue classification.
+- The corresponding `extract/oireachtas/enrichment_*` modules are adapter/review/compatibility layers rather than complete upstream replacements.
+- `LLM Column Creator` is fully superseded as a named component by the current Reusable LLM Task Runner Framework.
+- The S3 Column Deleter remains a destructive manual utility and should be operated only through the current maintenance/safety guidance.
+- The retained ridiculous-sentences workflows are manual editorial experiments, not canonical data products or publishing pipelines.
+- Current implementation/configuration is the primary source of truth; historical pages preserve provenance and successor relationships rather than competing with current system documentation.
+
+## Publication ledger
+
+| Component | PR | Validation | Exact-SHA Pages | Result |
 | --- | --- | --- | --- | --- |
-| P0/P1/P2 prior components | #62–#107 | passed | exact-SHA Pages gates passed | complete |
-| P3 Constituency Images Indexer | #108 | `31240091714` success | `31240103424` success | complete |
-| P3 Debate Issue Classifier | #109 | `31240199572` success | `31240218461` success | complete |
-| P3 LLM Column Creator | #110 | `31240280395` success | `31240290648` success | complete |
-| P3 Member Images Pipeline | #111 | `31240361712` success | `31240378449` success | complete |
-| P3 Member Summaries Table | #112 | `31240455460` success | `31240471450` success | complete |
-| P3 S3 Column Deleter | #113 | `31240538235` success | `31240557035` success | complete |
-| P3 legacy enrichment/classification lineage | #114 | `31240633404` success | `31240646296` success; SHA `c0420b2f3f7f783823aec939c82a48d7e8013130` | complete |
-| P3 experimental/editorial workflows | pending PR | pending | pending | draft in progress |
+| Workstream plan | #62 | `31219424981` | `31219454738` | complete |
+| P0 umbrella architecture | #64 | `31219706244` | `31219726250` | complete |
+| P0 repository | #66 | `31219954893` | `31219991624` | complete |
+| P0 Unified Oireachtas platform | #68 | `31220172926` | `31220199307` | complete |
+| P0 catalogue | #70 + retry #73 | passed | `31220683272` | complete |
+| P0 orchestration | #74 + retry #84 | passed | `31229230209` | complete |
+| P0 policies/contracts | #85 | `31229340996` | `31229357085` | complete |
+| P1 Instagram rendering | #90 + retries through #100 | passed | `31229966372` | complete |
+| P1 AI Instagram content | #104 | `31230259270` | `31230282153` | complete |
+| P1 Member Profile Metrics | #105 | `31239709900` | `31239725625` | complete |
+| P1 Reusable LLM Task Runner | #106 | `31239847243` | `31239858541` | complete |
+| P2 maintenance/repair/backfill | #107 | `31239997132` | `31240013265` | complete |
+| P3 Constituency Images Indexer | #108 | `31240091714` | `31240103424` | complete |
+| P3 Debate Issue Classifier | #109 | `31240199572` | `31240218461` | complete |
+| P3 LLM Column Creator | #110 | `31240280395` | `31240290648` | complete |
+| P3 Member Images Pipeline | #111 | `31240361712` | `31240378449` | complete |
+| P3 Member Summaries Table | #112 | `31240455460` | `31240471450` | complete |
+| P3 S3 Column Deleter | #113 | `31240538235` | `31240557035` | complete |
+| P3 legacy enrichment/classification lineage | #114 | `31240633404` | `31240646296` | complete |
+| P3 experimental/editorial workflows | #115 | `31240767005` | `31240780787`; SHA `1fde69e260ecc2ba7fd3d30024e3729dd844ab30` | complete |
 
-## Next action
+## Completion criteria
 
-Validate, merge, and exact-SHA Pages-verify target 54. After that succeeds, create one final plan-only synchronization PR marking the entire assigned P0–P3 workstream complete and close it only after its exact-SHA Pages deployment also succeeds.
+- [x] All assigned targets documented or reconciled.
+- [x] Current versus historical evidence clearly separated.
+- [x] Legacy successor/dependency relationships recorded.
+- [x] Destructive/security-sensitive operating boundaries documented without exposing secret values.
+- [x] Every substantive component passed documentation validation before merge.
+- [x] Every substantive component received a successful Pages deployment for its exact merge SHA.
+- [x] No unauthorized architecture, security, cost, access-control, or irreversible runtime change was made.
+
+## Future maintenance
+
+This plan now serves as a completion ledger rather than an execution queue.
+
+Future implementation changes should update the relevant current system/reference page and any affected archive lineage page. In particular, if any retained enrichment producer is eventually replaced, update the lineage matrix and archive record only after current source proves the legacy output is no longer required.
+
+Any new owner-wide documentation target should be taken from the canonical target catalogue or a newly approved discovery initiative rather than appended implicitly to this completed workstream.
+
+## Final verification record
+
+- Workstream completed: `2026-08-07` Pacific time / `2026-08-08` UTC publication activity.
+- Final substantive target: P3 target 54, PR #115.
+- Final substantive target validation: `31240767005` success.
+- Final substantive target Pages deployment: `31240780787` success for SHA `1fde69e260ecc2ba7fd3d30024e3729dd844ab30`.
+- Final remaining action for this ledger: validate, merge, and exact-SHA Pages-verify this completion-only synchronization change.
