@@ -41,22 +41,13 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 
 ### P0
 
-| Order | Component | State |
-| --- | --- | --- |
-| 1 | Irish Politics Analytics umbrella architecture | complete and published |
-| 2 | `eirepolitic-data-pipeline` repository | complete and published |
-| 3 | Unified Oireachtas Data Platform | complete and published |
-| 4 | Oireachtas canonical data-product catalogue | complete and published |
-| 5 | Oireachtas refresh/validation orchestration | complete and published |
-| 6 | Oireachtas write policies and downstream contracts | complete and published |
-
-**P0 status: complete.**
+All six P0 components are complete and published.
 
 ### P1
 
 | Order | Component | State |
 | --- | --- | --- |
-| 17 | Instagram / constituency campaign rendering system | merged; exact-SHA Pages retry on `docs/ipa-instagram-rendering-pages-retry` |
+| 17 | Instagram / constituency campaign rendering system | merged; second exact-SHA Pages retry on `docs/ipa-instagram-rendering-pages-retry-2` |
 | 18 | AI member-profile / Instagram content workflow | blocked on target 17 Pages gate |
 | 19 | Member Profile Metrics Builder | discovery complete enough to draft |
 | 20 | Reusable LLM Task Runner Framework | discovery complete enough to draft |
@@ -74,27 +65,15 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 
 ## Discovery state
 
-### Completed for P0
-
 - [x] full P0 implementation/configuration/runtime audit and all six P0 documentation components
-
-### P1 discovery
-
-- [x] complete `instagram/` tree
-- [x] complete `process/instagram*` tree
-- [x] complete Instagram workflow tree
-- [x] campaign renderer/spec, deterministic template renderer, copy pack, queue, S3 preview path
-- [x] constituency HTML renderer and local renderer test
-- [x] external provider adapter implementation at architecture level
+- [x] complete `instagram/`, `process/instagram*`, and Instagram workflow trees
+- [x] campaign renderer/spec, deterministic renderer, copy pack, queue, S3 preview path
+- [x] constituency HTML renderer, local renderer test, and provider-adapter architecture
 - [ ] AI member-profile / Option 5 implementation and workflows at documentation depth
 - [ ] Member Profile Metrics Builder at dedicated component depth
 - [ ] Reusable LLM Task Runner Framework at dedicated component depth
-
-### Later priorities
-
 - [ ] P2 maintenance/repair/backfill utility status and safety procedures
 - [ ] P3 retained legacy/editorial successor/status reconciliation
-- [ ] exact live IAM/S3/Glue/Athena configuration only if a later documentation target requires deployed-account evidence
 
 ## PR ledger
 
@@ -109,13 +88,14 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 | P0 orchestration | #74 | validation passed | first exact-SHA deployment cancelled by parallel `main` activity | superseded by retry |
 | Orchestration publication retry | #84 | `31229212100` success | `31229230209` success; `9b68becb6e2ca69c58c57cf1b2104948ec6a60d0` | complete |
 | P0 policies/contracts | #85 | `31229340996` success | `31229357085` success; `021db2fe9fb9ea6b1d581b121508bdd8cd81bb83` | complete |
-| P1 Instagram/constituency rendering | #90 | `31229511638` success | `31229551593` cancelled after successful Jekyll build for SHA `b471aeacaba092610ce85f278bc74824ae0eee4a` when newer `main` Pages run `31229577006` entered deployment lane | superseded by retry |
-| P1 rendering publication retry | pending PR | pending | pending | in progress |
+| P1 Instagram/constituency rendering | #90 | `31229511638` success | `31229551593` cancelled after successful Jekyll build for SHA `b471aeacaba092610ce85f278bc74824ae0eee4a` | superseded by retry |
+| P1 rendering publication retry #1 | #93 | `31229645985` success | `31229661485` cancelled after successful Jekyll build for SHA `2b02a5ca8f3e531f6fe4df7945719aa9314bd7bf` when newer `main` run `31229684812` entered the lane | superseded by retry #2 |
+| P1 rendering publication retry #2 | pending PR | pending | pending | in progress |
 
 ## Publication-gate note
 
-Parallel `main` changes have cancelled matching Pages deployments for the catalogue, orchestration, and now Instagram rendering. The first two were resolved with focused retry PRs and exact-SHA Pages success. Target 17 is using the same retry discipline; target 18 must not begin until the retry merge SHA deploys successfully.
+Parallel `main` changes have repeatedly pre-empted exact-SHA Pages deployment after successful Jekyll builds. This is a deployment-concurrency issue, not a target-17 content-validation failure. The workstream continues to require a successful exact-SHA Pages deployment before target 18 starts.
 
 ## Next action
 
-Complete the target-17 publication retry: validate, merge, and exact-SHA Pages-verify. Only then begin the AI member-profile / Instagram content workflow from current `main`.
+Complete target-17 retry #2: validate, merge, and exact-SHA Pages-verify. Only then begin the AI member-profile / Instagram content workflow from current `main`.
