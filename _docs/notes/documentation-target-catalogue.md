@@ -1,8 +1,8 @@
 ---
 title: Owner-Wide Documentation Target Catalogue
 summary: Consolidated, deduplicated catalogue of repositories, systems, pipelines, data products, integrations, workflows, security boundaries, and historical implementations identified across all six repositories.
-section: high-director
-doc_type: agent
+section: notes
+doc_type: note
 status: active
 created: 2026-08-07
 updated: 2026-08-07
@@ -154,6 +154,8 @@ Preserve the repository's explicit boundary: it does not implement staking logic
 **Document:** widgets, queries, JS orchestration, GitHub Contents API calls, config/index lifecycle, edit/rerun path, public embed, access/authentication, failure modes and deployment/update procedure.
 
 **External verification needed:** current live Appsmith configuration/export when this initiative begins. The detailed pasted technical handoff in `doc_configs/autodoc/autodoc_app.json` is strong source evidence but does not prove present live UI state.
+
+This is the current authoritative implementation relationship behind the `/autodoc/` Appsmith embed already identified in `eirepolitic.github.io`.
 
 ### 14. AutoDoc configuration schema and project-index registry
 

@@ -1,8 +1,8 @@
 ---
 title: AutoDoc documentation workstream plan
-summary: Persistent High Director plan for documenting AutoDoc from verified repository evidence through focused validated pull requests and matching Pages deployments.
-section: high-director
-doc_type: agent
+summary: Persistent coordination plan for documenting AutoDoc from verified repository evidence through focused validated pull requests and matching Pages deployments.
+section: notes
+doc_type: note
 status: active
 created: 2026-08-07
 updated: 2026-08-07
@@ -12,9 +12,9 @@ order: 104
 permalink: /projects/high-director/autodoc-documentation-workstream-plan/
 repository: eirepolitic.github.io
 tags:
-  - high-director
   - autodoc
   - documentation
+  - workstream
 ---
 
 # AutoDoc documentation workstream plan
@@ -25,7 +25,7 @@ This page is the persistent continuation plan for the complete AutoDoc documenta
 
 ## Current State
 
-The workstream is active. Repository discovery material exists at `_docs/high-director/repository-scan-autodoc.md`. The owner-wide catalogue assigns these AutoDoc targets:
+The workstream is active. Repository discovery material exists at `_docs/notes/repository-scan-autodoc.md`. The owner-wide catalogue assigns these AutoDoc targets:
 
 - P0: `autodoc` repository/system architecture; Appsmith intake/configuration application; configuration schema/project-index registry; creation-pipeline orchestration/trust boundaries; reviewed-document website-publication boundary.
 - P1: asset enrichment/source resolution; LLM section-fact extraction; template/Markdown rendering; LLM review/concision.
@@ -49,7 +49,7 @@ No major component is complete until its focused pull request passes `Validate d
 
 ### Excluded
 
-- Routine edits to `_docs/high-director/documentation-target-catalogue.md`; it is read-only coordination input.
+- Routine edits to `_docs/notes/documentation-target-catalogue.md`; it is read-only coordination input.
 - Full Irish Politics Analytics implementation, `bb-comp-prices`, `degenerate_investigator`, or Overlord except where AutoDoc cross-references require them.
 - Architecture, security, cost, access-control, credential, or irreversible implementation changes without explicit approval.
 - Secret values, personal emails/account IDs, private keys, private user data, or token values.
@@ -59,9 +59,9 @@ No major component is complete until its focused pull request passes `Validate d
 
 - Documentation standard: `DOCUMENTATION_STANDARD.md`.
 - Templates: full `_templates/` directory.
-- Scope coordination: `_docs/high-director/documentation-target-catalogue.md`.
+- Scope coordination: `_docs/notes/documentation-target-catalogue.md`.
 - Discovery plan: `_docs/high-director/repository-documentation-discovery-plan.md`.
-- Existing AutoDoc scan: `_docs/high-director/repository-scan-autodoc.md`.
+- Existing AutoDoc scan: `_docs/notes/repository-scan-autodoc.md`.
 - Public project landing page: `autodoc.md`.
 - Publication governance: `_docs/runbooks/documentation-site-operations.md`, `_docs/runbooks/publish-documentation-change.md`, and `.github/workflows/validate-documentation.yml`.
 - AutoDoc executable backend: current `autodoc` workflows and `process/*.py` files.

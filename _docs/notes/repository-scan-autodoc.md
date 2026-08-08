@@ -1,8 +1,8 @@
 ---
 title: Repository Scan — autodoc
 summary: Documentation-target inventory for the AutoDoc Appsmith intake, GitHub-backed configuration, LLM documentation-generation, review, and website-publication system.
-section: high-director
-doc_type: agent
+section: notes
+doc_type: note
 status: active
 created: 2026-08-07
 updated: 2026-08-07
