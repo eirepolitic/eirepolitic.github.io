@@ -14,7 +14,7 @@ repository: degenerate_investigator
 
 ## Purpose
 
-Persistent execution plan for the `degenerate_investigator` documentation workstream. The owner-wide catalogue remains the read-only scope contract; this file records sequencing, evidence, progress, and continuation state for this workstream only.
+Persistent execution and completion record for the `degenerate_investigator` documentation workstream. The owner-wide catalogue remains the read-only scope contract; this file records evidence, sequencing, completed target coverage, deployment gates, and future continuation rules for this workstream only.
 
 ## Scope
 
@@ -52,7 +52,7 @@ Never describe any fallback as if it were the trained Random Forest model.
 
 Evidence inspected on 2026-08-07:
 
-- repository tree;
+- complete repository tree;
 - `README.md`;
 - `requirements.txt`;
 - `common/io_helpers.py`;
@@ -61,34 +61,24 @@ Evidence inspected on 2026-08-07:
 - all GitHub Actions workflows under `.github/workflows/`;
 - `reports/latest_fight_report.md`.
 
-Verified storage defaults from `common/io_helpers.py`:
+Verified storage defaults from source:
 
 - bucket: `degenerative-investigator`;
 - region: `us-east-2`.
 
 Verified orchestration boundary: workflows are independently invoked with `workflow_dispatch`; no repository-level workflow automatically chains the complete pipeline. Operators coordinate stage order through workflow inputs and S3 object contracts.
 
-## Planned sequence
-
-1. Foundation PR: repository architecture plus S3/orchestration/security boundary.
-2. Current-ingestion PR: event card and fighter profiles.
-3. Historical-ingestion PR: historical fights and fighter profiles.
-4. External-enrichment PR: recent news plus internal market-context contracts only.
-5. Feature/training-data PR: feature engineering and historical dataset construction.
-6. Model PR: training and model artifact/metrics behavior.
-7. Inference/report PR: target-event scoring and report generation.
-8. Publication PR: S3-to-repository report export workflow.
-9. Cross-link/final consistency pass after syncing with current `main`.
-
 ## Merge and deployment gate
 
-Before every merge:
+Every component was handled through the required sequence:
 
-1. run repository documentation validation;
-2. confirm validation success;
-3. merge the focused PR;
-4. confirm the matching GitHub Pages deployment succeeds for the merged SHA;
-5. only then begin the next major component.
+1. repository documentation validation;
+2. validation success confirmation;
+3. focused merge;
+4. matching GitHub Pages deployment success for the merged SHA;
+5. only then continuation to the next major component.
+
+The P1-32/P1-33 merge's first Pages run was cancelled by a newer parallel deployment, so those pages were explicitly re-gated through a fresh checkpoint merge rather than treating the cancelled run as success.
 
 ## Security rules
 
@@ -102,28 +92,25 @@ Known core names include:
 - `S3_BUCKET`;
 - `OPENAI_API_KEY`.
 
-No separate news-service API integration was verified in source. If live AWS/IAM/S3 state is required and cannot be established from repository source, request one coherent evidence source at a time and record only sanitized findings.
+If live AWS/IAM/S3 state is needed in future and cannot be established from repository source, collect one coherent sanitized deployed-state source at a time and do not guess.
 
-## Progress
+## Completion record
 
-- [x] Read documentation standard, catalogue, discovery plan, repository scan, templates, and current documentation examples.
-- [x] Inspect complete `degenerate_investigator` repository tree and substantive files.
-- [x] Re-verify S3 defaults and workflow orchestration model.
-- [x] Create persistent workstream plan.
-- [x] Publish/merge P0-10 and P0-11; Pages succeeded for `050fabcd59fa154fdb9cac51fa19b422720e3504`.
-- [x] Publish/merge P1-25; Pages succeeded for `2ee49dde1dac5ce26b4786731332acbf205612df`.
-- [x] Publish/merge P1-26; Pages succeeded for `33f7bf19997ac91aa0b3b3803d14af989b0c9e80`.
-- [x] Publish/merge P1-27 and P1-28; Pages succeeded for `cb7be00a986f5da4ae9a84e97afc4bfa1ae23e34`.
-- [x] Publish/merge P1-29 and P1-30; Pages succeeded for `30dd2d6622386a56db5289c1c771a2af5d744c19`.
-- [x] Publish/merge P1-31; Pages succeeded for `ea398791da2415ad44d1810635cf2810295ff857`.
-- [x] Publish/merge P1-32 and P1-33 in PR #87; original Pages run for `6210e0bc5da013747f0e8d0edfedb7bb11187dd6` was cancelled by a newer parallel deployment.
-- [x] Re-gate P1-32/P1-33 through PR #88; matching Pages deployment succeeded for `ed5c425e6edc5602a4406678d7f992e78cfe38b8`.
-- [x] Publish/merge P2-43; matching Pages deployment succeeded for `6837cce5ba206f1936f5402ce2f8c25e87ec76ce`.
-- [x] Correct current fighter-profile schema count from 18 to 19 fields during the final consistency pass.
-- [ ] Validate/merge the final degenerate_investigator consistency checkpoint and confirm its matching Pages deployment.
+- [x] P0-10 and P0-11 foundation merged; Pages succeeded for `050fabcd59fa154fdb9cac51fa19b422720e3504`.
+- [x] P1-25 current UFC event/fighter ingestion merged; Pages succeeded for `2ee49dde1dac5ce26b4786731332acbf205612df`.
+- [x] P1-26 historical fight/fighter-profile ingestion merged; Pages succeeded for `33f7bf19997ac91aa0b3b3803d14af989b0c9e80`.
+- [x] P1-27 and P1-28 enrichment documentation merged; Pages succeeded for `cb7be00a986f5da4ae9a84e97afc4bfa1ae23e34`.
+- [x] P1-29 and P1-30 feature/training-data documentation merged; Pages succeeded for `30dd2d6622386a56db5289c1c771a2af5d744c19`.
+- [x] P1-31 winner-model training documentation merged; Pages succeeded for `ea39879138875a9ec09b8b9f7a0843a4f55ec3ef`.
+- [x] P1-32 and P1-33 scoring/report documentation merged in PR #87 as `6210e0bc5da013747f0e8d0edfedb7bb11187dd6`; its original Pages run was cancelled by a newer parallel deployment.
+- [x] P1-32/P1-33 were re-gated through PR #88; matching Pages deployment succeeded for `ed5c425e6edc5602a4406678d7f992e78cfe38b8`.
+- [x] P2-43 report-publication workflow documentation merged; Pages succeeded for `6837cce5ba206f1936f5402ce2f8c25e87ec76ce`.
+- [x] Final consistency pass corrected the current fighter-profile schema count from 18 to 19 fields.
+- [x] Final consistency PR #94 merged; matching Pages deployment succeeded for `a3a3ac7fb9bb301f364b58724c7308ae9fb58507`.
+- [x] All assigned `degenerate_investigator` catalogue targets are documented and deployment-gated.
 
 ## Current continuation point
 
-Current branch: `docs/degenerate-final-consistency-20260807`.
+The assigned `degenerate_investigator` documentation workstream is complete.
 
-Current task: validate and merge the final consistency checkpoint, confirm its matching Pages deployment, then treat the `degenerate_investigator` documentation workstream as complete and proceed to the isolated Overlord workstream.
+Future maintenance should be source-driven: when implementation changes alter workflow inputs, S3 keys, schemas, feature semantics, model/fallback behavior, report provenance, security/configuration names, or publication controls, update the corresponding authoritative page in the same change set and use the normal validation/Pages gate.
