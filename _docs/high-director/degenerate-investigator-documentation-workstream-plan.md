@@ -115,13 +115,14 @@ No separate news-service API integration was verified in source. If live AWS/IAM
 - [x] Publish/merge P1-26; Pages succeeded for `33f7bf19997ac91aa0b3b3803d14af989b0c9e80`.
 - [x] Publish/merge P1-27 and P1-28; Pages succeeded for `cb7be00a986f5da4ae9a84e97afc4bfa1ae23e34`.
 - [x] Publish/merge P1-29 and P1-30; Pages succeeded for `30dd2d6622386a56db5289c1c771a2af5d744c19`.
-- [ ] Publish and merge P1-31 UFC winner-model training documentation.
-- [ ] Complete P1-32 and P1-33 in the inference/report PR.
+- [x] Publish/merge P1-31; Pages succeeded for `ea398791da2415ad44d1810635cf2810295ff857`.
+- [ ] Publish and merge P1-32 target-event scoring documentation.
+- [ ] Publish and merge P1-33 fight-analysis report-generator documentation.
 - [ ] Complete P2-43 publication workflow documentation.
 - [ ] Final cross-link and continuation review.
 
 ## Current continuation point
 
-Current branch: `docs/degenerate-model-training-20260807`.
+Current branch: `docs/degenerate-inference-report-20260807`.
 
-Current task: validate and merge P1-31 model-training documentation, then confirm the matching Pages deployment before starting target-event scoring/report generation.
+Current task: validate and merge P1-32/P1-33 inference/report documentation, then confirm the matching Pages deployment before starting P2-43 report publication.
