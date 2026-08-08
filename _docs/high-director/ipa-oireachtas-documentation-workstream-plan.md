@@ -57,7 +57,7 @@ Use the current `eirepolitic-data-pipeline`, Irish Politics Analytics, Oireachta
 ## Related Documents
 
 - [eirepolitic-data-pipeline repository](../repositories/eirepolitic-data-pipeline.md)
-- [Irish Politics Analytics architecture](../systems/irish-politics-analytics-architecture.md)
+- [Irish Politics Analytics architecture](../systems/irish-politics-analytics.md)
 
 ## Verification Record
 
