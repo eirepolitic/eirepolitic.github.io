@@ -37,28 +37,38 @@ Every component requires: fresh `docs/autodoc-*` branch -> focused PR -> latest-
 | P1 enrichment | #128 | #245 success | `a92c16d8579f7cd0ea1dcbd962d209994241187b` | #232 success |
 | P1 extraction | #129 | #246 success | `1b848d8b3e7ddfb702ce65a6cf4c156f9c7f6ff7` | #233 success |
 | P1 rendering | #130 | #247 success | `e00502b88868efb5a6d72dccbcfd78d2f5c9c83b` | #234 success |
+| P1 review/concision | #131 | #248 success | `7d0ea3473335dfd0ddff1a5c2147ae0bbc484b8f` | #235 success |
+
+**P0 and P1 are complete.**
 
 ## Active Component
 
 ```text
-P1 target 37: LLM review/concision
-Branch: docs/autodoc-review-concision
-Draft: _docs/systems/autodoc-review-concision.md
+P2 target 44: Generated/reviewed artifact lifecycle and manual recovery
+Branch: docs/autodoc-artifact-lifecycle
+Draft: _docs/runbooks/recover-autodoc-artifacts.md
 ```
 
-Verified review facts:
+Verified lifecycle:
 
-- source `docs/<project>/<type>/<doc_key>.md`;
-- target `docs/<project>/<type>/reviewed/<doc_key>.md`;
-- `AUTODOC_MODEL` defaults to `gpt-4.1`; standard workflow explicitly sets `gpt-4.1`;
-- entire generated Markdown is sent in one request with `max_output_tokens=12000`;
-- prompt asks for concision while preserving formatting/headings/order and removing cross-section repetition;
-- no post-review factual/Markdown/front-matter validator and no retry loop;
-- current Appsmith dispatch sends `overwrite: "true"`;
-- existing reviewed file plus overwrite=false skips before source read;
-- workflow stages `docs/` broadly;
-- workflow commit step references `$DOC_KEY` outside the step where that env variable is defined, so current source does not establish a populated doc key in the commit message;
-- reviewed artifact is LLM concision state, not human/factual/publication approval.
+```text
+base config
+-> enriched JSON
+-> section summary CSV
+-> generated/raw Markdown
+-> reviewed Markdown
+-> optional website publication copy
+```
+
+Separate registry:
+
+```text
+doc_configs/<project>/_index.json
+```
+
+Recovery principle: identify the last valid persisted artifact, correct the actual upstream cause, and rerun only the smallest necessary downstream stage. `_index.json` is registry state and should be rebuilt independently when stale.
+
+Manual recovery workflows currently cover enrichment, extraction, rendering, review, and index rebuild. Publication remains separate and should not be used to diagnose upstream generation failures.
 
 ## Security Finding
 
@@ -74,22 +84,21 @@ No redesign is approved.
 
 ## Remaining Sequence
 
-1. P1 review/concision — **active**.
-2. P2 generated/reviewed lifecycle and manual recovery.
-3. P3 historical `docs/eirepolitic/pipeline/*` classification.
-4. Final current-`main` consistency review.
+1. P2 generated/reviewed lifecycle and manual recovery — **active**.
+2. P3 historical `docs/eirepolitic/pipeline/*` classification.
+3. Final current-`main` consistency review and workstream closeout.
 
 ## Next Safe Development Action
 
-Validate/publish review/concision. After matching Pages success, create a fresh P2 lifecycle/recovery branch.
+Validate/publish the P2 recovery runbook. After matching Pages success, create a fresh P3 branch to classify historical `docs/eirepolitic/pipeline/*` raw/reviewed artifacts as historical generated evidence rather than current Irish Politics implementation authority.
 
-Do not change models, prompts, overwrite/approval semantics, credentials/permissions, or publication architecture without explicit approval.
+Do not change models, prompts, recovery workflows, overwrite semantics, credentials/permissions, or publication architecture without explicit approval.
 
 ## Related Documents
 
-- [AutoDoc section-fact extraction](/projects/systems/autodoc-section-fact-extraction/)
 - [AutoDoc template/Markdown rendering](/projects/systems/autodoc-template-markdown-rendering/)
 - [AutoDoc review/concision](/projects/systems/autodoc-review-concision/)
+- [Recover AutoDoc artifacts](/projects/runbooks/recover-autodoc-artifacts/)
 - [AutoDoc publication boundary](/projects/systems/autodoc-publication-boundary/)
 
 ## Verification Record
