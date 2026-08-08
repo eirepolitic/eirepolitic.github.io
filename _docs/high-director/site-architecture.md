@@ -1,135 +1,46 @@
 ---
-title: Documentation Site Architecture
-summary: Final architecture and maintenance model for the Eire Politic technical knowledge base.
-section: high-director
-doc_type: agent
-status: active
+title: Documentation Site Architecture — Superseded Record
+summary: Archived predecessor architecture record retained after current documentation-site architecture moved to the Systems section.
+section: archive
+doc_type: reference
+status: archived
 repository: eirepolitic.github.io
-technologies:
-  - GitHub Pages
-  - Jekyll
-  - Markdown
-  - Liquid
-  - JavaScript
-  - Python
-  - GitHub Actions
 created: 2026-08-05
-updated: 2026-08-05
-last_verified: 2026-08-05
-order: 30
+updated: 2026-08-07
+last_verified: 2026-08-07
+archived_date: 2026-08-07
+archive_reason: Current documentation-site architecture is now maintained in the Eire Politic Documentation Site system page; this predecessor record is retained for historical continuity and URL stability.
+superseded_by: /projects/systems/documentation-site/
 related:
-  - /projects/high-director/site-rebuild-plan/
+  - /projects/systems/documentation-site/
   - /docs/runbooks/documentation-site-operations/
 ---
 
-# Documentation Site Architecture
+# Documentation Site Architecture — Superseded Record
 
-## Purpose
+> Archived and superseded. Current architecture is maintained in [Eire Politic Documentation Site](/projects/systems/documentation-site/).
 
-The site is a version-controlled technical knowledge base for Eire Politic repositories, systems, data, operations, architecture decisions, and High Director-assisted development.
+## Historical Role
 
-Its primary purpose is development continuity and technical reference. Public presentation and portfolio value are secondary outcomes.
+This page previously served as the main architecture reference for the documentation website while that material lived under High Director. It described GitHub Pages/Jekyll hosting, `_docs/` collection structure, metadata-driven navigation, browser-side search, validation, public-security boundaries, and the branch/PR/Pages change-management model.
 
-## Hosting and build
+Those current architectural facts have now been consolidated into the Systems documentation where the documentation site itself is the primary subject.
 
-- Repository: `eirepolitic.github.io`
-- Default branch: `main`
-- Hosting: GitHub Pages
-- Static-site generator: Jekyll
-- Primary content format: Markdown
-- Deployment: GitHub Pages workflow after changes reach `main`
+## Why It Was Superseded
 
-No database, application server, Lambda function, or external search service is required.
+The page's subject is the documentation website, not the High Director agent. Retaining it as an active High Director page caused navigation/category drift and duplicated the formal Documentation Site system page.
 
-## Content model
+The physical file remains at its original path so existing relative links and its default public URL continue to resolve.
 
-Published technical documentation lives in `_docs/` as a Jekyll collection.
+## Current Authority
 
-Top-level sections are defined in `_data/docs_sections.yml`:
+- [Eire Politic Documentation Site](/projects/systems/documentation-site/) — current architecture and system boundary.
+- [Documentation Site Operations](/docs/runbooks/documentation-site-operations/) — current operating and publishing procedures.
+- `DOCUMENTATION_STANDARD.md` — metadata/content rules.
 
-- Repositories
-- Systems
-- Data and Schemas
-- Runbooks
-- Architecture Decisions
-- High Director
-- Notes
-- Archive
+## Verification Record
 
-Each document uses standardized front matter defined in `DOCUMENTATION_STANDARD.md`.
-
-## Rendering model
-
-- `_layouts/default.html` provides the global site shell.
-- `_layouts/docs.html` renders technical documents.
-- `_layouts/docs-section.html` renders section landing pages.
-- `_includes/docs-nav.html` generates documentation navigation.
-- `assets/css/site.css` contains the primary design system.
-- `assets/css/search.css` and `assets/css/indexes.css` contain feature-specific styles.
-- `assets/js/site.js` builds the on-page table of contents.
-- `assets/js/search.js` runs browser-based documentation search.
-
-## Navigation and discovery
-
-Navigation and indexes are generated from document metadata rather than physical folder-name checks.
-
-Discovery features include:
-
-- section navigation and counts
-- section landing pages
-- full-text client-side search
-- repository, technology, type, status, and recent-update indexes
-- explicit related-document metadata
-- automatic same-repository relationships
-- recently updated content on the homepage
-
-## Search architecture
-
-Jekyll generates `/search-index.json` from public documents in `_docs/`.
-
-The browser loads that file and ranks matches across titles, summaries, repositories, sections, types, statuses, technologies, tags, and page text.
-
-The search requires no API, database, account, or paid service.
-
-## Quality controls
-
-`scripts/validate_docs.py` validates:
-
-- required front matter
-- allowed sections, document types, and statuses
-- date formats
-- archive requirements
-- duplicate permalinks
-- local links and assets
-- explicit related URLs
-
-`.github/workflows/validate-documentation.yml` runs the validator on relevant pull requests and by manual dispatch.
-
-## Security model
-
-The site is public. Secrets, credentials, private keys, tokens, session data, and confidential material must never be committed.
-
-The `visibility` field controls generated listings and search inclusion, but it is not a security boundary because committed content remains in repository history.
-
-## Change-management model
-
-Material changes should follow this path:
-
-1. Create a branch from `main`.
-2. Make focused changes.
-3. Open a pull request.
-4. Confirm validation passes.
-5. Merge into `main`.
-6. Confirm the Pages deployment succeeds.
-7. Verify affected live pages.
-
-## Continuation model
-
-Future development should begin by reading:
-
-1. `DOCUMENTATION_STANDARD.md`
-2. Documentation Site Operations
-3. Documentation Site Rebuild Plan
-4. The latest merged pull requests
-
-The next safe action should be recorded in relevant system or repository documentation before a development session ends.
+- Last verified: `2026-08-07`
+- Verified against: former architecture record, current Documentation Site system page, documentation standard, and current site cleanup initiative.
+- Verified by: High Director
+- Verification scope: supersession, URL/link-preservation decision, current authority, and archival classification.
