@@ -37,7 +37,9 @@ Current implementation/configuration outranks runtime evidence, user-supplied au
 
 Each major documentation component uses a focused `docs/ipa-*` PR. Before moving to the next component: documentation validation must pass, the PR must merge, and the matching `pages-build-deployment` run must succeed for that exact merge SHA.
 
-## P0 execution state
+## Priority execution state
+
+### P0
 
 | Order | Component | State |
 | --- | --- | --- |
@@ -45,8 +47,19 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 | 2 | `eirepolitic-data-pipeline` repository | complete and published |
 | 3 | Unified Oireachtas Data Platform | complete and published |
 | 4 | Oireachtas canonical data-product catalogue | complete and published |
-| 5 | Oireachtas refresh/validation orchestration | complete and published after exact-SHA retry |
-| 6 | Oireachtas write policies and downstream contracts | draft on `docs/ipa-oireachtas-policies-contracts` |
+| 5 | Oireachtas refresh/validation orchestration | complete and published |
+| 6 | Oireachtas write policies and downstream contracts | complete and published |
+
+**P0 status: complete.**
+
+### P1
+
+| Order | Component | State |
+| --- | --- | --- |
+| 17 | Instagram / constituency campaign rendering system | draft on `docs/ipa-instagram-rendering` |
+| 18 | AI member-profile / Instagram content workflow | discovery in progress |
+| 19 | Member Profile Metrics Builder | discovery complete enough to draft |
+| 20 | Reusable LLM Task Runner Framework | discovery complete enough to draft |
 
 ## Verified P0 facts
 
@@ -62,6 +75,17 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 - **Observed runtime:** scheduled orchestrator run `30740881592` on 2026-08-02 completed refresh, validation, promotion, and pointer verification successfully.
 - Historical July packet-status statements that scheduled observation was pending are stale relative to August runtime evidence.
 
+## Verified P1 rendering discoveries
+
+- `Instagram Campaign Render (Manual)` is the current review-oriented campaign workflow and does not publish, schedule, or approve Instagram content.
+- `process/instagram_render_campaign.py` currently supports only `member_profile_batch_v1` and initializes generated review rows as `needs_review` / `publish_ready=no`.
+- `instagram/renderer/template_renderer.py` is a deterministic Pillow renderer for JSON layouts/palettes plus YAML/JSON bindings; it emits PNGs, source-value metadata, render manifests, and warnings.
+- deterministic caption/alt-text generation is separate from rendering and does not use an LLM.
+- publish-queue generation is gated by explicit approval state, `publish_ready`, and empty `safety_notes`; it creates files only and performs no social-platform publishing.
+- `process/instagram_render_post.py` remains the executable constituency Jinja2/Playwright renderer and has a local fixture regression test.
+- Bannerbear and Placid provider adapters are implemented with explicit mappings and local-HTML fallback, but live provider credentials/templates/successful current renders are unverified in this workstream.
+- constituency/provider-test paths still default to older compatibility/legacy S3 inputs, while the current member-profile campaign reads `processed/members/member_profile_metrics_2025.csv`.
+
 ## Discovery state
 
 ### Completed for P0
@@ -74,9 +98,20 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 - [x] downstream contract config, staging, compatibility adapters, comparison/mismatch behavior and contract tests
 - [x] batch control, seeding, reassembly, promotion and rollback behavior
 
-### Remaining later-workstream discovery
+### P1 discovery
 
-- [ ] detailed P1 Instagram/content/member-metrics/LLM operating documentation
+- [x] complete `instagram/` tree
+- [x] complete `process/instagram*` tree
+- [x] complete Instagram workflow tree
+- [x] campaign renderer/spec, deterministic template renderer, copy pack, queue, S3 preview path
+- [x] constituency HTML renderer and local renderer test
+- [x] external provider adapter implementation at architecture level
+- [ ] AI member-profile / Option 5 implementation and workflows at documentation depth
+- [ ] Member Profile Metrics Builder at dedicated component depth
+- [ ] Reusable LLM Task Runner Framework at dedicated component depth
+
+### Later priorities
+
 - [ ] P2 maintenance/repair/backfill utility status and safety procedures
 - [ ] P3 retained legacy/editorial successor/status reconciliation
 - [ ] exact live IAM/S3/Glue/Athena configuration only if a later documentation target requires deployed-account evidence
@@ -93,7 +128,8 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 | Catalogue publication retry | #73 | `31220665186` success | `31220683272` success; `6f5c9c1d9685addeed5ec75a05a6d701de04733d` | complete |
 | P0 orchestration | #74 | validation passed | first exact-SHA deployment cancelled by parallel `main` activity | superseded by retry |
 | Orchestration publication retry | #84 | `31229212100` success | `31229230209` success; `9b68becb6e2ca69c58c57cf1b2104948ec6a60d0` | complete |
-| P0 policies/contracts | pending PR | pending | pending | draft in progress |
+| P0 policies/contracts | #85 | `31229340996` success | `31229357085` success; `021db2fe9fb9ea6b1d581b121508bdd8cd81bb83` | complete |
+| P1 Instagram/constituency rendering | pending PR | pending | pending | draft in progress |
 
 ## Publication-gate note
 
@@ -101,4 +137,4 @@ Parallel `main` changes cancelled the first matching Pages deployment for both t
 
 ## Next action
 
-Validate, merge, and exact-SHA Pages-verify the P0 write-policy/downstream-contract reference. Once that succeeds, mark P0 complete and begin P1 from current `main`, starting with the Instagram/constituency campaign rendering system.
+Validate, merge, and exact-SHA Pages-verify the Instagram/constituency campaign rendering system page. After that gate succeeds, begin the AI member-profile / Instagram content workflow from current `main`.
