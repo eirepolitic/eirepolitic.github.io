@@ -3,7 +3,7 @@ title: bb-comp-prices Walmart.ca acquisition and probe subsystem
 summary: Verified Walmart.ca search/detail probe framework, identity-challenge behavior, current blocked production status, workflow operation, and safe research boundary.
 section: systems
 doc_type: pipeline
-status: experimental
+status: active
 created: 2026-08-07
 updated: 2026-08-07
 last_verified: 2026-08-07
