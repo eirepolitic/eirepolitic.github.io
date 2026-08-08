@@ -14,7 +14,7 @@ repository: Overlord
 
 ## Purpose
 
-Persistent execution plan for the smaller `Overlord` documentation workstream. The owner-wide target catalogue remains the read-only scope contract; this file keeps Overlord progress separate from the `degenerate_investigator` workstream and from other parallel documentation chats.
+Persistent execution and completion record for the `Overlord` documentation workstream. The owner-wide target catalogue remains the read-only scope contract; this file records evidence, scope boundaries, completed target coverage, deployment gates, and future continuation rules for Overlord only.
 
 ## Scope
 
@@ -64,40 +64,38 @@ Observed fixture front matter fields:
 
 No source code currently defines a formal allowed status vocabulary, transition graph, schema validator, or automated lifecycle enforcement. Documentation presents conventions as observed conventions, not enforced behavior.
 
-## Planned sequence
-
-1. Complete the `degenerate_investigator` workstream and final Pages gate.
-2. Sync from current validated documentation `main`.
-3. Create an isolated `docs/overlord-*` branch.
-4. Document repository purpose, maturity, record schema, work/personal partition, lifecycle/status conventions, and limitations.
-5. Document versioned task/project/meeting templates, equivalence, naming convention, and current limitations.
-6. Validate, merge, and verify the matching Pages deployment.
-7. Record final completion state in the persistent plans.
-
 ## Merge and deployment gate
 
-Before every merge:
+The implemented sequence was:
 
-1. run repository documentation validation;
-2. confirm validation success;
-3. merge the focused PR;
-4. confirm the matching GitHub Pages deployment succeeds for the merged SHA.
+1. complete and final-gate the `degenerate_investigator` workstream;
+2. sync Overlord work from current validated documentation `main`;
+3. use an isolated `docs/overlord-*` branch;
+4. document P2-45 and P2-46 only from verified source;
+5. run repository documentation validation;
+6. merge only after validation success;
+7. confirm the matching GitHub Pages deployment for the merged SHA;
+8. record final completion state here.
 
-## Progress
+The first Overlord draft PR was closed rather than merged after validation exposed documentation-format issues. A replacement branch was recreated from validated current `main`, the reference page was placed under `_docs/notes/`, and an invalid unquoted YAML summary scalar was corrected before successful validation.
+
+## Completion record
 
 - [x] Read documentation standard, catalogue, discovery plan, repository scan, templates, and current documentation examples.
 - [x] Inspect and re-verify complete `Overlord` repository tree and substantive files.
-- [x] Create persistent workstream plan.
+- [x] Create a persistent Overlord workstream plan.
 - [x] Complete and final-gate the `degenerate_investigator` workstream before Overlord.
-- [x] Draft P2-45 repository/task-record system documentation.
-- [x] Draft P2-46 versioned-template documentation.
-- [x] Recreate the Overlord branch from validated current `main` after the first stale branch failed validation.
-- [ ] Validate and merge the replacement focused Overlord PR.
-- [ ] Confirm the matching Pages deployment.
-- [ ] Record final completion/continuation state.
+- [x] Document P2-45 repository/task-record system in `_docs/repositories/overlord.md`.
+- [x] Document P2-46 versioned templates in `_docs/notes/overlord-versioned-task-project-meeting-templates.md`.
+- [x] Keep test-task files as fixtures/examples rather than separate documentation targets.
+- [x] Keep current capability claims constrained to the verified Markdown repository; no application/agent/API/cloud/automation capabilities were inferred.
+- [x] Replacement Overlord branch exact head `14d347a00907f3da1620436fa405168407c5986a` passed repository documentation validation.
+- [x] Replacement PR #102 merged as `07243ef21313e762a5bde8c2fe66c8ef195f702e`.
+- [x] Matching GitHub Pages deployment #207 succeeded for `07243ef21313e762a5bde8c2fe66c8ef195f702e`.
+- [x] All assigned Overlord catalogue targets are documented and deployment-gated.
 
 ## Current continuation point
 
-Current branch: `docs/overlord-documentation-v2-20260807`.
+The assigned Overlord documentation workstream is complete.
 
-Current task: validate this fresh-main replacement branch, merge P2-45/P2-46 only after success, confirm the matching Pages deployment, then perform the final workstream closeout update.
+Future maintenance should remain source-grounded. If Overlord later gains executable code, validation tooling, automation, APIs, integrations, deployment infrastructure, new status rules, or new template versions, document those capabilities only after they exist in source or an explicit repository standard, and use the normal validation/Pages gate.
