@@ -59,7 +59,7 @@ The repository also contains historical generated documentation for projects out
 - Base/type templates: `templates/base.md` and `templates/types/*.md`.
 - Project configuration/registry: `doc_configs/<owner>/*.json`, `*.enriched.json`, `_index.json`, and `summaries/*.csv`.
 - Generated/reviewed Markdown: repository `docs/` tree.
-- Documentation discovery evidence: `_docs/high-director/repository-scan-autodoc.md` in `eirepolitic.github.io`.
+- Documentation discovery evidence: `_docs/notes/repository-scan-autodoc.md` in `eirepolitic.github.io`.
 
 Evidence precedence for current backend behavior is executable workflow/Python source first, then current persisted configuration/intermediate artifacts, then generated/reviewed outputs, then historical handoff text.
 
