@@ -1,101 +1,64 @@
 ---
-title: Overlord Documentation Workstream Plan
-summary: Persistent execution plan, evidence baseline, scope boundary, sequencing, and merge/deployment gates for the Overlord documentation workstream.
-section: high-director
-doc_type: agent
-status: active
+title: Overlord Documentation Workstream Completion Ledger
+summary: Archived completion ledger for the completed Overlord documentation workstream.
+section: archive
+doc_type: reference
+status: archived
 owner: High Director
 created: 2026-08-07
 updated: 2026-08-07
+archived_date: 2026-08-07
+last_verified: 2026-08-07
 repository: Overlord
+archive_reason: The assigned documentation workstream is complete; current maintenance belongs on the authoritative repository and template-reference pages.
 ---
 
-# Overlord Documentation Workstream Plan
+# Overlord Documentation Workstream Completion Ledger
 
-## Purpose
+> This page preserves the completed Overlord documentation workstream. It is historical coordination evidence, not current High Director configuration or an active execution queue.
 
-Persistent execution and completion record for the `Overlord` documentation workstream. The owner-wide target catalogue remains the read-only scope contract; this file records evidence, scope boundaries, completed target coverage, deployment gates, and future continuation rules for Overlord only.
+## Archive Summary
 
-## Scope
+The assigned Overlord documentation scope is complete. The repository was documented as a lightweight Markdown task-record store with work/personal partitions, YAML front matter, observed status conventions, fixtures, and versioned task/project/meeting templates.
 
-Assigned catalogue targets:
+## Completed Scope
 
-- P2-45: `Overlord` repository/task-record system.
-- P2-46: Overlord versioned task/project/meeting templates.
+The completed documentation covers:
 
-The `test-task-*` files are fixtures/examples used as schema evidence, not separate documentation targets.
+- the `Overlord` repository/task-record system;
+- work/personal record partitions;
+- observed YAML-front-matter fields and lifecycle conventions;
+- fixture/example records;
+- versioned task/project/meeting templates;
+- current limitations and absence of verified executable/cloud automation.
 
-## Verified current-state boundary
+## Final Verified Boundaries
 
-Evidence inspected and re-verified on 2026-08-07:
+Repository source did not establish an executable application, agent, API, cloud deployment, GitHub Actions runtime, database, or external integration. Those capabilities were therefore not inferred from the repository name.
 
-- complete 20-entry repository tree;
-- `README.md`;
-- all files under `tasks/work/` and `tasks/personal/`;
-- `templates/tasks/task_v1.md`;
-- `templates/tasks/project_v1.md`;
-- `templates/tasks/meeting_v1.md`.
+Observed statuses and timestamp/slug conventions were documented as manual conventions rather than enforced schemas or state machines. `test-task-*` files were treated as fixtures/examples rather than separate technical subsystems.
 
-Verified repository characteristics:
+## Security Record
 
-- lightweight Markdown record repository;
-- `tasks/work/` contains eight `test-task-*` fixtures plus `.gitkeep`;
-- `tasks/personal/` contains only `.gitkeep`;
-- YAML front matter record metadata;
-- body sections `Overview`, `Notes`, `Next Actions`, `Open Questions`, and `Changelog`;
-- versioned task/project/meeting template filenames;
-- all three current v1 templates are byte-equivalent and share Git blob SHA `84736e15c54ee52c00964b58e054255f02e59cc2`;
-- observed fixture statuses include `active` and `done`.
+The repository's `personal` directory was documented as an organizational partition only; no technical privacy/access-control guarantee was inferred from its name. No private personal data or secrets were introduced into documentation.
 
-No verified executable application, agent, API, cloud deployment, GitHub Actions automation, database, or external integration exists in the inspected repository. Do not infer any of those capabilities from the repository name.
+## Why It Was Archived
 
-## Current schema evidence
+The documentation workstream is complete. This file now serves only as historical coordination evidence. Keeping it in the active High Director navigation would incorrectly suggest that the Overlord repository is part of High Director configuration or operation.
 
-Observed fixture front matter fields:
+## Current Recommendation
 
-- `title`;
-- `slug`;
-- `context`;
-- `template_type`;
-- `template_version`;
-- `status`;
-- `created_at`;
-- `updated_at`.
+Use the current Overlord repository page and template reference for maintenance. If executable code, automation, validation, integrations, or deployment infrastructure is added later, document those capabilities only after they exist in source.
 
-No source code currently defines a formal allowed status vocabulary, transition graph, schema validator, or automated lifecycle enforcement. Documentation presents conventions as observed conventions, not enforced behavior.
+## Related Documents
 
-## Merge and deployment gate
+- [Overlord repository](../repositories/overlord.md)
+- [Overlord versioned task, project, and meeting templates](../notes/overlord-versioned-task-project-meeting-templates.md)
 
-The implemented sequence was:
+## Verification Record
 
-1. complete and final-gate the `degenerate_investigator` workstream;
-2. sync Overlord work from current validated documentation `main`;
-3. use an isolated `docs/overlord-*` branch;
-4. document P2-45 and P2-46 only from verified source;
-5. run repository documentation validation;
-6. merge only after validation success;
-7. confirm the matching GitHub Pages deployment for the merged SHA;
-8. record final completion state here.
-
-The first Overlord draft PR was closed rather than merged after validation exposed documentation-format issues. A replacement branch was recreated from validated current `main`, the reference page was placed under `_docs/notes/`, and an invalid unquoted YAML summary scalar was corrected before successful validation.
-
-## Completion record
-
-- [x] Read documentation standard, catalogue, discovery plan, repository scan, templates, and current documentation examples.
-- [x] Inspect and re-verify complete `Overlord` repository tree and substantive files.
-- [x] Create a persistent Overlord workstream plan.
-- [x] Complete and final-gate the `degenerate_investigator` workstream before Overlord.
-- [x] Document P2-45 repository/task-record system in `_docs/repositories/overlord.md`.
-- [x] Document P2-46 versioned templates in `_docs/notes/overlord-versioned-task-project-meeting-templates.md`.
-- [x] Keep test-task files as fixtures/examples rather than separate documentation targets.
-- [x] Keep current capability claims constrained to the verified Markdown repository; no application/agent/API/cloud/automation capabilities were inferred.
-- [x] Replacement Overlord branch exact head `14d347a00907f3da1620436fa405168407c5986a` passed repository documentation validation.
-- [x] Replacement PR #102 merged as `07243ef21313e762a5bde8c2fe66c8ef195f702e`.
-- [x] Matching GitHub Pages deployment #207 succeeded for `07243ef21313e762a5bde8c2fe66c8ef195f702e`.
-- [x] All assigned Overlord catalogue targets are documented and deployment-gated.
-
-## Current continuation point
-
-The assigned Overlord documentation workstream is complete.
-
-Future maintenance should remain source-grounded. If Overlord later gains executable code, validation tooling, automation, APIs, integrations, deployment infrastructure, new status rules, or new template versions, document those capabilities only after they exist in source or an explicit repository standard, and use the normal validation/Pages gate.
+- Last verified: `2026-08-07`
+- Verified against: completed Overlord documentation and current repository evidence captured by the workstream.
+- Verified by: High Director
+- Verification scope: completed documentation scope, repository maturity boundaries, security/privacy interpretation, and maintenance handoff.
+- Unverified areas: none beyond future capabilities not present in source at archive time.
