@@ -38,37 +38,36 @@ Every component requires: fresh `docs/autodoc-*` branch -> focused PR -> latest-
 | P1 extraction | #129 | #246 success | `1b848d8b3e7ddfb702ce65a6cf4c156f9c7f6ff7` | #233 success |
 | P1 rendering | #130 | #247 success | `e00502b88868efb5a6d72dccbcfd78d2f5c9c83b` | #234 success |
 | P1 review/concision | #131 | #248 success | `7d0ea3473335dfd0ddff1a5c2147ae0bbc484b8f` | #235 success |
+| P2 artifact lifecycle/recovery | #132 | #249 success | `c2e4c491d8a43a2425369b9b03154fdc295c34d7` | #236 success |
 
-**P0 and P1 are complete.**
+**P0, P1, and P2 are complete.**
 
 ## Active Component
 
 ```text
-P2 target 44: Generated/reviewed artifact lifecycle and manual recovery
-Branch: docs/autodoc-artifact-lifecycle
-Draft: _docs/runbooks/recover-autodoc-artifacts.md
+P3 target 56: Historical docs/eirepolitic/pipeline/* artifact classification
+Branch: docs/autodoc-historical-artifacts
+Draft: _docs/archive/autodoc-eirepolitic-generated-artifacts.md
 ```
 
-Verified lifecycle:
+Verified current artifact inventory contains six `pipeline` document keys, each with both raw and `reviewed/` Markdown:
 
 ```text
-base config
--> enriched JSON
--> section summary CSV
--> generated/raw Markdown
--> reviewed Markdown
--> optional website publication copy
+constituency_images_indexer
+debate_issue_classifier
+llm_column_creator
+member_images_pipeline
+member_summaries_table
+s3_column_deleter
 ```
 
-Separate registry:
+Current classification:
 
-```text
-doc_configs/<project>/_index.json
-```
-
-Recovery principle: identify the last valid persisted artifact, correct the actual upstream cause, and rerun only the smallest necessary downstream stage. `_index.json` is registry state and should be rebuilt independently when stale.
-
-Manual recovery workflows currently cover enrichment, extraction, rendering, review, and index rebuild. Publication remains separate and should not be used to diagnose upstream generation failures.
+- these are derived AutoDoc documentation artifacts with complete base/enriched/summary/raw/reviewed provenance retained in `autodoc`;
+- `reviewed/` is AutoDoc LLM-concision state, not human/factual approval;
+- their generated prose is historical evidence, not current Irish Politics implementation authority;
+- current `eirepolitic.github.io` already contains dedicated source-reconciled archive/lineage pages for all six;
+- current implementation questions should use `eirepolitic-data-pipeline` source plus those reconciled archive records.
 
 ## Security Finding
 
@@ -84,25 +83,24 @@ No redesign is approved.
 
 ## Remaining Sequence
 
-1. P2 generated/reviewed lifecycle and manual recovery — **active**.
-2. P3 historical `docs/eirepolitic/pipeline/*` classification.
-3. Final current-`main` consistency review and workstream closeout.
+1. P3 historical artifact classification — **active**.
+2. Final current-`main` cross-page/link/evidence consistency review and workstream closeout.
 
 ## Next Safe Development Action
 
-Validate/publish the P2 recovery runbook. After matching Pages success, create a fresh P3 branch to classify historical `docs/eirepolitic/pipeline/*` raw/reviewed artifacts as historical generated evidence rather than current Irish Politics implementation authority.
+Validate/publish the P3 archive index. After matching Pages success, create one final fresh branch from current `main` for consistency review, stale-status correction, cross-link repair if required, and persistent-plan closeout.
 
-Do not change models, prompts, recovery workflows, overwrite semantics, credentials/permissions, or publication architecture without explicit approval.
+Do not change historical Irish Politics implementation, AutoDoc models/prompts/workflows, credentials/permissions, or publication architecture without explicit approval.
 
 ## Related Documents
 
-- [AutoDoc template/Markdown rendering](/projects/systems/autodoc-template-markdown-rendering/)
-- [AutoDoc review/concision](/projects/systems/autodoc-review-concision/)
 - [Recover AutoDoc artifacts](/projects/runbooks/recover-autodoc-artifacts/)
-- [AutoDoc publication boundary](/projects/systems/autodoc-publication-boundary/)
+- [Historical AutoDoc Irish Politics artifacts](/projects/archive/autodoc-eirepolitic-generated-artifacts/)
+- [eirepolitic-data-pipeline](/projects/repositories/eirepolitic-data-pipeline/)
+- [AutoDoc repository](/projects/repositories/autodoc/)
 
 ## Verification Record
 
 - Last verified: `2026-08-07` local programme date.
 - Verified by: High Director.
-- Unverified external state: PAT scopes, Appsmith workspace membership, OpenAI account/service limits, repository-rule enforcement.
+- Unverified external state: PAT scopes, Appsmith workspace membership, OpenAI account/service limits, repository-rule enforcement, exact historical run IDs for every archived artifact pair.
