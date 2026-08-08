@@ -1,6 +1,6 @@
 ---
-title: <High Director topic or initiative>
-summary: <One sentence stating the agent-assisted work, current state, and continuation purpose>
+title: <High Director capability or configuration topic>
+summary: <One sentence describing the High Director capability, configuration, integration, runtime behavior, or verification covered>
 section: high-director
 doc_type: agent
 status: active
@@ -11,138 +11,97 @@ owner: High Director
 order: 100
 permalink: /projects/high-director/<slug>/
 # Optional:
-# repository: <Primary repository name>
-# system: <Affected system name>
+# repository: <Repository implementing or configuring High Director>
+# system: <High Director subsystem or integration>
 # tags:
 #   - high-director
 #   - <domain>
 ---
 
-# <High Director topic or initiative>
+# <High Director capability or configuration topic>
 
-> Use this template for agent-assisted development plans, operating guidance, capability records, or continuation documents. Remove headings that add no value and never publish unresolved placeholders as facts.
+> Use this template only when the page's primary subject is the High Director agent itself: its configuration, capabilities, tools, integrations, runtime architecture, security/access boundaries, implementation, operating rules, or verification. Do not use this template merely because High Director authored, coordinated, or executed work on another repository, system, documentation programme, or project.
 
 ## Purpose
 
-State why this document exists, what work or capability it governs, and how it should help future High Director sessions continue safely.
+State what aspect of High Director this document explains and why an operator or future High Director session needs it.
 
 ## Current State
 
-Describe what is implemented, merged, deployed, validated, pending review, blocked, paused, deprecated, or unverified.
+Describe what High Director capability, configuration, integration, runtime component, or operating rule is currently implemented, deployed, validated, blocked, deprecated, or unverified.
 
-Use exact pull request numbers, branches, commits, workflow runs, repositories, file paths, platform objects, and deployment states. Separate confirmed facts from assumptions and planned work.
+Use exact repositories, file paths, platform objects, workflow names, commits, and deployment states where relevant. Separate current facts from proposed changes.
 
 ## Scope
 
 ### Included
 
-List the repositories, systems, platforms, files, workflows, datasets, documentation, or decisions covered.
+List the High Director components, configuration, actions, backend services, integrations, security boundaries, or operating behavior covered.
 
 ### Excluded
 
-State what must not be changed or started under this document, including blocked phases, architectural boundaries, security constraints, or deferred work.
+State related systems or projects that this page does not document. Project/workstream plans whose primary subject is another repository or documentation programme belong in `notes` while active and `archive` when complete.
 
 ## Source of Truth
 
-Identify the authoritative locations for code, configuration, plans, deployments, and decisions.
+Identify authoritative locations for the High Director behavior covered here.
 
 - Repository: `<exact repository name>`
 - Primary files: `<exact paths>`
-- Working branch or default branch: `<branch name>`
-- Pull requests: `<numbers or stable references>`
-- Workflows: `<exact .github/workflows path or workflow name>`
-- Platform objects: `<exact non-secret AWS, Appsmith, Power BI, Power Automate, or other names>`
-- Parent plan or decision: `<stable internal documentation link>`
+- Branch: `<branch name>`
+- Workflows: `<exact workflow names/paths>`
+- Platform objects: `<exact non-secret AWS, Google, GitHub, Appsmith, Power BI, Power Automate, or other names>`
+- Parent reference: `<stable internal documentation link>`
 
 State which source wins when documentation and implementation differ.
 
-## Completed Work
+## Implementation Details
 
-Record only work that is actually committed, merged, deployed, validated, or otherwise confirmed. Include evidence such as pull requests, commits, workflow results, and exact paths.
+Explain only the High Director implementation details necessary to understand or safely maintain the subject:
 
-Do not describe drafted, previewed, or local-only changes as complete.
+- entry points and configuration files;
+- inputs, outputs, interfaces, and dependencies;
+- runtime/deployment behavior;
+- validation and expected evidence;
+- known differences between intended and actual behavior.
 
-## Current Implementation Details
-
-Explain the parts of the implementation needed to continue safely:
-
-- Repository and directory structure.
-- Important entry points and configuration files.
-- Inputs, outputs, interfaces, and dependencies.
-- Deployment and operational behavior.
-- Validation commands and expected evidence.
-- Known differences between intended and actual behavior.
-
-Keep this section focused on continuation, not a full duplicate of repository or system documentation.
+Link to repository/system/runbook pages instead of duplicating unrelated project documentation.
 
 ## Decisions and Constraints
 
-Record decisions already made, unresolved decisions, architectural boundaries, user approvals, cost constraints, security rules, tooling limitations, and actions that require confirmation.
-
-Link architecture decisions where available. Do not silently reinterpret earlier constraints.
+Record High Director-specific architecture boundaries, approvals, cost constraints, security rules, tooling limitations, and decisions that affect this capability or configuration.
 
 ## Security and Access
 
 Document allowed access, approval boundaries, secret-storage locations, required roles, protected resources, and prohibited actions.
 
-Name repositories, environments, variables, secret objects, roles, connections, parameters, and platform resources without exposing values.
-
-Never include credentials, tokens, private keys, secret values, session data, private personal data, or confidential identifiers.
+Name resources and secret objects without exposing values. Never include credentials, tokens, private keys, session data, private personal data, or confidential identifiers.
 
 ## Validation and Evidence
 
-State how current claims were verified.
+State how current High Director claims were verified, including applicable tests, workflows, deployments, source files, commits, platform objects, and any unverified areas.
 
-Include:
-
-- Commands, tests, validators, or queries used.
-- GitHub Actions workflow and run result.
-- Deployment or Pages result where applicable.
-- Files, commits, pull requests, or platform objects inspected.
-- Areas not verified.
-
-Editing this document alone does not justify changing `last_verified`.
+Editing wording alone does not justify changing `last_verified`.
 
 ## Failure Modes and Recovery
 
-Document likely continuation failures, such as working from an outdated branch, bypassing validation, assuming a deployment succeeded, changing the wrong repository, exposing secrets, or starting a blocked phase.
-
-For each, state the visible symptom, safe first check, authoritative evidence, and recovery or escalation path.
+For important failures, state the visible symptom, safe first check, authoritative evidence, and recovery/escalation path.
 
 ## Known Limitations
 
-List missing access, unavailable tools, unverified behavior, incomplete documentation, platform limitations, manual dependencies, and assumptions that may affect future work.
+List missing access, unavailable tools, unverified behavior, manual dependencies, platform limitations, and assumptions that affect the High Director subject covered here.
 
 ## Outstanding Work
 
-List actionable unfinished work in dependency order. Include exact repository, branch, file, platform object, blocker, and required approval where relevant.
-
-Distinguish required work from optional improvements.
+List unfinished High Director-specific work in dependency order. Do not turn this section into a general project-management plan for unrelated repositories or systems.
 
 ## Next Safe Development Action
 
-State the smallest useful action that can be performed without guessing or changing architecture.
-
-Include:
-
-- Exact repository and branch.
-- Exact file or platform object.
-- Preconditions and checks.
-- Expected change.
-- Validation command or workflow.
-- Merge or deployment gate.
-
-Example: On branch `high-director/example-step`, update `_templates/example-template.md`, run the documentation validation workflow, and open a pull request without beginning the example-document phase.
-
-## Handoff Notes
-
-Record details a future High Director session must know before acting, including sequence, branch strategy, pending reviews, temporary conditions, naming conventions, and decisions that must not be revisited without cause.
-
-Avoid repeating information already clear in the sections above.
+State the smallest useful action that can be performed without guessing or changing architecture. Include the exact repository/branch/path or platform object, expected change, validation, and merge/deployment gate when applicable.
 
 ## Related Documents
 
-Link parent plans, repository pages, system pages, schemas, runbooks, architecture decisions, previous High Director records, and successor documents using stable internal links. Explain the relationship when useful.
+Link relevant High Director references plus repository, system, schema, runbook, or decision pages. If a project was merely coordinated by High Director, link to its own Notes/Archive/Repository/System documentation rather than making it a High Director subordinate page.
 
 ## Verification Record
 
@@ -154,6 +113,6 @@ Link parent plans, repository pages, system pages, schemas, runbooks, architectu
 
 ## When to Create Subordinate Pages
 
-Keep the main page authoritative for purpose, scope, current state, completed work, decisions, outstanding work, and next safe action. Create subordinate pages for large implementation phases, tool-specific procedures, detailed repository analyses, migration plans, validation evidence, or recurring runbooks when they are independently maintained or would make the main page difficult to scan.
+Create subordinate High Director pages only when the subordinate page is still primarily about High Director and has an independently maintained implementation, procedure, integration, security boundary, or verification cycle.
 
-Link subordinate pages from the exact section where they become relevant and preserve a clear parent-child relationship.
+Do not use the High Director section as a container for arbitrary development plans, repository scans, website rebuild plans, or workstream continuation records. Classify those documents by their actual primary subject and lifecycle.
