@@ -118,11 +118,12 @@ No separate news-service API integration was verified in source. If live AWS/IAM
 - [x] Publish/merge P1-31; Pages succeeded for `ea398791da2415ad44d1810635cf2810295ff857`.
 - [x] Publish/merge P1-32 and P1-33 in PR #87; original Pages run for `6210e0bc5da013747f0e8d0edfedb7bb11187dd6` was cancelled by a newer parallel deployment.
 - [x] Re-gate P1-32/P1-33 through PR #88; matching Pages deployment succeeded for `ed5c425e6edc5602a4406678d7f992e78cfe38b8`.
-- [ ] Publish and merge P2-43 report-publication workflow documentation.
-- [ ] Final cross-link and continuation review.
+- [x] Publish/merge P2-43; matching Pages deployment succeeded for `6837cce5ba206f1936f5402ce2f8c25e87ec76ce`.
+- [x] Correct current fighter-profile schema count from 18 to 19 fields during the final consistency pass.
+- [ ] Validate/merge the final degenerate_investigator consistency checkpoint and confirm its matching Pages deployment.
 
 ## Current continuation point
 
-Current branch: `docs/degenerate-report-publication-20260807`.
+Current branch: `docs/degenerate-final-consistency-20260807`.
 
-Current task: validate and merge P2-43 S3-to-repository report-publication documentation, confirm its matching Pages deployment, then perform the final degenerate_investigator consistency pass before handing off to the isolated Overlord sequence.
+Current task: validate and merge the final consistency checkpoint, confirm its matching Pages deployment, then treat the `degenerate_investigator` documentation workstream as complete and proceed to the isolated Overlord workstream.
