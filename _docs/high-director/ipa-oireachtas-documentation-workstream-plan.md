@@ -20,105 +20,85 @@ permalink: /projects/high-director/ipa-oireachtas-documentation-workstream-plan/
 
 ## Purpose
 
-This is the mutable execution plan for the Irish Politics Analytics / `eirepolitic-data-pipeline` documentation workstream. The owner-wide target catalogue remains the read-only scope contract.
+Mutable execution plan for the Irish Politics Analytics / `eirepolitic-data-pipeline` documentation workstream. The owner-wide target catalogue remains the read-only scope contract.
 
-## Scope contract
+## Scope
 
-- **P0:** Irish Politics Analytics umbrella architecture; `eirepolitic-data-pipeline`; Unified Oireachtas Data Platform; canonical data-product catalogue; refresh/validation orchestration; write policies/downstream contracts.
+- **P0:** umbrella architecture; repository; Unified Oireachtas platform; canonical product catalogue; refresh/validation orchestration; write policies/downstream contracts.
 - **P1:** Instagram/constituency rendering; AI member-profile/Instagram workflow; Member Profile Metrics Builder; Reusable LLM Task Runner Framework.
 - **P2:** maintenance, repair, and backfill utilities.
 - **P3:** assigned legacy enrichment/classification/media/destructive/editorial targets and successor mapping.
 
-Excluded except for technically necessary cross-references: AutoDoc, `bb-comp-prices`, `degenerate_investigator`, and Overlord.
+Excluded except for necessary cross-references: AutoDoc, `bb-comp-prices`, `degenerate_investigator`, and Overlord.
 
-## Evidence rules
+## Evidence and publication rules
 
-Use this evidence order: current implementation/configuration; observed runtime evidence; user-supplied authoritative source; current repository documentation/handoffs; historical/archive documentation; labelled inference only. Never publish secrets, credentials, private keys, personal identifiers, private individual URLs, or confidential identifiers.
+Current implementation/configuration outranks runtime evidence, user-supplied authoritative sources, current handoffs, archive material, and labelled inference. Never publish secrets or personal/private account details.
 
-## Working method
+Each major documentation component uses a focused `docs/ipa-*` PR. Before moving to the next component: documentation validation must pass, the PR must merge, and the matching `pages-build-deployment` run must succeed for that exact merge SHA.
 
-- Inspect current source completely enough to support the target being documented.
-- Prefer exact paths, functions, workflows, configuration keys, tables, object keys, inputs/outputs, dependencies, failure modes, and validation procedures.
-- Reconcile archive pages against source and document successor relationships rather than creating competing current pages.
-- Use focused `docs/ipa-*` branches and PRs.
-- Before every merge: documentation validation must pass; then merge; then the matching Pages deployment for the exact merged SHA must pass before the next major component.
-- Start each new component from current `main` to avoid conflicts with parallel workstreams.
-
-## P0 execution sequence
+## P0 execution state
 
 | Order | Component | State |
 | --- | --- | --- |
 | 1 | Irish Politics Analytics umbrella architecture | complete and published |
 | 2 | `eirepolitic-data-pipeline` repository | complete and published |
 | 3 | Unified Oireachtas Data Platform | complete and published |
-| 4 | Oireachtas canonical data-product catalogue | complete and published after exact-SHA Pages retry |
-| 5 | Oireachtas refresh/validation orchestration | merged; exact-SHA Pages retry on `docs/ipa-oireachtas-orchestration-pages-retry` |
-| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft; blocked on orchestration Pages gate |
+| 4 | Oireachtas canonical data-product catalogue | complete and published |
+| 5 | Oireachtas refresh/validation orchestration | complete and published after exact-SHA retry |
+| 6 | Oireachtas write policies and downstream contracts | draft on `docs/ipa-oireachtas-policies-contracts` |
 
-## Discovery checklist
+## Verified P0 facts
 
-### Documentation repository
+- Canonical registry: 31 confirmed products — 23 silver, 5 gold, 3 control.
+- Current source acquisition uses the public Oireachtas API with complete offset pagination, 429/5xx retry, repeated-page detection, and incomplete-pagination failure.
+- Production publication uses immutable batches plus `production`/`previous` pointers; active candidate reads are isolated from production fallback.
+- Weekly defaults: incremental, rolling 35-day window, page size 100. Monthly: incremental, previous month plus seven-day leading overlap, page size 200. Yearly: full previous calendar year, page size 200.
+- Only the high-level refresh-validation orchestrator is scheduled; cadence wrappers are manual.
+- Write strategies are `snapshot_replace`, `upsert`, `append`, and `rebuild`; all 31 products have policy coverage.
+- Downstream validation currently contains six dataset contracts plus two legacy/reference comparison threshold sets.
+- Auxiliary enrichment staging enforces source freshness before copying into a candidate.
+- Production pointer mutation is guarded separately from candidate publication.
+- **Observed runtime:** scheduled orchestrator run `30740881592` on 2026-08-02 completed refresh, validation, promotion, and pointer verification successfully.
+- Historical July packet-status statements that scheduled observation was pending are stale relative to August runtime evidence.
 
-- [x] standard, complete templates, target catalogue and discovery plan
-- [x] IPA overview and assigned archive pages
-- [x] representative repository/system/runbook pages and validator
+## Discovery state
 
-### `eirepolitic-data-pipeline`
+### Completed for P0
 
-- [x] full repository tree, root dependencies, `configs/`, `extract/`, `process/`, `docs/`, `instagram/`, `tasks/`, `tests/`
-- [x] current Oireachtas API/schema/storage/batch/write-policy/contract core
-- [x] current production orchestrator, reusable refresh and reusable validation
-- [x] exact cadence table sets, modes, windows and page-size defaults
-- [x] all 31 registry definitions, PKs, columns, cadences, endpoints, statuses and builder locations
-- [x] configured write strategy and selected relationship metadata for all 31 products
-- [x] representative silver and gold builder DQ/storage behavior
-- [x] current compatibility-adapter and executable contract behavior
-- [x] batch control, candidate seeding/reassembly, promotion and rollback guard behavior
-- [x] write-policy merge/integrity tests and refresh-orchestration tests
-- [x] batch-control workflow UI inputs and publication guards
-- [x] member metrics and reusable LLM entry points at repository-map depth
-- [ ] detailed maintenance/backfill utility status for P2
-- [ ] detailed retained legacy/editorial successor/status audit for P3
+- [x] documentation standard/templates/catalogue/discovery plan and representative pages
+- [x] complete `eirepolitic-data-pipeline` tree and dependency inventory
+- [x] Oireachtas configs, package, process helpers, workflows, tests, handoffs and current runtime evidence
+- [x] all canonical registry products, schemas-as-column-lists, PKs, cadences, endpoints and builder locations
+- [x] write-policy coverage, merge semantics, relationship helpers and tests
+- [x] downstream contract config, staging, compatibility adapters, comparison/mismatch behavior and contract tests
+- [x] batch control, seeding, reassembly, promotion and rollback behavior
 
-## Current verified discovery notes
+### Remaining later-workstream discovery
 
-- Registry: 31 confirmed products — 23 silver, 3 control, 5 gold. Registry columns are authoritative names/order but do not encode formal types/nullability.
-- API client performs complete offset pagination, retries HTTP 429/5xx, detects repeated pages and fails incomplete production pagination.
-- Production publication uses immutable batches and production/previous pointers; candidate logical reads resolve to the active batch during validation.
-- Weekly defaults: incremental, 35-day rolling window, page size 100. Monthly: incremental, previous month plus seven-day leading overlap, page size 200. Yearly: full, previous calendar year, page size 200.
-- Only `Oireachtas Refresh Validation Orchestrator` is scheduled; cadence wrappers are manual. Scheduled runs force candidate publication, consumer validation, and automatic promotion after success.
-- Write strategies: snapshot replacement for core dimensions/current manifest, upsert for history/facts, append for run/DQ audit streams, rebuild for all gold products.
-- Compatibility contracts resolve through candidate/production state and enforce readability, columns, row minimum, PK integrity and freshness; comparison thresholds add key/row/join tolerances.
-- Auxiliary enrichment staging refuses source objects older than each contract maximum before copying them into a candidate and records candidate provenance.
-- Batch pointer mutation requires both `OIREACHTAS_PUBLISH_ENABLED=true` and `OIREACHTAS_PUBLISH_LATEST=true` in the batch-control CLI.
-- **Observed runtime:** scheduled orchestrator run `30740881592` on 2026-08-02 completed refresh, validation, promotion and pointer verification successfully.
-- July packet-status pending-observation statements are historical where contradicted by August runtime evidence.
-- Repository legacy/trial workflow enablement alone is not evidence of production intent.
+- [ ] detailed P1 Instagram/content/member-metrics/LLM operating documentation
+- [ ] P2 maintenance/repair/backfill utility status and safety procedures
+- [ ] P3 retained legacy/editorial successor/status reconciliation
+- [ ] exact live IAM/S3/Glue/Athena configuration only if a later documentation target requires deployed-account evidence
 
 ## PR ledger
 
-| Component | Branch / PR | Validation | Pages deployment | Result |
+| Component | PR | Validation | Pages | Result |
 | --- | --- | --- | --- | --- |
-| Workstream plan | `docs/ipa-workstream-plan` / PR #62 | `31219424981` success | `31219454738` success; SHA `e25a90677d11c732bfe86a87616aa25191827cff` | complete |
-| P0 umbrella architecture | `docs/ipa-architecture` / PR #64 | `31219706244` success | `31219726250` success; SHA `307441a2479cda507589bf77a796a54f6c0042ac` | complete |
-| P0 repository page | `docs/ipa-repository` / PR #66 | `31219954893` success | `31219991624` success; SHA `49c130d88cf84418be3f15a17848f8d50f3112e1` | complete |
-| P0 Unified Oireachtas platform | `docs/ipa-oireachtas-platform` / PR #68 | `31220172926` success | `31220199307` success; SHA `74aa6405164440b62d28e6ac64d76f01388a7957` | complete |
-| P0 data-product catalogue | `docs/ipa-oireachtas-catalogue` / PR #70 | `31220389309` success | initial exact-SHA run `31220425800` cancelled by newer parallel Pages deployment | superseded by retry |
-| P0 catalogue Pages retry | `docs/ipa-oireachtas-catalogue-pages-retry` / PR #73 | `31220665186` success | `31220683272` success; SHA `6f5c9c1d9685addeed5ec75a05a6d701de04733d` | complete |
-| P0 orchestration | `docs/ipa-oireachtas-orchestration` / PR #74 | validation passed; merged | exact-SHA Pages run `31220883662` cancelled by newer parallel `main` deployment during Jekyll | superseded by retry |
-| P0 orchestration Pages retry | `docs/ipa-oireachtas-orchestration-pages-retry` | pending | pending | in progress |
-| P0 policies/contracts | pending | pending | pending | pending |
+| Workstream plan | #62 | `31219424981` success | `31219454738` success; `e25a90677d11c732bfe86a87616aa25191827cff` | complete |
+| P0 umbrella architecture | #64 | `31219706244` success | `31219726250` success; `307441a2479cda507589bf77a796a54f6c0042ac` | complete |
+| P0 repository | #66 | `31219954893` success | `31219991624` success; `49c130d88cf84418be3f15a17848f8d50f3112e1` | complete |
+| P0 Unified Oireachtas platform | #68 | `31220172926` success | `31220199307` success; `74aa6405164440b62d28e6ac64d76f01388a7957` | complete |
+| P0 data-product catalogue | #70 | `31220389309` success | first exact-SHA deployment cancelled by parallel `main` activity | superseded by retry |
+| Catalogue publication retry | #73 | `31220665186` success | `31220683272` success; `6f5c9c1d9685addeed5ec75a05a6d701de04733d` | complete |
+| P0 orchestration | #74 | validation passed | first exact-SHA deployment cancelled by parallel `main` activity | superseded by retry |
+| Orchestration publication retry | #84 | `31229212100` success | `31229230209` success; `9b68becb6e2ca69c58c57cf1b2104948ec6a60d0` | complete |
+| P0 policies/contracts | pending PR | pending | pending | draft in progress |
 
-## Publication-gate incident note
+## Publication-gate note
 
-Parallel `main` activity has twice cancelled a matching Pages deployment while Jekyll was running, without a documentation-content failure: first for the catalogue, then for orchestration. The catalogue was resolved with a focused retry and exact-SHA Pages success. The same exact-SHA retry discipline is now being applied to the orchestration runbook before P0 policies/contracts begins.
-
-## Unknowns to resolve
-
-- Exact live IAM/S3/Glue/Athena configuration where checked-in source cannot establish deployed state.
-- Detailed status of every legacy, repair, patch and experimental workflow, reserved for P2/P3.
-- Formal data types/nullability for canonical columns are not declared by the registry and should not be invented without typed source/observed schema evidence.
+Parallel `main` changes cancelled the first matching Pages deployment for both the catalogue and orchestration components while Jekyll was running. Neither cancellation reported a content-build failure. Both were resolved with focused retry PRs and successful Pages deployments for the retry merge SHA before subsequent work began.
 
 ## Next action
 
-Complete the orchestration publication retry: validate, merge, and require Pages success for the retry merge SHA. Only then create the P0 write-policy/downstream-contract reference from current `main`. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
+Validate, merge, and exact-SHA Pages-verify the P0 write-policy/downstream-contract reference. Once that succeeds, mark P0 complete and begin P1 from current `main`, starting with the Instagram/constituency campaign rendering system.
