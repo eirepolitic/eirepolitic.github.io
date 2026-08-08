@@ -55,8 +55,8 @@ Target 38 is complete and published.
 
 | Order | Component | State |
 | --- | --- | --- |
-| 47 | Constituency Images Indexer | reconciliation draft on `docs/ipa-legacy-constituency-images` |
-| 48 | Debate Issue Classifier | pending |
+| 47 | Constituency Images Indexer | complete and published |
+| 48 | Debate Issue Classifier | reconciliation draft on `docs/ipa-legacy-debate-issue-classifier` |
 | 49 | LLM Column Creator | pending |
 | 50 | Member Images Pipeline | pending |
 | 51 | Member Summaries Table | pending |
@@ -64,30 +64,29 @@ Target 38 is complete and published.
 | 53 | Retained debate/member enrichment and classification scripts | pending |
 | 54 | Experimental/editorial content-generation workflows | pending |
 
-## Verified P2 discoveries
-
-- The baseline Oireachtas inventory is read-only and explicitly disables publication flags.
-- The S3 column deleter is a current manual destructive utility with no dry-run, backup, confirmation token, rollback, prefix allow-list, or candidate isolation; CSV and Parquet are overwritten sequentially.
-- `STRICT=1` only verifies the column is present in both representations before writes; it is not a safety/dry-run mode.
-- The debate CSV→Parquet helper preserves the source CSV but overwrites a normalized Parquet output.
-- The July 2026 validation-fixes workflows are retained branch/batch/date-specific repair-campaign tooling, not the normal reusable production backfill interface.
-
 ## Verified P3 target-47 discoveries
 
-- `process/constituency_images_indexer.py` and `.github/workflows/constituency_images_index.yml` remain present on current `main`.
-- Observed legacy workflow run `21652253875` succeeded on 2026-02-03; this is historical runtime evidence, not proof of current production intent.
-- The newer `extract/oireachtas/enrichment_constituency_images.py` explicitly reads `processed/constituencies/constituency_images.csv`, the legacy index output.
-- The newer enrichment module does not create/download/overwrite image files. It reshapes the legacy index into richer trial/review outputs and a Unified Oireachtas compatibility adapter.
-- The current relationship is therefore dependency/adapter migration, not full replacement: image discovery/index creation remains upstream in the retained legacy implementation.
-- Current source does not establish complete retirement of the legacy indexer, so the archive page must preserve lineage rather than claim a clean successor cutover.
+- The retained constituency image indexer still produces the legacy CSV consumed by the newer Oireachtas constituency-image enrichment trial.
+- The newer layer does not create/discover images; it reshapes the legacy index into richer trial/review outputs and a compatibility adapter.
+- Full retirement is not established. Target 47 therefore remains an archive/lineage record with retained executable dependency.
+
+## Verified P3 target-48 discoveries
+
+- `.github/workflows/monthly_extract.yml` remains scheduled on current `main` for `15 9 1 * *` and still runs the older XML debate extraction/parser/member-extract path.
+- `process/speech_issue_classifier.py` plus `.github/workflows/speech_issue_classifier.yml` remain the checked-in OpenAI issue-label generator for the legacy classified debate lineage.
+- The classifier reuses existing labels by deterministic `speech_id`, classifies only missing eligible speeches, validates against the fixed issue-category list, retries/refines invalid output, autosaves, and overwrites the legacy classified CSV/Parquet outputs.
+- The manual workflow overrides the script model default and currently specifies `gpt-4.1-mini` with low reasoning/verbosity.
+- `extract/oireachtas/enrichment_speech_issue_labels.py` explicitly does not call OpenAI and does not overwrite the legacy classified CSV. It consumes that CSV and creates richer trial/review outputs plus the Unified Oireachtas compatibility dataset.
+- The compatibility dataset feeds the current `debate_issue_labels` downstream contract and member-profile metrics consumer.
+- The new layer is therefore an adapter/validation successor, not a replacement classifier. Full classifier retirement is not established.
 
 ## Discovery state
 
 - [x] full P0 implementation/configuration/runtime audit and documentation
 - [x] all four assigned P1 component audits and documentation
 - [x] P2 target 38 utility inventory, risk classification, repair/backfill status, and operating guidance
-- [x] P3 target 47 legacy/current constituency-image lineage audit
-- [ ] P3 target 48 Debate Issue Classifier successor/status reconciliation
+- [x] P3 target 47 legacy/current constituency-image lineage audit and publication
+- [x] P3 target 48 debate issue classifier / enrichment lineage audit
 - [ ] P3 target 49 LLM Column Creator predecessor mapping to current LLM runner
 - [ ] P3 target 50 Member Images Pipeline successor/status reconciliation
 - [ ] P3 target 51 Member Summaries Table successor/status reconciliation
@@ -111,12 +110,13 @@ Target 38 is complete and published.
 | P1 Member Profile Metrics Builder | #105 | `31239709900` success | `31239725625` success; `c2422d9e9d2ee958563be10114c23961df8e6c1e` | complete |
 | P1 Reusable LLM Task Runner Framework | #106 | `31239847243` success | `31239858541` success; `dd573507439153e9f18c8520549548c12c65c126` | complete |
 | P2 Data maintenance/repair/backfill utilities | #107 | `31239997132` success | `31240013265` success; `f46435b4aabb2b7ca9298e531744431ee658c62b` | complete |
-| P3 Constituency Images Indexer reconciliation | pending PR | pending | pending | draft in progress |
+| P3 Constituency Images Indexer reconciliation | #108 | `31240091714` success | `31240103424` success; `0e39df9568871353978341b01450ce6fe6ae8c1f` | complete |
+| P3 Debate Issue Classifier reconciliation | pending PR | pending | pending | draft in progress |
 
 ## Publication-gate note
 
-P2 target 38 passed its exact-SHA Pages gate in run `31240013265`. P3 target 47 began only after that success. Every P3 reconciliation must use the same validation → merge → exact-SHA Pages discipline before the next target begins.
+Target 47 passed exact-SHA Pages run `31240103424`. Target 48 began only after that success. Every P3 reconciliation must use the same validation → merge → exact-SHA Pages discipline before the next target begins.
 
 ## Next action
 
-Validate, merge, and exact-SHA Pages-verify target 47. Only after that gate succeeds, begin target 48 Debate Issue Classifier from current `main`.
+Validate, merge, and exact-SHA Pages-verify target 48. Only after that gate succeeds, begin target 49 LLM Column Creator from current `main`.
