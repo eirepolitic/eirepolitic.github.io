@@ -1,6 +1,6 @@
 ---
 title: AutoDoc documentation workstream plan
-summary: Persistent coordination plan for documenting AutoDoc from verified repository evidence through focused validated pull requests and matching Pages deployments.
+summary: Persistent completed-work record for the AutoDoc documentation workstream, including evidence rules, publication gates, security findings, and future continuation guidance.
 section: notes
 doc_type: note
 status: active
@@ -19,11 +19,20 @@ tags:
 
 # AutoDoc documentation workstream plan
 
-## Evidence and Governance
+## Workstream Status
 
-Current backend workflows/Python outrank persisted artifacts and historical prose. Current sanitized Appsmith export outranks the historical Appsmith handoff. Secret values are never persisted.
+**Documentation scope P0-P3 is complete.**
 
-Every component requires: fresh `docs/autodoc-*` branch -> focused PR -> latest-head `Validate documentation` success -> merge -> matching Pages build/deploy success -> next component.
+This page remains active as the persistent handoff/evidence record because the documentation validator does not have a `completed` status and archived documents must live in the archive section. It is no longer an active build queue.
+
+## Evidence Rules
+
+- Current `autodoc` workflow/Python source is authority for backend behavior.
+- Current persisted configuration/intermediate artifacts are supporting evidence.
+- Generated/reviewed Markdown is derived evidence and can be stale.
+- The sanitized Appsmith export supplied on `2026-08-07` is captured current authority for Appsmith behavior and supersedes the historical Appsmith handoff.
+- Current executable source wins over historical/generated prose when they conflict.
+- Secret values are never persisted in documentation.
 
 ## Completed Gates
 
@@ -39,68 +48,147 @@ Every component requires: fresh `docs/autodoc-*` branch -> focused PR -> latest-
 | P1 rendering | #130 | #247 success | `e00502b88868efb5a6d72dccbcfd78d2f5c9c83b` | #234 success |
 | P1 review/concision | #131 | #248 success | `7d0ea3473335dfd0ddff1a5c2147ae0bbc484b8f` | #235 success |
 | P2 artifact lifecycle/recovery | #132 | #249 success | `c2e4c491d8a43a2425369b9b03154fdc295c34d7` | #236 success |
+| P3 historical artifact classification | #133 | #250 success | `aa1263959e76e4ed4392642cd2c8f934606b4d49` | #237 success |
 
-**P0, P1, and P2 are complete.**
+The original publication merge's matching Pages run was cancelled; PR #127 intentionally supplied the required fresh validated merge and successful matching deployment before P1 began.
 
-## Active Component
+## Completed Documentation Map
+
+### Foundation
+
+- [AutoDoc repository](/projects/repositories/autodoc/)
+- [AutoDoc system](/projects/systems/autodoc/)
+
+### P0 boundaries
+
+- [AutoDoc Appsmith intake](/projects/systems/autodoc-appsmith-intake/)
+- [AutoDoc configuration and project index](/projects/data/autodoc-configuration-and-project-index/)
+- [AutoDoc pipeline orchestration](/projects/systems/autodoc-pipeline-orchestration/)
+- [AutoDoc publication boundary](/projects/systems/autodoc-publication-boundary/)
+- [Sanitized Appsmith live source](/projects/high-director/autodoc-appsmith-live-source-2026-08-07/)
+
+### P1 stages
+
+- [AutoDoc asset enrichment](/projects/systems/autodoc-asset-enrichment/)
+- [AutoDoc section-fact extraction](/projects/systems/autodoc-section-fact-extraction/)
+- [AutoDoc template/Markdown rendering](/projects/systems/autodoc-template-markdown-rendering/)
+- [AutoDoc review/concision](/projects/systems/autodoc-review-concision/)
+
+### P2 recovery
+
+- [Recover AutoDoc artifacts](/projects/runbooks/recover-autodoc-artifacts/)
+
+### P3 historical provenance
+
+- [Historical AutoDoc Irish Politics artifacts](/projects/archive/autodoc-eirepolitic-generated-artifacts/)
+- [eirepolitic-data-pipeline](/projects/repositories/eirepolitic-data-pipeline/) for current Irish Politics implementation authority.
+
+## Key Current Facts
+
+### Appsmith
+
+Current captured app has `Submit` and `DocsViewer`, writes config/index state, can create project `.gitkeep`, and dispatches review/publication workflows. The older handoff's intake-only/no-Actions description is historical drift.
+
+### Automatic pipeline
+
+Current automatic chain is:
 
 ```text
-P3 target 56: Historical docs/eirepolitic/pipeline/* artifact classification
-Branch: docs/autodoc-historical-artifacts
-Draft: _docs/archive/autodoc-eirepolitic-generated-artifacts.md
+enrich -> extract -> render
 ```
 
-Verified current artifact inventory contains six `pipeline` document keys, each with both raw and `reviewed/` Markdown:
+Review is separate.
 
-```text
-constituency_images_indexer
-debate_issue_classifier
-llm_column_creator
-member_images_pipeline
-member_summaries_table
-s3_column_deleter
-```
+### Enrichment
 
-Current classification:
+Sources are `pasted`, `github_path`, and `github_url`; non-recognized `github_url` values can fall through to generic HTTP GET.
 
-- these are derived AutoDoc documentation artifacts with complete base/enriched/summary/raw/reviewed provenance retained in `autodoc`;
-- `reviewed/` is AutoDoc LLM-concision state, not human/factual approval;
-- their generated prose is historical evidence, not current Irish Politics implementation authority;
-- current `eirepolitic.github.io` already contains dedicated source-reconciled archive/lineage pages for all six;
-- current implementation questions should use `eirepolitic-data-pipeline` source plus those reconciled archive records.
+### Extraction
+
+Current model `gpt-4.1-mini`, full enriched JSON per section, rate-limit retries. Current prompt does not interpolate the passed section-template body.
+
+### Rendering
+
+Current model `gpt-4.1-mini`; section template + extracted facts are used. Blank facts produce `_TBD`; current generated front matter uses `layout: default`.
+
+### Review
+
+Standard workflow uses `gpt-4.1`, sends the whole generated document in one request, and writes a separate reviewed artifact. `reviewed` is not human/factual approval.
+
+### Publication
+
+**CURRENT VERIFIED BEHAVIOR:** direct clone/copy/commit/push into `eirepolitic.github.io` using `WEBSITE_PAT`.
+
+**CURRENT DOCUMENTATION GOVERNANCE:** branch/PR -> `Validate documentation` -> merge -> matching Pages success -> live verification.
+
+The mismatch remains intentionally documented and unresolved by this documentation workstream.
 
 ## Security Finding
 
-The supplied Appsmith export contained two distinct GitHub PAT values. Values/raw export were not committed. Credential rotation/revocation remains an explicit security/access action requiring user approval/handling.
+The supplied Appsmith export contained two distinct GitHub PAT values. The raw export and token values were not committed or reproduced.
 
-## Publication Mismatch
+Outstanding security action remains outside documentation scope:
 
-**CURRENT VERIFIED BEHAVIOR:** AutoDoc publication directly clones/writes/pushes `eirepolitic.github.io` using `WEBSITE_PAT`.
+```text
+rotate/revoke both exposed GitHub PATs and replace the active Appsmith credential configuration
+```
 
-**CURRENT DOCUMENTATION GOVERNANCE:** branch/PR -> validation -> merge -> matching Pages success -> live verification.
+This requires explicit security/access handling. Documentation completion is not authorization to perform it.
 
-No redesign is approved.
+## Historical Artifact Rule
 
-## Remaining Sequence
+The six retained `docs/eirepolitic/pipeline/*` raw/reviewed pairs are AutoDoc-derived historical evidence. Current Irish Politics claims must be verified against current `eirepolitic-data-pipeline` source and its reconciled archive/lineage documentation.
 
-1. P3 historical artifact classification — **active**.
-2. Final current-`main` cross-page/link/evidence consistency review and workstream closeout.
+Do not regenerate historical pages merely to make them look current.
+
+## Future Change Procedure
+
+For future AutoDoc implementation changes:
+
+1. identify the owning component page;
+2. verify current `autodoc/main` executable source;
+3. update implementation and documentation in focused changes;
+4. preserve source-vs-historical drift explicitly;
+5. use the recovery runbook for artifact failures;
+6. treat credential/access/model/prompt/source-host/publication architecture changes as explicit design decisions;
+7. publish documentation changes through the current PR/validation/merge/Pages governance.
+
+## Known External/Unresolved State
+
+The documentation does not prove:
+
+- exact live GitHub PAT scopes;
+- current Appsmith workspace membership/access policy;
+- GitHub repository-rule enforcement outside source-visible configuration;
+- OpenAI account quotas/billing/service availability;
+- runtime availability of every configured external source.
+
+These are external verification items when operationally required.
+
+## Final Consistency Pass
+
+Final branch:
+
+```text
+docs/autodoc-final-consistency
+```
+
+Final changes:
+
+- refresh foundation repository/system pages so they no longer say Appsmith is unverified;
+- replace stale early-workstream outstanding actions with future-operation guidance;
+- add complete cross-links to P0-P3 component pages;
+- close this persistent plan as a completed scope record.
+
+The workstream is considered fully closed only after this final branch passes `Validate documentation`, merges, and receives successful matching Pages deployment.
 
 ## Next Safe Development Action
 
-Validate/publish the P3 archive index. After matching Pages success, create one final fresh branch from current `main` for consistency review, stale-status correction, cross-link repair if required, and persistent-plan closeout.
-
-Do not change historical Irish Politics implementation, AutoDoc models/prompts/workflows, credentials/permissions, or publication architecture without explicit approval.
-
-## Related Documents
-
-- [Recover AutoDoc artifacts](/projects/runbooks/recover-autodoc-artifacts/)
-- [Historical AutoDoc Irish Politics artifacts](/projects/archive/autodoc-eirepolitic-generated-artifacts/)
-- [eirepolitic-data-pipeline](/projects/repositories/eirepolitic-data-pipeline/)
-- [AutoDoc repository](/projects/repositories/autodoc/)
+After the final closeout gate succeeds, no AutoDoc documentation target remains from the assigned P0-P3 catalogue. Future work should be driven by an implementation change, newly supplied authoritative state, a discovered documentation defect, or the outstanding credential-security action under explicit approval.
 
 ## Verification Record
 
 - Last verified: `2026-08-07` local programme date.
 - Verified by: High Director.
-- Unverified external state: PAT scopes, Appsmith workspace membership, OpenAI account/service limits, repository-rule enforcement, exact historical run IDs for every archived artifact pair.
+- Verified against: current `eirepolitic.github.io/main`; PR/validation/merge/Pages records above; current `autodoc/main`; sanitized Appsmith evidence; P0-P3 pages and artifact inventory.
+- Remaining work before full closeout: final PR validation, merge, and matching Pages success only.
