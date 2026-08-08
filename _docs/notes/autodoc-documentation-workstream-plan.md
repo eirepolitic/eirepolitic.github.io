@@ -25,106 +25,106 @@ Persistent continuation plan for the complete AutoDoc documentation workstream. 
 
 The owner-wide target catalogue remains read-only scope coordination during routine AutoDoc work.
 
-## Assigned Scope
+## Scope
 
 - **P0:** repository/system architecture; Appsmith intake/configuration; config schema/project index; pipeline orchestration/trust; reviewed-document website publication.
 - **P1:** enrichment/source resolution; LLM section-fact extraction; template/Markdown rendering; LLM review/concision.
 - **P2:** generated/reviewed artifact lifecycle and manual recovery.
 - **P3:** historical `docs/eirepolitic/pipeline/*` artifacts.
 
-## Evidence Hierarchy
+Backend authority is current workflows/Python before current persisted contracts, generated outputs, or historical prose. Current sanitized live Appsmith export supersedes the older Appsmith handoff for present Appsmith behavior.
 
-Backend: current workflows/Python > current config/intermediate contracts > generated/reviewed outputs > historical prose.
-
-Appsmith: current sanitized live export > historical repository handoff.
-
-The user-supplied `2026-08-07` Appsmith export is current captured-state authority. The raw export is not committed because it contained credentials; sanitized evidence is persisted at `_docs/high-director/autodoc-appsmith-live-source-2026-08-07.md`.
-
-## Completed Components
+## Completed P0 Components
 
 ### Repository/system architecture
 
 ```text
-_docs/repositories/autodoc.md
-_docs/systems/autodoc.md
 PR #76
 Validate documentation #126: success
 Merge: dd410f89e5b0259b7224593c3feaf6b136ba1a1c
 Pages #182: success
+Docs: _docs/repositories/autodoc.md; _docs/systems/autodoc.md
 ```
 
-### Appsmith/configuration/index boundary
+### Appsmith/configuration/index
 
 ```text
-_docs/systems/autodoc-appsmith-intake.md
-_docs/data/autodoc-configuration-and-project-index.md
-_docs/high-director/autodoc-appsmith-live-source-2026-08-07.md
 Stale PR #120: closed without merge
 Replacement PR #121
 Validate documentation #231: success
 Merge: 382093fb826520c0b99dc08b4b609d7f0c40f4f1
 Pages #225: success
+Docs: _docs/systems/autodoc-appsmith-intake.md
+      _docs/data/autodoc-configuration-and-project-index.md
+      _docs/high-director/autodoc-appsmith-live-source-2026-08-07.md
 ```
 
-### Automatic pipeline orchestration/trust boundaries
+### Pipeline orchestration/trust
 
 ```text
-_docs/systems/autodoc-pipeline-orchestration.md
 PR #123
 Validate documentation #240: success
 Merge: 39b3729389d03de9ea3f09e01a010245c2838e26
 Pages #228: success
+Doc: _docs/systems/autodoc-pipeline-orchestration.md
 ```
 
-## Publication Boundary: Gate Recovery Active
+### Reviewed-document website publication
 
-Documentation page is merged:
+Primary documentation merge:
 
 ```text
-_docs/systems/autodoc-publication-boundary.md
 PR #125
 Validate documentation #241: success
 Merge: 9f30e9b46b62174ddfc853543f75589a7657fa00
-Pages #229: cancelled before checkout/build/deploy completed
+Pages #229: cancelled before successful build/deploy
+Doc: _docs/systems/autodoc-publication-boundary.md
 ```
 
-Pages run #229 was cancelled during the Pages container-pull step while parallel site activity was occurring. The publication component is **not** considered complete because the required matching Pages deployment did not succeed.
-
-Recovery branch:
+Required gate recovery:
 
 ```text
-docs/autodoc-publication-gate-recovery
+PR #127
+Validate documentation #244: success
+Merge: d6a01ff442bf21e1cecded8eddf8251415b5bb7f
+Pages #231: success for recovery merge
 ```
 
-This focused follow-up updates only the persistent workstream state so a new validated merge containing the already-merged publication documentation can receive a complete matching Pages deployment. P1 work remains blocked until that gate succeeds.
+The recovery merge contains the already-merged publication documentation and completed the required build/deploy gate. **P0 is complete.**
 
-## Verified Publication Boundary
+## Active Component
 
-Current `autodoc/.github/workflows/publish_to_website.yml`:
+```text
+P1 target 34: Asset enrichment/source resolution
+Branch: docs/autodoc-enrichment
+Draft: _docs/systems/autodoc-asset-enrichment.md
+```
 
-- is `workflow_dispatch`;
-- requires `project`, `type`, `doc_key`, `dest_type`; `overwrite` defaults to `"true"`;
-- declares `contents: read` in `autodoc`;
-- requires `docs/<project>/<type>/reviewed/<doc_key>.md`;
-- uses credential name `WEBSITE_PAT` for the cross-repository clone/push;
-- requires existing destination directory `projects/<dest_type>`;
-- writes `projects/<dest_type>/<doc_key>.md`;
-- commits/pushes directly if changed;
-- creates no branch/PR and runs no documentation validator or matching Pages check.
+Verified implementation source:
 
-### CURRENT VERIFIED BEHAVIOR
+```text
+autodoc/process/enrich_configs.py
+autodoc/.github/workflows/enrich_configs.yml
+autodoc/.github/workflows/autodoc_pipeline.yml
+```
 
-Reviewed Markdown -> direct PAT-authenticated website clone/copy/commit/push.
+Key verified enrichment facts:
 
-### CURRENT DOCUMENTATION GOVERNANCE
-
-Branch/PR -> `Validate documentation` -> merge -> matching Pages build/deploy success -> live verification.
-
-The mismatch is documented; no redesign is approved.
+- supported source modes: `pasted`, `github_path`, `github_url`;
+- recognized GitHub blob/raw URLs are fetched through GitHub Contents API;
+- non-recognized `github_url` locators fall back to generic HTTP GET rather than a GitHub-only allowlist;
+- GitHub/HTTP requests use a 60-second timeout;
+- text stores canonical `resolved_content` plus `resolved_content_lines`;
+- heuristic binary content is base64 persisted and flagged `binary_base64=true`;
+- per-asset resolution failures are captured in enriched JSON and normally do not fail the configuration;
+- config-level failures continue across a broad manual run but make process exit code `1`;
+- automatic enrichment uses `--overwrite` before extraction;
+- manual workflow supports project/doc filtering, overwrite, and `only_missing`;
+- resolved content, final URL/provenance metadata, and errors can be persisted, making source configuration a security/privacy boundary.
 
 ## Security Finding
 
-The supplied Appsmith export contained two distinct GitHub PAT values. Values and the raw export were not committed. Sanitized evidence only was persisted.
+The supplied Appsmith export contained two distinct GitHub PAT values. Values and the raw export were not committed; sanitized evidence only was persisted.
 
 Outstanding security action requiring explicit user approval/handling:
 
@@ -134,52 +134,63 @@ rotate/revoke both exposed GitHub PATs and replace the active Appsmith credentia
 
 Do not perform credential changes automatically.
 
-## Publication Governance for This Workstream
+## Publication Architecture Mismatch
+
+### CURRENT VERIFIED BEHAVIOR
+
+`publish_to_website.yml` uses `WEBSITE_PAT` to clone `eirepolitic.github.io`, copy reviewed Markdown under `projects/<dest_type>/`, commit if changed, and push directly.
+
+### CURRENT DOCUMENTATION GOVERNANCE
+
+Material documentation changes require branch/PR -> `Validate documentation` -> merge -> matching Pages build/deploy success -> live verification.
+
+The mismatch is documented; no redesign is approved.
+
+## Workstream Gate
 
 For every focused component:
 
 1. branch from current `main`;
 2. open focused PR;
-3. latest-head `Validate documentation` must succeed;
+3. latest-head `Validate documentation` succeeds;
 4. merge;
-5. identify merge commit;
-6. matching Pages build/deploy must succeed for that commit;
+5. record merge SHA;
+6. matching Pages build/deploy succeeds for that SHA;
 7. only then begin the next major component.
 
-A cancelled matching Pages run does not satisfy the gate.
+A failed or cancelled matching Pages run does not satisfy the gate.
 
 ## Work Sequence
 
-1. Repository/system architecture — **complete**.
-2. Appsmith/config/index — **complete**.
-3. Automatic pipeline orchestration/trust — **complete**.
-4. Reviewed-document website publication — **merged, Pages gate recovery active**.
-5. Asset enrichment/source resolution — blocked until publication gate clears.
-6. LLM section-fact extraction.
-7. Template/Markdown rendering.
-8. LLM review/concision.
-9. Generated/reviewed lifecycle/manual recovery.
-10. Historical `docs/eirepolitic/pipeline/*` classification.
+1. P0 repository/system architecture — **complete**.
+2. P0 Appsmith/config/index — **complete**.
+3. P0 orchestration/trust — **complete**.
+4. P0 website publication — **complete after gate recovery**.
+5. P1 asset enrichment/source resolution — **active**.
+6. P1 section-fact extraction.
+7. P1 template/Markdown rendering.
+8. P1 review/concision.
+9. P2 generated/reviewed lifecycle and manual recovery.
+10. P3 historical `docs/eirepolitic/pipeline/*` classification.
 11. Final current-`main` consistency review.
 
 ## Next Safe Development Action
 
-Validate and merge this gate-recovery PR, then confirm the matching Pages build and deploy succeed for its merge commit. Only then create a fresh P1 enrichment branch.
+Validate and publish the enrichment component. After a successful matching Pages deployment, create a fresh branch for LLM section-fact extraction and its persisted CSV contract.
 
-Do not rotate credentials, change PAT scopes/storage, alter workflow permissions/models, modify publication architecture, or change Appsmith access control without explicit approval.
+Do not change source-host policy, PAT scope/storage, workflow permissions, models, publication architecture, or Appsmith access control without explicit approval.
 
 ## Related Documents
 
 - [AutoDoc repository](/projects/repositories/autodoc/)
 - [AutoDoc system](/projects/systems/autodoc/)
-- [AutoDoc Appsmith intake](/projects/systems/autodoc-appsmith-intake/)
-- [AutoDoc configuration and project index](/projects/data/autodoc-configuration-and-project-index/)
 - [AutoDoc pipeline orchestration](/projects/systems/autodoc-pipeline-orchestration/)
 - [AutoDoc publication boundary](/projects/systems/autodoc-publication-boundary/)
+- [AutoDoc asset enrichment](/projects/systems/autodoc-asset-enrichment/)
 
 ## Verification Record
 
 - Last verified: `2026-08-07` local programme date.
 - Verified by: High Director.
-- Verified against: current `eirepolitic.github.io` `main`; PR/validation/merge/Pages records above; current `autodoc` source; sanitized Appsmith evidence; current publication runbooks.
+- Verified against: current `eirepolitic.github.io` `main`; gate records above; current `autodoc` source; sanitized Appsmith evidence; current publication runbooks.
 - Unverified external state: exact PAT scopes, Appsmith workspace membership, repository-rule enforcement, external-service availability.
