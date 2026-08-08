@@ -36,6 +36,8 @@ Evidence inspected on 2026-08-07:
 - `templates/tasks/project_v1.md`;
 - `templates/tasks/meeting_v1.md`.
 
+Re-verification during implementation confirmed a 20-entry tree, empty `tasks/personal/` apart from `.gitkeep`, eight work fixtures, and identical Git blob content for all three v1 templates.
+
 Verified repository characteristics:
 
 - lightweight Markdown record repository;
@@ -43,10 +45,10 @@ Verified repository characteristics:
 - YAML front matter record metadata;
 - body sections `Overview`, `Notes`, `Next Actions`, `Open Questions`, and `Changelog`;
 - versioned task/project/meeting template filenames;
-- current task/project/meeting v1 templates are materially equivalent skeletons;
+- current task/project/meeting v1 templates are byte-equivalent skeletons;
 - observed fixture statuses include `active` and `done`.
 
-No verified executable application, agent, API, cloud deployment, GitHub Actions automation, or external integration exists in the inspected repository. Do not infer any of those capabilities from the repository name.
+No verified executable application, agent, API, cloud deployment, GitHub Actions automation, database, or external integration exists in the inspected repository. Do not infer any of those capabilities from the repository name.
 
 ## Current schema evidence
 
@@ -61,11 +63,11 @@ Observed fixture front matter fields:
 - `created_at`;
 - `updated_at`.
 
-No source code currently defines a formal allowed status vocabulary, transition graph, schema validator, or automated lifecycle enforcement. Documentation must present conventions as observed conventions, not enforced behavior.
+No source code currently defines a formal allowed status vocabulary, transition graph, schema validator, or automated lifecycle enforcement. Documentation presents these as observed conventions, not enforced behavior.
 
 ## Planned sequence
 
-1. Complete `degenerate_investigator` foundation and subordinate high-priority work first.
+1. Complete `degenerate_investigator` work and deployment gates.
 2. Sync from current documentation `main`.
 3. Create a small isolated `docs/overlord-*` branch.
 4. Document repository purpose, maturity, record schema, work/personal partition, lifecycle/status conventions, and limitations.
@@ -86,10 +88,15 @@ Before every merge:
 - [x] Read documentation standard, catalogue, discovery plan, repository scan, templates, and current documentation examples.
 - [x] Inspect complete `Overlord` repository tree and substantive files.
 - [x] Create persistent workstream plan.
-- [ ] Document P2-45 repository/task-record system.
-- [ ] Document P2-46 versioned templates.
-- [ ] Final consistency and continuation review.
+- [x] Complete `degenerate_investigator` and its final matching Pages gate before starting Overlord.
+- [x] Draft P2-45 repository/task-record system documentation.
+- [x] Draft P2-46 versioned-template documentation.
+- [ ] Validate and merge the focused Overlord PR.
+- [ ] Confirm the matching Pages deployment.
+- [ ] Close final consistency/continuation state.
 
 ## Current continuation point
 
-Overlord implementation documentation is intentionally deferred until the `degenerate_investigator` sequence reaches the planned handoff point. When resumed, use a fresh `docs/overlord-*` branch based on current `main`; do not mix Overlord changes into `degenerate_investigator` PRs except this persistent plan file created during initial workstream setup.
+Current branch: `docs/overlord-documentation-20260807`.
+
+Current task: validate and merge P2-45/P2-46, confirm the matching Pages deployment, then treat the assigned Overlord documentation workstream as complete.
