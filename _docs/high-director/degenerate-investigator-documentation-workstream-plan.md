@@ -1,24 +1,27 @@
 ---
-title: Degenerate Investigator Documentation Workstream Plan
-summary: Persistent execution plan, evidence baseline, sequencing, safety boundary, and merge/deployment gates for the degenerate_investigator documentation workstream.
-section: high-director
-doc_type: agent
-status: active
+title: Degenerate Investigator Documentation Workstream Completion Ledger
+summary: Archived completion ledger for the completed degenerate_investigator documentation workstream.
+section: archive
+doc_type: reference
+status: archived
 owner: High Director
 created: 2026-08-07
 updated: 2026-08-07
+archived_date: 2026-08-07
+last_verified: 2026-08-07
 repository: degenerate_investigator
+archive_reason: The assigned documentation workstream is complete; current maintenance belongs on the authoritative repository and system pages.
 ---
 
-# Degenerate Investigator Documentation Workstream Plan
+# Degenerate Investigator Documentation Workstream Completion Ledger
 
-## Purpose
+> This page preserves the completed `degenerate_investigator` documentation workstream. It is historical coordination evidence, not current High Director configuration or an active execution queue.
 
-Persistent execution and completion record for the `degenerate_investigator` documentation workstream. The owner-wide catalogue remains the read-only scope contract; this file records evidence, sequencing, completed target coverage, deployment gates, and future continuation rules for this workstream only.
+## Archive Summary
 
-## Scope
+The assigned `degenerate_investigator` documentation workstream is complete. All assigned catalogue targets were documented, validated, merged, and deployment-gated. Future changes should update the current repository/system pages rather than reactivate this ledger.
 
-Assigned catalogue targets:
+## Completed Scope
 
 - P0-10: repository and UFC analytics architecture.
 - P0-11: S3, orchestration, and security/configuration boundary.
@@ -33,11 +36,11 @@ Assigned catalogue targets:
 - P1-33: fight-analysis report generator.
 - P2-43: S3-to-repository report publication workflow.
 
-## Documentation boundary
+## Final Verified Boundaries
 
-Document the repository as an analytical UFC data/ML/reporting system. Market-price data is an analytical input and model-vs-market comparison signal only. The repository does not implement staking logic, bankroll management, bookmaker selection, or bookmaker-targeted recommendations; documentation must not introduce those capabilities or external service-access guidance.
+The repository is documented as an analytical UFC data/ML/reporting system. Market-price data is an analytical input and model-vs-market comparison signal only. The repository does not implement staking logic, bankroll management, bookmaker selection, or bookmaker-targeted recommendations.
 
-The model source of truth must always distinguish:
+Model documentation distinguishes:
 
 - trained estimator behavior and artifacts;
 - the explicit scoring heuristic fallback;
@@ -46,71 +49,42 @@ The model source of truth must always distinguish:
 - prediction and report artifacts;
 - report-text fallback behavior.
 
-Never describe any fallback as if it were the trained Random Forest model.
+Verified storage defaults from source at completion were bucket `degenerative-investigator` and region `us-east-2`. Workflows were independently invoked with `workflow_dispatch`; no repository-level workflow automatically chained the full pipeline.
 
-## Verified evidence baseline
+## Completion Record
 
-Evidence inspected on 2026-08-07:
+- P0 foundation merged; Pages succeeded for `050fabcd59fa154fdb9cac51fa19b422720e3504`.
+- P1 current UFC event/fighter ingestion merged; Pages succeeded for `2ee49dde1dac5ce26b4786731332acbf205612df`.
+- P1 historical ingestion merged; Pages succeeded for `33f7bf19997ac91aa0b3b3803d14af989b0c9e80`.
+- P1 market/news enrichment merged; Pages succeeded for `cb7be00a986f5da4ae9a84e97afc4bfa1ae23e34`.
+- P1 feature/training-data documentation merged; Pages succeeded for `30dd2d6622386a56db5289c1c771a2af5d744c19`.
+- P1 winner-model training documentation merged; Pages succeeded for `ea39879138875a9ec09b8b9f7a0843a4f55ec3ef`.
+- P1 scoring/report documentation merged in PR #87 as `6210e0bc5da013747f0e8d0edfedb7bb11187dd6`; its first Pages run was superseded/cancelled.
+- P1 scoring/report pages were re-gated through PR #88; Pages succeeded for `ed5c425e6edc5602a4406678d7f992e78cfe38b8`.
+- P2 report-publication documentation merged; Pages succeeded for `6837cce5ba206f1936f5402ce2f8c25e87ec76ce`.
+- Final consistency PR #94 corrected the current fighter-profile schema count and merged; Pages succeeded for `a3a3ac7fb9bb301f364b58724c7308ae9fb58507`.
 
-- complete repository tree;
-- `README.md`;
-- `requirements.txt`;
-- `common/io_helpers.py`;
-- all files under `extract/`;
-- all files under `process/`;
-- all GitHub Actions workflows under `.github/workflows/`;
-- `reports/latest_fight_report.md`.
+## Security Record
 
-Verified storage defaults from source:
+The workstream documented configuration/secret names only where necessary, including `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `S3_BUCKET`, and `OPENAI_API_KEY`. No credential values, tokens, private keys, personal email addresses, or personal account identifiers were persisted.
 
-- bucket: `degenerative-investigator`;
-- region: `us-east-2`.
+## Why It Was Archived
 
-Verified orchestration boundary: workflows are independently invoked with `workflow_dispatch`; no repository-level workflow automatically chains the complete pipeline. Operators coordinate stage order through workflow inputs and S3 object contracts.
+The assigned documentation scope is complete. This file now serves only as historical evidence of sequencing, validation, and deployment completion. Keeping it in the active High Director section would incorrectly imply that the workstream is still part of High Director setup or operation.
 
-## Merge and deployment gate
+## Current Recommendation
 
-Every component was handled through the required sequence:
+Use the current `degenerate_investigator` repository and system documentation for implementation and maintenance. If source changes alter workflow inputs, S3 keys, schemas, feature semantics, model/fallback behavior, report provenance, security/configuration names, or publication controls, update the corresponding authoritative page and use the normal validation/Pages gate.
 
-1. repository documentation validation;
-2. validation success confirmation;
-3. focused merge;
-4. matching GitHub Pages deployment success for the merged SHA;
-5. only then continuation to the next major component.
+## Related Documents
 
-The P1-32/P1-33 merge's first Pages run was cancelled by a newer parallel deployment, so those pages were explicitly re-gated through a fresh checkpoint merge rather than treating the cancelled run as success.
+- [degenerate_investigator repository](../repositories/degenerate-investigator.md)
+- [degenerate_investigator S3, orchestration, and security boundary](../systems/degenerate-investigator-storage-orchestration-security.md)
 
-## Security rules
+## Verification Record
 
-Document secret and environment-variable names only where technically necessary and safe. Never persist credential values, tokens, passwords, private keys, personal email addresses, or personal account identifiers.
-
-Known core names include:
-
-- `AWS_ACCESS_KEY_ID`;
-- `AWS_SECRET_ACCESS_KEY`;
-- `AWS_REGION`;
-- `S3_BUCKET`;
-- `OPENAI_API_KEY`.
-
-If live AWS/IAM/S3 state is needed in future and cannot be established from repository source, collect one coherent sanitized deployed-state source at a time and do not guess.
-
-## Completion record
-
-- [x] P0-10 and P0-11 foundation merged; Pages succeeded for `050fabcd59fa154fdb9cac51fa19b422720e3504`.
-- [x] P1-25 current UFC event/fighter ingestion merged; Pages succeeded for `2ee49dde1dac5ce26b4786731332acbf205612df`.
-- [x] P1-26 historical fight/fighter-profile ingestion merged; Pages succeeded for `33f7bf19997ac91aa0b3b3803d14af989b0c9e80`.
-- [x] P1-27 and P1-28 enrichment documentation merged; Pages succeeded for `cb7be00a986f5da4ae9a84e97afc4bfa1ae23e34`.
-- [x] P1-29 and P1-30 feature/training-data documentation merged; Pages succeeded for `30dd2d6622386a56db5289c1c771a2af5d744c19`.
-- [x] P1-31 winner-model training documentation merged; Pages succeeded for `ea39879138875a9ec09b8b9f7a0843a4f55ec3ef`.
-- [x] P1-32 and P1-33 scoring/report documentation merged in PR #87 as `6210e0bc5da013747f0e8d0edfedb7bb11187dd6`; its original Pages run was cancelled by a newer parallel deployment.
-- [x] P1-32/P1-33 were re-gated through PR #88; matching Pages deployment succeeded for `ed5c425e6edc5602a4406678d7f992e78cfe38b8`.
-- [x] P2-43 report-publication workflow documentation merged; Pages succeeded for `6837cce5ba206f1936f5402ce2f8c25e87ec76ce`.
-- [x] Final consistency pass corrected the current fighter-profile schema count from 18 to 19 fields.
-- [x] Final consistency PR #94 merged; matching Pages deployment succeeded for `a3a3ac7fb9bb301f364b58724c7308ae9fb58507`.
-- [x] All assigned `degenerate_investigator` catalogue targets are documented and deployment-gated.
-
-## Current continuation point
-
-The assigned `degenerate_investigator` documentation workstream is complete.
-
-Future maintenance should be source-driven: when implementation changes alter workflow inputs, S3 keys, schemas, feature semantics, model/fallback behavior, report provenance, security/configuration names, or publication controls, update the corresponding authoritative page in the same change set and use the normal validation/Pages gate.
+- Last verified: `2026-08-07`
+- Verified against: completion ledger and merged/deployed documentation records listed above.
+- Verified by: High Director
+- Verification scope: assigned target completion, validation/deployment gates, final architecture/security boundaries, and maintenance handoff.
+- Unverified areas: exact current live AWS/IAM state outside repository evidence.
