@@ -20,11 +20,11 @@
   order: 50
 - id: high-director
   title: High Director
-  description: Agent capabilities, operating rules, build plans, and continuation guidance.
+  description: High Director configuration, capabilities, integrations, runtime architecture, security boundaries, implementation references, and verification.
   order: 60
 - id: notes
   title: Notes
-  description: Useful technical reference that has not yet become formal system documentation.
+  description: Useful technical reference and active coordination material that has not yet become formal system documentation.
   order: 70
 - id: archive
   title: Archive
