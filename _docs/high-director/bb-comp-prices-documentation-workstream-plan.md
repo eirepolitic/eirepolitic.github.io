@@ -10,6 +10,7 @@ updated: 2026-08-07
 archived_date: 2026-08-07
 last_verified: 2026-08-07
 repository: bb-comp-prices
+permalink: /projects/high-director/bb-comp-prices-documentation-workstream-plan/
 archive_reason: The assigned documentation workstream is complete; current maintenance belongs on the authoritative repository, system, data, and archive pages.
 ---
 
