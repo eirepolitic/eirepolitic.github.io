@@ -299,7 +299,7 @@ Repository source proves how these names are consumed, but it does not prove the
 
 - [degenerate_investigator S3, Orchestration, and Security Boundary](../systems/degenerate-investigator-storage-orchestration-security.md)
 - [Degenerate Investigator Documentation Workstream Plan](../high-director/degenerate-investigator-documentation-workstream-plan.md)
-- [Documentation Target Catalogue](../high-director/documentation-target-catalogue.md)
+- [Documentation Target Catalogue](/projects/high-director/documentation-target-catalogue/)
 - [Repository Scan: degenerate_investigator](../high-director/repository-scan-degenerate-investigator.md)
 
 ## Continuation
