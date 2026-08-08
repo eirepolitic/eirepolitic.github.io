@@ -41,8 +41,8 @@ Current implementation/configuration outranks runtime evidence, handoffs, archiv
 | 47 | Constituency Images Indexer | complete and published |
 | 48 | Debate Issue Classifier | complete and published |
 | 49 | LLM Column Creator | complete and published |
-| 50 | Member Images Pipeline | reconciliation draft on `docs/ipa-legacy-member-images` |
-| 51 | Member Summaries Table | pending |
+| 50 | Member Images Pipeline | complete and published |
+| 51 | Member Summaries Table | reconciliation draft on `docs/ipa-legacy-member-summaries` |
 | 52 | S3 Column Deleter | pending |
 | 53 | Retained debate/member enrichment and classification scripts | pending |
 | 54 | Experimental/editorial content-generation workflows | pending |
@@ -52,18 +52,16 @@ Current implementation/configuration outranks runtime evidence, handoffs, archiv
 - **47 Constituency Images Indexer:** retained image index remains an explicit source for the newer Oireachtas constituency-image enrichment/compatibility layer; full retirement is not established.
 - **48 Debate Issue Classifier:** retained legacy classifier still produces issue labels; the newer Oireachtas layer validates/adapts that classified CSV and does not call OpenAI itself.
 - **49 LLM Column Creator:** no separate current implementation remains; the old concept is superseded/generalized by the current Reusable LLM Task Runner Framework.
-- **50 Member Images Pipeline:** `process/members_photo_urls.py` remains the photo-discovery scraper. The current manual workflow overrides the script's old root-level output paths and writes under `processed/members/member_photos/`. The newer Oireachtas member-photo enrichment checks that nested path first, falls back to the old root-level path, and explicitly does not scrape new pages. It publishes richer trial/review data plus `members_photo_urls_compat.csv`, which feeds current member metrics/Instagram consumers. Full scraper retirement is not established.
+- **50 Member Images Pipeline:** retained scraper remains the photo-discovery producer; newer Oireachtas photo enrichment consumes the legacy nested/root fallback CSV and does not scrape new pages. Full scraper retirement is not established.
+- **51 Member Summaries Table:** retained `members_background_summarizer.py` remains the checked-in generator of `background` summaries using OpenAI Responses + web search. The newer Oireachtas summaries enrichment consumes `processed/members/members_summaries.csv`, does not call OpenAI, and creates review/compatibility outputs. The same legacy table is also shared by current generic LLM tasks, so it has evolved from a single-purpose summary product into a mutable enrichment table. The dedicated summarizer preserves arbitrary existing columns; the generic runner may drop columns omitted from a task's `keep` list.
 
 ## Discovery state
 
 - [x] P0 complete
 - [x] P1 complete
 - [x] P2 target 38 complete
-- [x] P3 target 47 complete
-- [x] P3 target 48 complete
-- [x] P3 target 49 complete
-- [x] P3 target 50 member-photo legacy/current lineage audited
-- [ ] P3 target 51 Member Summaries Table
+- [x] P3 targets 47–50 complete
+- [x] P3 target 51 member-summary legacy/current/shared-table lineage audited
 - [ ] P3 target 52 S3 Column Deleter
 - [ ] P3 target 53 retained enrichment/classification lineage
 - [ ] P3 target 54 experimental/editorial workflows
@@ -73,11 +71,12 @@ Current implementation/configuration outranks runtime evidence, handoffs, archiv
 | Component | PR | Validation | Pages | Result |
 | --- | --- | --- | --- | --- |
 | P0/P1/P2 prior components | #62–#107 | passed | exact-SHA Pages gates passed | complete |
-| P3 Constituency Images Indexer | #108 | `31240091714` success | `31240103424` success; SHA `0e39df9568871353978341b01450ce6fe6ae8c1f` | complete |
-| P3 Debate Issue Classifier | #109 | `31240199572` success | `31240218461` success; SHA `1209256adc461e3efff5e4a1947e1248f6131628` | complete |
-| P3 LLM Column Creator | #110 | `31240280395` success | `31240290648` success; SHA `46c2c8e8361715a7e2950ff3cee36d930706ab1c` | complete |
-| P3 Member Images Pipeline | pending PR | pending | pending | draft in progress |
+| P3 Constituency Images Indexer | #108 | `31240091714` success | `31240103424` success | complete |
+| P3 Debate Issue Classifier | #109 | `31240199572` success | `31240218461` success | complete |
+| P3 LLM Column Creator | #110 | `31240280395` success | `31240290648` success | complete |
+| P3 Member Images Pipeline | #111 | `31240361712` success | `31240378449` success; SHA `ea768eb1d44436472a93090d04a87277898e2a4c` | complete |
+| P3 Member Summaries Table | pending PR | pending | pending | draft in progress |
 
 ## Next action
 
-Validate, merge, and exact-SHA Pages-verify target 50. Only after that succeeds, begin target 51 Member Summaries Table from current `main`.
+Validate, merge, and exact-SHA Pages-verify target 51. Only after that succeeds, begin target 52 S3 Column Deleter from current `main`.
