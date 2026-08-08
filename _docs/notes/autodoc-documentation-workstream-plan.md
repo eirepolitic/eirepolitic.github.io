@@ -36,34 +36,33 @@ Every component requires: fresh `docs/autodoc-*` branch -> focused PR -> latest-
 | P0 publication gate recovery | #127 | #244 success | `d6a01ff442bf21e1cecded8eddf8251415b5bb7f` | #231 success |
 | P1 enrichment | #128 | #245 success | `a92c16d8579f7cd0ea1dcbd962d209994241187b` | #232 success |
 | P1 extraction | #129 | #246 success | `1b848d8b3e7ddfb702ce65a6cf4c156f9c7f6ff7` | #233 success |
+| P1 rendering | #130 | #247 success | `e00502b88868efb5a6d72dccbcfd78d2f5c9c83b` | #234 success |
 
 ## Active Component
 
 ```text
-P1 target 36: Template and Markdown rendering
-Branch: docs/autodoc-rendering
-Draft: _docs/systems/autodoc-template-markdown-rendering.md
+P1 target 37: LLM review/concision
+Branch: docs/autodoc-review-concision
+Draft: _docs/systems/autodoc-review-concision.md
 ```
 
-Verified current rendering facts:
+Verified review facts:
 
-- renderer: `process/render_sections.py`;
-- model: hard-coded `gpt-4.1-mini`, `temperature=0`;
-- requires base config, enriched config, and summaries CSV;
-- base template plus optional `templates/types/<type>.md` extension;
-- current type extensions: generic, pipeline, dataset, dashboard, investigation;
-- only `{{title}}`, `{{project}}`, `{{type}}`, `{{generated_at}}` are replaced deterministically;
-- section placeholder text remains in the template body and is supplied to the LLM as guidance;
-- model receives section title + section template body + extracted facts, not enriched JSON;
-- blank facts skip the model and emit `_TBD (no extracted facts provided for this section)._`;
-- no renderer-local retry/backoff;
-- front matter is ensured with current title and `layout: default`;
-- generated output overwrites `docs/<project>/<type>/<doc_key>.md`;
-- historical generated artifacts can contain older metadata such as `layout: doc` and are not current-source authority.
+- source `docs/<project>/<type>/<doc_key>.md`;
+- target `docs/<project>/<type>/reviewed/<doc_key>.md`;
+- `AUTODOC_MODEL` defaults to `gpt-4.1`; standard workflow explicitly sets `gpt-4.1`;
+- entire generated Markdown is sent in one request with `max_output_tokens=12000`;
+- prompt asks for concision while preserving formatting/headings/order and removing cross-section repetition;
+- no post-review factual/Markdown/front-matter validator and no retry loop;
+- current Appsmith dispatch sends `overwrite: "true"`;
+- existing reviewed file plus overwrite=false skips before source read;
+- workflow stages `docs/` broadly;
+- workflow commit step references `$DOC_KEY` outside the step where that env variable is defined, so current source does not establish a populated doc key in the commit message;
+- reviewed artifact is LLM concision state, not human/factual/publication approval.
 
 ## Security Finding
 
-The supplied Appsmith export contained two distinct GitHub PAT values. Values/raw export were not committed. Outstanding credential rotation/revocation requires explicit security/access approval and handling.
+The supplied Appsmith export contained two distinct GitHub PAT values. Values/raw export were not committed. Credential rotation/revocation remains an explicit security/access action requiring user approval/handling.
 
 ## Publication Mismatch
 
@@ -75,24 +74,22 @@ No redesign is approved.
 
 ## Remaining Sequence
 
-1. P1 rendering — **active**.
-2. P1 review/concision.
-3. P2 generated/reviewed lifecycle and manual recovery.
-4. P3 historical artifact classification.
-5. Final current-`main` consistency review.
+1. P1 review/concision — **active**.
+2. P2 generated/reviewed lifecycle and manual recovery.
+3. P3 historical `docs/eirepolitic/pipeline/*` classification.
+4. Final current-`main` consistency review.
 
 ## Next Safe Development Action
 
-Validate/publish rendering. After matching Pages success, create a fresh branch for review/concision.
+Validate/publish review/concision. After matching Pages success, create a fresh P2 lifecycle/recovery branch.
 
-Do not change models, prompts/template semantics, front-matter/TBD policy, credentials/permissions, or publication architecture without explicit approval.
+Do not change models, prompts, overwrite/approval semantics, credentials/permissions, or publication architecture without explicit approval.
 
 ## Related Documents
 
-- [AutoDoc asset enrichment](/projects/systems/autodoc-asset-enrichment/)
 - [AutoDoc section-fact extraction](/projects/systems/autodoc-section-fact-extraction/)
 - [AutoDoc template/Markdown rendering](/projects/systems/autodoc-template-markdown-rendering/)
-- [AutoDoc pipeline orchestration](/projects/systems/autodoc-pipeline-orchestration/)
+- [AutoDoc review/concision](/projects/systems/autodoc-review-concision/)
 - [AutoDoc publication boundary](/projects/systems/autodoc-publication-boundary/)
 
 ## Verification Record
