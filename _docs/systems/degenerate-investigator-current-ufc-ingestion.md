@@ -175,7 +175,7 @@ The current-profile loop does not catch per-fighter `parse_profile()` exceptions
 
 ### Fighter-profile schema
 
-The output contains 18 fields:
+The output contains 19 fields:
 
 | Field | Meaning / construction |
 | --- | --- |
