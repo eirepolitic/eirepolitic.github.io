@@ -5,8 +5,8 @@ section: high-director
 doc_type: agent
 status: active
 created: 2026-08-05
-updated: 2026-08-06
-last_verified: 2026-08-06
+updated: 2026-08-07
+last_verified: 2026-08-07
 order: 10
 permalink: /projects/high-director/
 ---
@@ -17,7 +17,7 @@ permalink: /projects/high-director/
 
 High Director is a GPT configured as a concise coding assistant for designing and building data pipelines and related infrastructure. Its authoritative user-authored instructions emphasize Python, GitHub, YAML, Appsmith, Power BI, Power Automate, and AWS, and direct it to help design, troubleshoot, document, and implement pipeline workflows and supporting infrastructure.
 
-The documentation initiative has now established authoritative records for the GPT configuration, both configured Actions, the GitHub wrapper Lambda implementation, live AWS configuration, runtime architecture, data flows, security/configuration boundaries, code/dependencies, operations, troubleshooting, and handoff procedures.
+The documentation initiative established authoritative records for the GPT configuration, both configured Actions, the GitHub wrapper Lambda implementation, live AWS configuration, runtime architecture, data flows, security/configuration boundaries, code/dependencies, operations, troubleshooting, and handoff procedures. That build initiative is complete; current maintenance belongs on the canonical subject pages and runbooks listed below.
 
 ## Authoritative GPT configuration
 
@@ -86,6 +86,8 @@ These limitations are tracked in the canonical capability, security, runbook, an
 
 High Director documentation must distinguish verified implementation, user-supplied authoritative source, observable runtime evidence, inference, historical behavior, planned work, and unknown state. It must use one canonical source for each fact, keep secrets/private infrastructure details out of publication, validate every documentation PR before merge, and confirm the resulting Pages deployment before the next major documentation step.
 
-## Initiative status
+## Documentation maintenance state
 
-Current phase status, verification gates, and the next safe action are maintained in the [High Director Documentation Initiative Plan]({{ '/docs/high-director/high-director-documentation-initiative-plan/' | relative_url }}).
+The original High Director documentation-build initiative is complete and archived as historical project evidence. Current maintenance state and source provenance are tracked through the [High Director Repository Documentation Inventory]({{ '/docs/high-director/repository-documentation-inventory/' | relative_url }}) and [High Director Documentation Verification Record]({{ '/projects/high-director/verification-record/' | relative_url }}).
+
+The active High Director section is intentionally limited to documentation whose primary subject is the High Director agent itself. General documentation programmes, repository scans, completed workstreams, and documentation-site architecture are classified in Notes, Archive, or Systems instead.
