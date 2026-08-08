@@ -49,8 +49,8 @@ All six P0 components are complete and published.
 | --- | --- | --- |
 | 17 | Instagram / constituency campaign rendering system | complete and published after fourth exact-SHA retry |
 | 18 | AI member-profile / Instagram content workflow | complete and published |
-| 19 | Member Profile Metrics Builder | draft on `docs/ipa-member-profile-metrics` |
-| 20 | Reusable LLM Task Runner Framework | discovery complete enough to draft |
+| 19 | Member Profile Metrics Builder | complete and published |
+| 20 | Reusable LLM Task Runner Framework | draft on `docs/ipa-llm-task-runner` |
 
 ## Verified P1 discoveries
 
@@ -63,6 +63,11 @@ All six P0 components are complete and published.
 - Current metrics inputs are four Unified Oireachtas compatibility products: members, member votes, member photos, and classified debate issues.
 - Metric outputs are year-specific and support immutable candidate-batch consumer output when `OIREACHTAS_BATCH_ID` is active.
 - Latest observed dedicated metrics workflow run `29299647855` on 2026-07-14 succeeded end-to-end.
+- `process/llm_table_runner.py` is the generic YAML-driven S3 table enrichment runner. It supports up to five prompt variables, optional OpenAI web search, retries, autosave, resumability, overwrite mode, CSV/Parquet output, and lightweight validation/repair.
+- Current LLM validation is soft: an invalid first output triggers one repair attempt, but a still-invalid repaired output does not hard-fail the row.
+- Current same-key `full_table` tasks can drop unrelated enrichment columns because only configured `keep` columns plus the current output column are reconstructed.
+- Current checked-in LLM tasks are `Absence_Reasons.yml`, `In_Government.yml`, and executable `llm_task_template.yml`; all three point at `processed/members/members_summaries.csv` as both input and output CSV.
+- Observed successful LLM workflow runs include generic controller `21535030240`, absence controller `21878606063`, and government controller `21642958774`.
 
 ## Discovery state
 
@@ -70,7 +75,7 @@ All six P0 components are complete and published.
 - [x] target 17 deterministic Instagram/constituency rendering documentation
 - [x] target 18 AI member-profile/Instagram content workflow documentation
 - [x] target 19 metrics inputs, aliases, formulas, output schema, candidate semantics, workflow, consumers, wrapper lineage, and runtime evidence
-- [ ] target 20 Reusable LLM Task Runner Framework at dedicated component depth
+- [x] target 20 runner implementation, YAML schema, retry/resume/autosave semantics, validation/repair behavior, write modes, current tasks/controllers, runtime evidence, security/cost boundaries, and preservation risks
 - [ ] P2 maintenance/repair/backfill utility status and safety procedures
 - [ ] P3 retained legacy/editorial successor/status reconciliation
 
@@ -90,12 +95,13 @@ All six P0 components are complete and published.
 | P1 Instagram/constituency rendering | #90 | `31229511638` success | first exact-SHA deployment cancelled | superseded by retries |
 | P1 rendering publication retry #4 | #100 | `31229949203` success | `31229966372` success; `925938a0db20c0d58f5fda33f1fb361bc53dcf1d` | complete |
 | P1 AI member-profile / Instagram content | #104 | `31230259270` success | `31230282153` success; `507464f44a3321b70a473bd75095abb28da22f08` | complete |
-| P1 Member Profile Metrics Builder | pending PR | pending | pending | draft in progress |
+| P1 Member Profile Metrics Builder | #105 | `31239709900` success | `31239725625` success; `c2422d9e9d2ee958563be10114c23961df8e6c1e` | complete |
+| P1 Reusable LLM Task Runner Framework | pending PR | pending | pending | draft in progress |
 
 ## Publication-gate note
 
-Parallel `main` changes repeatedly pre-empted target 17's exact-SHA Pages deployment. The fourth focused retry succeeded. Target 18 then passed validation and exact-SHA Pages normally. The same gate remains mandatory for targets 19 and 20.
+Parallel `main` changes repeatedly pre-empted target 17's exact-SHA Pages deployment. The fourth focused retry succeeded. Targets 18 and 19 then passed validation and exact-SHA Pages normally. The same gate remains mandatory for target 20 before P2 begins.
 
 ## Next action
 
-Validate, merge, and exact-SHA Pages-verify the Member Profile Metrics Builder page. Only after that gate succeeds, begin the Reusable LLM Task Runner Framework from current `main`.
+Validate, merge, and exact-SHA Pages-verify the Reusable LLM Task Runner Framework page. Only after that gate succeeds, begin P2 target 38 maintenance/repair/backfill utilities from current `main`.
