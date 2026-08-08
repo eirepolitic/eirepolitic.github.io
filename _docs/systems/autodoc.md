@@ -1,6 +1,6 @@
 ---
 title: AutoDoc
-summary: System architecture for the configuration-driven AutoDoc documentation-generation pipeline from intake boundary through reviewed Markdown publication.
+summary: System architecture for the configuration-driven AutoDoc documentation-generation pipeline from verified Appsmith intake through generated/reviewed artifact publication.
 section: systems
 doc_type: system
 status: active
@@ -24,255 +24,311 @@ tags:
 
 ## Summary
 
-AutoDoc is a repository-backed documentation-generation system whose current verified backend is implemented in the `autodoc` repository. It takes project configuration persisted under `doc_configs/`, enriches configured source assets, extracts section facts through OpenAI, renders Markdown from a base/type template contract, performs an OpenAI review/concision pass, retains generated/reviewed artifacts, and can publish a reviewed Markdown file into `eirepolitic.github.io`.
+AutoDoc is a repository-backed documentation-generation system implemented in `autodoc`. It accepts project configuration through the verified Appsmith/GitHub boundary, resolves source assets, extracts section facts with OpenAI, renders Markdown from base/type templates, optionally produces a separate LLM review/concision artifact, retains all major stages in Git, and can publish reviewed Markdown into `eirepolitic.github.io`.
 
-The system crosses several trust boundaries: Appsmith/caller to GitHub configuration, GitHub Actions to repository contents and configured asset sources, GitHub Actions to OpenAI, and the publication workflow from `autodoc` into the documentation repository.
+The system crosses distinct trust boundaries: Appsmith -> GitHub configuration, Actions -> source hosts, Actions -> OpenAI, Actions -> repository writes, and AutoDoc publication -> documentation repository.
 
 ## Current Implementation State
 
-Current executable backend stages are implemented and repository-persisted. The full automatic path is orchestrated by `.github/workflows/autodoc_pipeline.yml`, with manual stage workflows providing rerun/recovery entry points.
+Current Appsmith behavior is verified from the sanitized user-supplied export dated `2026-08-07`. It supersedes the older repository handoff for current Appsmith claims.
 
-The upstream Appsmith intake/configuration application is evidenced by a detailed repository handoff. That handoff is authoritative for the captured implementation at the time it was recorded, but exact current live Appsmith state is not yet verified. Current backend workflows/Python files outrank historical backend descriptions where they differ.
+Current backend behavior is verified from current `autodoc` workflows/Python source.
 
-A separate governance distinction is critical:
+Critical governance distinction:
 
-- **CURRENT VERIFIED BEHAVIOR:** `publish_to_website.yml` directly clones and pushes a reviewed Markdown file into `eirepolitic.github.io` using `WEBSITE_PAT`.
-- **CURRENT DOCUMENTATION GOVERNANCE:** documentation changes should use branch/PR, successful `Validate documentation`, merge, and successful matching GitHub Pages deployment.
+- **CURRENT VERIFIED BEHAVIOR:** `publish_to_website.yml` directly clones and pushes reviewed Markdown into `eirepolitic.github.io` using `WEBSITE_PAT`.
+- **CURRENT DOCUMENTATION GOVERNANCE:** documentation changes use branch/PR, successful `Validate documentation`, merge, and successful matching Pages deployment.
 
-The current publication workflow does not implement the newer governance sequence. This page records the mismatch without redesigning it.
+No architecture redesign was made by this documentation workstream.
 
 ## System Boundary
 
-Included in AutoDoc:
+Included:
 
-- Appsmith intake/configuration boundary as evidenced by repository handoff/current live source when later supplied;
-- `doc_configs/<owner>/` base/enriched configs, owner registry, and section-summary CSVs;
-- AutoDoc GitHub Actions workflows;
-- Python stage processors under `process/`;
-- Markdown templates under `templates/`;
-- generated/reviewed Markdown under `docs/`;
-- reviewed-document publication into `eirepolitic.github.io`.
+- Appsmith `Submit`/`DocsViewer` intake/control surface;
+- `doc_configs/<project>/` configuration/intermediate/registry state;
+- GitHub Actions orchestration and recovery workflows;
+- Python stage processors;
+- Markdown templates;
+- raw/reviewed Markdown artifacts;
+- optional reviewed-document publication into `eirepolitic.github.io`.
 
 Outside the AutoDoc implementation boundary:
 
-- the full downstream systems being documented by AutoDoc;
-- GitHub/Appsmith/OpenAI account administration beyond the names/interfaces required by AutoDoc;
-- the internal GitHub Pages build system of `eirepolitic.github.io`, except as the final documentation-governance verification gate.
+- the implementation of systems AutoDoc documents;
+- GitHub/Appsmith/OpenAI account administration beyond required interfaces/secret names;
+- GitHub Pages internals beyond documentation deployment verification.
 
 ## Authoritative Sources
 
-For current backend behavior:
+Backend precedence:
 
-1. current `.github/workflows/*.yml`/`.yaml` in `autodoc`;
-2. current `process/*.py` in `autodoc`;
-3. current persisted config/intermediate/artifact files;
-4. historical handoff/generated documentation.
+```text
+current workflows/Python
+  > current persisted stage artifacts
+  > generated/reviewed documents
+  > historical handoff/generated prose
+```
 
-For Appsmith behavior, current sanitized live Appsmith source takes precedence if supplied. Until then, the detailed repository handoff is authoritative only for its captured point in time.
+Appsmith precedence:
 
-Primary files:
+```text
+sanitized live export dated 2026-08-07
+  > historical repository handoff
+```
 
-- `.github/workflows/autodoc_pipeline.yml`
-- `.github/workflows/enrich_configs.yml`
-- `.github/workflows/section_extract.yml`
-- `.github/workflows/render_docs.yml`
-- `.github/workflows/review_doc.yml`
-- `.github/workflows/index_rebuilder.yaml`
-- `.github/workflows/publish_to_website.yml`
-- `process/enrich_configs.py`
-- `process/section_extract.py`
-- `process/render_sections.py`
-- `process/review_doc.py`
-- `process/update_index.py`
-- `templates/base.md`
-- `templates/types/*.md`
-- `doc_configs/<owner>/...`
-- `docs/...`
+Primary implementation paths:
+
+```text
+.github/workflows/autodoc_pipeline.yml
+.github/workflows/enrich_configs.yml
+.github/workflows/section_extract.yml
+.github/workflows/render_docs.yml
+.github/workflows/review_doc.yml
+.github/workflows/index_rebuilder.yaml
+.github/workflows/publish_to_website.yml
+process/enrich_configs.py
+process/section_extract.py
+process/render_sections.py
+process/review_doc.py
+process/update_index.py
+templates/
+doc_configs/
+docs/
+```
 
 ## Architecture Overview
 
 ```text
-Appsmith / configuration caller
+Appsmith Submit / DocsViewer
         |
         v
-GitHub repository boundary
-  doc_configs/<owner>/<slug>.json
-  doc_configs/<owner>/_index.json
+GitHub repository state
+  base config + _index.json
         |
         v
-GitHub Actions orchestration
-  autodoc_pipeline.yml / manual workflows
+AutoDoc Actions control plane
         |
-        +--> enrich_configs.py
-        |      -> <slug>.enriched.json
+        +--> enrichment
+        |      -> enriched JSON
         |
-        +--> section_extract.py
-        |      -> summaries/<slug>.csv
+        +--> extraction
+        |      -> summary CSV
         |      -> OpenAI
         |
-        +--> render_sections.py
-        |      -> templates/base.md + templates/types/<type>.md
-        |      -> generated Markdown
+        +--> rendering
+        |      -> raw Markdown
+        |      -> OpenAI for fact-bearing sections
         |
-        +--> review_doc.py
-               -> OpenAI
+        +--> separate review
                -> reviewed Markdown
+               -> OpenAI
                        |
                        v
-             publish_to_website.yml
-             WEBSITE_PAT trust boundary
+             optional publication
+             WEBSITE_PAT boundary
                        |
                        v
               eirepolitic.github.io
 ```
 
-## Components
+The automatic push-triggered pipeline currently ends at render. Review and publication are separate dispatches.
 
-### Intake and configuration boundary
+## Appsmith Intake and Control
 
-Base configuration lives at `doc_configs/<owner>/<slug>.json`. The captured Appsmith handoff describes creating/updating this file and maintaining the owner `_index.json` through the GitHub Contents API. Exact current live Appsmith implementation is deferred to the dedicated Appsmith/config/index page.
+The verified application has two pages:
 
-### Owner registry
+```text
+Submit
+DocsViewer
+```
 
-`process/update_index.py` rebuilds `doc_configs/<owner>/_index.json` from base configuration files. Enriched configs are not treated as separate projects. Registry ordering is deterministic by title, and each entry's `updated_at` is derived from the latest Git commit timestamp for the underlying base config.
+`Submit` can create/load base configs, maintain an immediate `_index.json` entry, and create a project `.gitkeep` path.
 
-### Asset enrichment
+`DocsViewer` can discover documents, read/edit Markdown, dispatch `review_doc.yml`, check reviewed-file state, and dispatch `publish_to_website.yml`.
 
-`process/enrich_configs.py` reads a base config, resolves configured assets from supported source modes, records resolution status/error information, and writes `<slug>.enriched.json`. Individual asset resolution failures are captured rather than necessarily aborting the whole enrichment pass.
+Current Appsmith config/index writes are not the final registry authority: `process/update_index.py` can deterministically rebuild `_index.json` from base configs and Git history.
 
-### Section-fact extraction
+The supplied export contained two distinct GitHub PAT values. Values/raw export were not persisted in documentation. Credential rotation/revocation remains a separate security/access action.
 
-`process/section_extract.py` consumes the enriched configuration, assembles source context by requested section, calls OpenAI, and writes `doc_configs/<owner>/summaries/<slug>.csv`. The CSV is an explicit persisted intermediate contract consumed by rendering.
+## Artifact Lifecycle
 
-### Template and Markdown rendering
+```text
+base config
+-> enriched JSON
+-> section-summary CSV
+-> generated/raw Markdown
+-> reviewed Markdown
+-> optional website copy
+```
 
-`process/render_sections.py` combines `templates/base.md` with the selected `templates/types/<type>.md` extension. Verified type files are `generic.md`, `pipeline.md`, `dataset.md`, `dashboard.md`, and `investigation.md`. Rendering uses extracted section facts; a section without facts is emitted as `_TBD_` rather than fabricated content.
+Separate registry:
 
-### Review/concision
+```text
+_index.json
+```
 
-`process/review_doc.py` consumes generated Markdown, calls OpenAI for a review/concision pass, and writes a reviewed Markdown artifact. Generated and reviewed artifacts are separate lifecycle states.
+Persistent intermediate state allows bounded recovery instead of always restarting the whole chain.
 
-### Publication boundary
+## Asset Enrichment
 
-`.github/workflows/publish_to_website.yml` accepts a reviewed AutoDoc Markdown path, validates the expected source-path boundary, clones `eirepolitic.github.io` using `WEBSITE_PAT`, copies the reviewed file, commits, and pushes to the website repository.
+`process/enrich_configs.py` supports:
 
-This direct push is current implementation behavior, not evidence that the newer documentation governance was followed.
+```text
+pasted
+github_path
+github_url
+```
 
-## Data Flow
+Recognized GitHub blob/raw URLs use the GitHub Contents API. Other `github_url` values currently fall through to generic HTTP GET. Text/binary content, provenance metadata, per-asset success/error state, and timestamps are persisted into enriched JSON.
 
-1. A project base config is created/updated in `doc_configs/<owner>/<slug>.json`.
-2. The owner registry may be maintained/rebuilt as `_index.json`.
-3. Enrichment resolves configured source assets and writes `<slug>.enriched.json`.
-4. Extraction converts enriched source evidence into section-scoped facts persisted as `summaries/<slug>.csv`.
-5. Rendering maps those facts into the selected base/type Markdown section structure and writes generated Markdown.
-6. Review/concision rewrites the generated document into a reviewed Markdown artifact.
-7. Publication may copy the reviewed artifact into `eirepolitic.github.io` and push it directly.
-8. Separately, current documentation governance expects PR validation, merge, and matching Pages success before a documentation change is considered complete.
+Individual asset failures are normally captured rather than causing the entire config to fail.
 
-## Inputs
+## Section-Fact Extraction
 
-- base project configuration JSON;
-- asset references and source-mode configuration;
-- selected document type/template structure;
-- GitHub repository content available to configured resolvers;
-- OpenAI API access for extraction/review stages;
-- reviewed Markdown path for publication.
+`process/section_extract.py`:
 
-## Outputs
+- requires base + enriched config;
+- discovers sections from H2 headings in merged templates;
+- uses hard-coded `gpt-4.1-mini`, `temperature=0`;
+- sends full enriched JSON for every section;
+- currently does not interpolate the passed section-template body into the extraction prompt;
+- retries rate-limit-like failures up to eight attempts;
+- writes `section_title,extracted_facts` CSV rows.
 
-- enriched configuration JSON;
-- section-summary CSV;
-- generated Markdown;
-- reviewed Markdown;
-- owner `_index.json` registry rebuilds;
-- optionally published Markdown in `eirepolitic.github.io`.
+## Template/Markdown Rendering
 
-## External Dependencies
+`process/render_sections.py`:
 
-- GitHub repositories and GitHub Actions;
-- GitHub API/git transport;
-- OpenAI API;
-- configured HTTP/source hosts used by enrichment;
-- Appsmith for the captured intake/configuration UI;
-- `eirepolitic.github.io` for publication;
-- GitHub Pages for the documentation site's deployment verification.
+- merges `templates/base.md` plus optional type template;
+- deterministically replaces only title/project/type/generated-at placeholders;
+- uses section-template body + extracted facts as LLM input;
+- uses `gpt-4.1-mini`, `temperature=0`;
+- skips OpenAI for blank-fact sections and emits a fixed `_TBD` marker;
+- ensures current front matter with `layout: default`;
+- writes raw Markdown under `docs/<project>/<type>/<doc_key>.md`.
 
-The exact current availability, permissions, and live account configuration of those services are not inferred from repository source.
+## Review/Concision
+
+`process/review_doc.py`:
+
+- reads the whole generated Markdown document;
+- uses `AUTODOC_MODEL`, standard workflow value `gpt-4.1`;
+- sends the full document in one request;
+- requests concision while preserving formatting/headings/order;
+- performs no factual or structural post-response validation;
+- writes `docs/<project>/<type>/reviewed/<doc_key>.md`.
+
+`reviewed` is an LLM artifact state, not human/factual/publication approval.
+
+## Automatic Orchestration
+
+`autodoc_pipeline.yml` triggers on qualifying config JSON pushes, filters to changed base configs, and runs:
+
+```text
+enrich -> extract -> render
+```
+
+It serializes automatic runs with concurrency group `autodoc-pipeline`, prevents bot-authored output commits from recursively processing, rebases generated changes onto current `main`, regenerates affected indexes, and commits/pushes outputs when changed.
+
+## Manual Recovery
+
+Manual workflows support bounded reruns for:
+
+- enrichment;
+- extraction;
+- rendering;
+- review;
+- index rebuild.
+
+Recovery rule: find the last valid persisted artifact, repair the actual upstream cause, then rerun the smallest necessary downstream stage.
+
+## Publication Boundary
+
+`publish_to_website.yml`:
+
+- is manually dispatchable and currently called by Appsmith;
+- requires reviewed Markdown at the expected path;
+- validates selected path inputs;
+- uses secret name `WEBSITE_PAT` for the website clone/push;
+- copies to `projects/<dest_type>/<doc_key>.md`;
+- commits/pushes directly if changed;
+- does not create a branch/PR, run the documentation validator, merge through governance, or wait for Pages.
+
+This is the documented implementation/governance mismatch.
+
+## Historical Generated Artifacts
+
+AutoDoc retains six Irish Politics `pipeline` artifact families with base/enriched/summary/raw/reviewed provenance. Their generated prose is archived historical evidence, not current Irish Politics implementation authority.
+
+Current dedicated archive/lineage pages in `eirepolitic.github.io` reconcile those artifacts against current `eirepolitic-data-pipeline` source.
 
 ## Trust and Security Boundaries
 
-### Appsmith/caller -> GitHub
+### Appsmith -> GitHub
 
-The intake client can create/update repository-hosted configuration and historically the owner registry. This boundary can influence what downstream assets are fetched and what project configuration the pipeline processes. Token values must never be documented; only the required credential/interface names may be recorded.
+Appsmith can write configuration/registry state and dispatch workflows. Exported credential exposure proves raw Appsmith exports must be treated as sensitive until sanitized.
 
-### GitHub Actions -> configured asset sources
+### Actions -> source hosts
 
-Enrichment causes Actions runners to read configured external/GitHub sources. Asset source configuration is therefore an input-trust boundary. The dedicated enrichment page documents exact supported modes, path handling, errors, and host behavior.
+Enrichment can fetch configured GitHub and generic HTTP sources. Source configuration therefore controls external retrieval and persistence.
 
-### GitHub Actions -> OpenAI
+### Actions -> OpenAI
 
-Extraction and review send constructed project/document context to OpenAI. `OPENAI_API_KEY` is a secret name only. Exact model/configuration details are documented in the stage pages from current source.
+Extraction, rendering for fact-bearing sections, and review send document-derived content to OpenAI. `OPENAI_API_KEY` is a secret name only.
 
-### GitHub Actions -> repository writes
+### Actions -> repository writes
 
-Automatic/manual workflows commit stage outputs back to `autodoc`; the declared workflow permissions and token choice govern those writes. Bot-trigger suppression in the automatic workflow prevents its own output commits from recursively starting the same pipeline path.
+Automatic/manual workflows commit intermediate/generated artifacts to `autodoc` with declared write permissions where applicable.
 
 ### AutoDoc -> documentation repository
 
-Publication uses `WEBSITE_PAT` to cross from `autodoc` into `eirepolitic.github.io`. This is a distinct repository-write boundary and currently bypasses the newer documentation PR/validation gate.
+Publication crosses repositories through `WEBSITE_PAT` and currently bypasses the documentation PR/validation gate.
 
-## Failure Behavior
+## Failure and Recovery Model
 
-- Enrichment can preserve per-asset resolution errors in the enriched output while allowing other assets to complete.
-- Extraction/rendering require their expected upstream persisted stage files and fail when required contracts are absent or invalid.
-- OpenAI-backed stages can fail on API/response errors; persisted earlier-stage outputs allow bounded rerun rather than full recreation where safe.
-- Rendering uses `_TBD_` for a section with no extracted facts instead of inventing facts.
-- Index rebuilding derives registry state from base configs and Git history rather than trusting an independently edited registry as the only source.
-- Publication validates the reviewed artifact/path boundary before copying and pushing.
-
-## Operations and Recovery
-
-The automatic workflow provides the standard chained path. Manual workflows exist for enrichment, extraction, rendering, review, index rebuilding, and website publication so an operator can rerun a bounded stage after verifying its upstream artifact.
-
-Safe recovery principle: identify the last valid persisted stage artifact, correct the actual cause, and rerun only the failed/downstream stage where the current workflow supports it. Do not delete or overwrite prior evidence solely to force a clean run.
-
-Detailed commands/dispatch inputs and artifact naming belong to the dedicated lifecycle/recovery runbook.
-
-## Current Documentation Governance
-
-Documentation changes in `eirepolitic.github.io` are governed by:
-
-1. focused branch and PR;
-2. successful `Validate documentation`;
-3. merge;
-4. successful matching GitHub Pages deployment for the merge commit.
-
-This workstream follows that discipline before beginning the next major AutoDoc component. The fact that `publish_to_website.yml` directly pushes does not override the documented site governance.
+- base contract errors must be fixed at base config;
+- per-asset enrichment failures are inspected through `resolved_ok`/`resolved_error`;
+- failed extraction can leave an older CSV on disk, so existence is not latest-run proof;
+- `_TBD` rendering usually indicates missing extracted facts rather than a renderer-only problem;
+- review failures leave raw Markdown available for rerun;
+- stale `_index.json` is rebuilt from base configs;
+- publication should never be used to diagnose upstream generation failures.
 
 ## Known Limitations
 
-- Exact live Appsmith state is not yet verified.
-- Historical Appsmith/backend handoff text contains drift from current backend source and must be dated/classified rather than treated as current implementation.
-- Live PAT scopes, GitHub repository rules, OpenAI account settings, and Appsmith access policy are not proven by repository source.
-- Direct website publication and current documentation governance are misaligned.
-- Historical generated documentation can be stale and should not override current executable source.
+- exact live external PAT scopes/repository rules/Appsmith membership remain external state;
+- generic HTTP fallback broadens the enrichment source-host boundary;
+- extraction repeats full enriched JSON per section and currently ignores section body text;
+- renderer has no local retry loop;
+- review has no factual/structural output validator;
+- review workflow stages `docs/` broadly and its commit-message `$DOC_KEY` is step-scoped incorrectly in current source;
+- direct publication remains misaligned with current documentation governance;
+- historical generated documents can preserve obsolete claims.
 
 ## Next Safe Development Action
 
-Publish this architecture foundation through the required documentation validation/merge/Pages gate. Then create a separate focused Appsmith/config/index page, using the captured repository handoff as historical authoritative evidence and requesting one live Appsmith source only where current implementation cannot be established safely from repository evidence.
+For future AutoDoc implementation work, start from the component page that owns the relevant stage and verify current `autodoc/main` source. Use the recovery runbook for stale/failed artifacts. Treat model/prompt, credentials/access, source-host policy, and publication architecture as explicit design decisions requiring approval.
 
 ## Related Documents
 
 - [AutoDoc repository](/projects/repositories/autodoc/)
+- [AutoDoc Appsmith intake](/projects/systems/autodoc-appsmith-intake/)
+- [AutoDoc configuration and project index](/projects/data/autodoc-configuration-and-project-index/)
+- [AutoDoc pipeline orchestration](/projects/systems/autodoc-pipeline-orchestration/)
+- [AutoDoc asset enrichment](/projects/systems/autodoc-asset-enrichment/)
+- [AutoDoc section-fact extraction](/projects/systems/autodoc-section-fact-extraction/)
+- [AutoDoc template/Markdown rendering](/projects/systems/autodoc-template-markdown-rendering/)
+- [AutoDoc review/concision](/projects/systems/autodoc-review-concision/)
+- [AutoDoc publication boundary](/projects/systems/autodoc-publication-boundary/)
+- [Recover AutoDoc artifacts](/projects/runbooks/recover-autodoc-artifacts/)
+- [Historical AutoDoc Irish Politics artifacts](/projects/archive/autodoc-eirepolitic-generated-artifacts/)
 - [AutoDoc documentation workstream plan](/projects/high-director/autodoc-documentation-workstream-plan/)
-- [Repository scan — AutoDoc](/projects/high-director/repository-scan-autodoc/)
-- [Documentation site](/projects/systems/documentation-site/)
-- [Publish a documentation change](/projects/runbooks/publish-documentation-change/)
 
 ## Verification Record
 
 - Last verified: `2026-08-07`
-- Verified against: current `autodoc` `main` repository tree; primary workflow files; all current `process/*.py` stage entry points; AutoDoc configs/intermediate artifacts; templates; generated/reviewed artifact directories; `requirements.txt`; documentation-site operations/publication runbooks and validator workflow.
+- Verified against: completed AutoDoc component documentation, current `autodoc/main`, sanitized Appsmith live-source record, artifact/recovery/archive records, and current publication governance documentation.
 - Verified by: High Director
-- Verification scope: system boundary, components, data flow, trust boundaries, persistence model, failure/recovery model, and publication-governance mismatch.
-- Unverified areas: exact current live Appsmith configuration and external credential/access-policy state.
+- Verification scope: current system boundary, Appsmith/backend authority, lifecycle, stages, orchestration, recovery, trust/security, publication mismatch, and historical artifact classification.
+- Unverified areas: external credential scopes/account membership and service availability.
