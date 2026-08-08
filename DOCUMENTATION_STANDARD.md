@@ -97,6 +97,20 @@ visibility: public
 
 Do not use terms such as `done`, `live`, or `old` as lifecycle statuses.
 
+## Classification rules
+
+Classify a page by its **primary subject**, not by the tool, agent, person, or process that authored, coordinated, or executed the work.
+
+Examples:
+
+- A page about High Director configuration, capabilities, integrations, runtime architecture, security boundaries, implementation, or verification belongs in `high-director`.
+- A repository-specific implementation page belongs in `repositories`, `systems`, `data`, `runbooks`, or another subject-appropriate section even when High Director created the page.
+- An active documentation programme, repository scan, continuation plan, or coordination record that has not become formal system documentation belongs in `notes`.
+- A completed or superseded workstream/discovery/build plan belongs in `archive` when it is retained for historical context.
+- Documentation-site architecture belongs in `systems`, not `high-director`, because the documentation site is the subject.
+
+High Director must not become a general bucket for projects merely because High Director performed the work.
+
 ## Naming conventions
 
 - Use lowercase kebab-case filenames: `member-images-pipeline.md`.
@@ -219,12 +233,15 @@ Pages intended to support future agent work should include:
 - Next safe action
 - Last verification date
 
+These continuation requirements do not determine the page's navigation section. A continuation page about another repository or programme must still be classified by that page's primary subject and lifecycle.
+
 ## Review checklist
 
 Before publishing:
 
 - Required metadata is present.
 - Status and document type use allowed values.
+- The page is classified by its primary subject rather than by its author/coordinator.
 - No secrets are included.
 - Commands and paths are accurate.
 - Completed and proposed work are clearly distinguished.
