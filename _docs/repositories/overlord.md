@@ -1,6 +1,6 @@
 ---
 title: Overlord Repository and Markdown Task-Record System
-summary: Source-grounded documentation for the current Overlord repository: a lightweight Markdown task-record store with work/personal partitions, YAML front matter, observed status conventions, fixture records, and no verified executable or cloud automation layer.
+summary: Source-grounded documentation for the current Overlord repository as a lightweight Markdown task-record store with work/personal partitions, YAML front matter, observed status conventions, fixture records, and no verified executable or cloud automation layer.
 section: repositories
 doc_type: repository
 status: active
