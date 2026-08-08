@@ -40,8 +40,8 @@ Current implementation/configuration outranks runtime evidence, handoffs, archiv
 | --- | --- | --- |
 | 47 | Constituency Images Indexer | complete and published |
 | 48 | Debate Issue Classifier | complete and published |
-| 49 | LLM Column Creator | reconciliation draft on `docs/ipa-legacy-llm-column-creator` |
-| 50 | Member Images Pipeline | pending |
+| 49 | LLM Column Creator | complete and published |
+| 50 | Member Images Pipeline | reconciliation draft on `docs/ipa-legacy-member-images` |
 | 51 | Member Summaries Table | pending |
 | 52 | S3 Column Deleter | pending |
 | 53 | Retained debate/member enrichment and classification scripts | pending |
@@ -49,27 +49,20 @@ Current implementation/configuration outranks runtime evidence, handoffs, archiv
 
 ## Verified P3 findings
 
-### Target 47 — Constituency Images Indexer
-
-The retained legacy indexer still produces `processed/constituencies/constituency_images.csv`, which is the explicit source of the newer Oireachtas constituency-image enrichment trial. The newer layer adds trial/review/compatibility outputs but does not create/discover image objects. Full legacy retirement is not established.
-
-### Target 48 — Debate Issue Classifier
-
-The older monthly debate extraction remains scheduled in checked-in source and the manual `speech_issue_classifier.py` path remains the checked-in OpenAI label generator. The newer Oireachtas speech-issue enrichment module explicitly does not call OpenAI; it consumes `processed/debates/debate_speeches_classified.csv`, validates/reshapes it, and publishes the compatibility dataset used by current downstream contracts and member-profile metrics. Full classifier retirement is not established.
-
-### Target 49 — LLM Column Creator
-
-No separate current repository implementation named `LLM Column Creator` or `llm_column_creator` was identified. The archived page had incorrectly pointed directly at current `process/llm_table_runner.py` as though it were the archive target's own implementation. The correct relationship is a superseded predecessor concept whose capability has been generalized into the current Reusable LLM Task Runner Framework.
+- **47 Constituency Images Indexer:** retained image index remains an explicit source for the newer Oireachtas constituency-image enrichment/compatibility layer; full retirement is not established.
+- **48 Debate Issue Classifier:** retained legacy classifier still produces issue labels; the newer Oireachtas layer validates/adapts that classified CSV and does not call OpenAI itself.
+- **49 LLM Column Creator:** no separate current implementation remains; the old concept is superseded/generalized by the current Reusable LLM Task Runner Framework.
+- **50 Member Images Pipeline:** `process/members_photo_urls.py` remains the photo-discovery scraper. The current manual workflow overrides the script's old root-level output paths and writes under `processed/members/member_photos/`. The newer Oireachtas member-photo enrichment checks that nested path first, falls back to the old root-level path, and explicitly does not scrape new pages. It publishes richer trial/review data plus `members_photo_urls_compat.csv`, which feeds current member metrics/Instagram consumers. Full scraper retirement is not established.
 
 ## Discovery state
 
 - [x] P0 complete
 - [x] P1 complete
 - [x] P2 target 38 complete
-- [x] P3 target 47 audited and published
-- [x] P3 target 48 audited and published
-- [x] P3 target 49 predecessor/successor mapping audited
-- [ ] P3 target 50 Member Images Pipeline
+- [x] P3 target 47 complete
+- [x] P3 target 48 complete
+- [x] P3 target 49 complete
+- [x] P3 target 50 member-photo legacy/current lineage audited
 - [ ] P3 target 51 Member Summaries Table
 - [ ] P3 target 52 S3 Column Deleter
 - [ ] P3 target 53 retained enrichment/classification lineage
@@ -79,22 +72,12 @@ No separate current repository implementation named `LLM Column Creator` or `llm
 
 | Component | PR | Validation | Pages | Result |
 | --- | --- | --- | --- | --- |
-| Workstream plan | #62 | `31219424981` success | `31219454738` success | complete |
-| P0 umbrella architecture | #64 | `31219706244` success | `31219726250` success | complete |
-| P0 repository | #66 | `31219954893` success | `31219991624` success | complete |
-| P0 Unified Oireachtas platform | #68 | `31220172926` success | `31220199307` success | complete |
-| P0 catalogue | #70 + #73 | validation passed | `31220683272` success | complete |
-| P0 orchestration | #74 + #84 | validation passed | `31229230209` success | complete |
-| P0 policies/contracts | #85 | `31229340996` success | `31229357085` success | complete |
-| P1 Instagram rendering | #90 + retries through #100 | validation passed | `31229966372` success | complete |
-| P1 AI Instagram content | #104 | `31230259270` success | `31230282153` success | complete |
-| P1 Member Profile Metrics | #105 | `31239709900` success | `31239725625` success | complete |
-| P1 Reusable LLM Task Runner | #106 | `31239847243` success | `31239858541` success | complete |
-| P2 maintenance/repair/backfill | #107 | `31239997132` success | `31240013265` success | complete |
+| P0/P1/P2 prior components | #62–#107 | passed | exact-SHA Pages gates passed | complete |
 | P3 Constituency Images Indexer | #108 | `31240091714` success | `31240103424` success; SHA `0e39df9568871353978341b01450ce6fe6ae8c1f` | complete |
 | P3 Debate Issue Classifier | #109 | `31240199572` success | `31240218461` success; SHA `1209256adc461e3efff5e4a1947e1248f6131628` | complete |
-| P3 LLM Column Creator | pending PR | pending | pending | draft in progress |
+| P3 LLM Column Creator | #110 | `31240280395` success | `31240290648` success; SHA `46c2c8e8361715a7e2950ff3cee36d930706ab1c` | complete |
+| P3 Member Images Pipeline | pending PR | pending | pending | draft in progress |
 
 ## Next action
 
-Validate, merge, and exact-SHA Pages-verify target 49. Only after that succeeds, begin target 50 Member Images Pipeline from current `main`.
+Validate, merge, and exact-SHA Pages-verify target 50. Only after that succeeds, begin target 51 Member Summaries Table from current `main`.
