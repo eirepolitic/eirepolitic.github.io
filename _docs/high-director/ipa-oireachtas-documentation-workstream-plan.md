@@ -10,6 +10,7 @@ updated: 2026-08-07
 archived_date: 2026-08-07
 last_verified: 2026-08-07
 repository: eirepolitic-data-pipeline
+permalink: /projects/high-director/ipa-oireachtas-documentation-workstream-plan/
 archive_reason: The assigned documentation workstream is complete; current maintenance belongs on the authoritative repository, system, data, runbook, and decision pages.
 ---
 
