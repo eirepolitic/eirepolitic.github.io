@@ -43,28 +43,29 @@ Current implementation/configuration outranks runtime evidence, handoffs, archiv
 | 49 | LLM Column Creator | complete and published |
 | 50 | Member Images Pipeline | complete and published |
 | 51 | Member Summaries Table | complete and published |
-| 52 | S3 Column Deleter | reconciliation draft on `docs/ipa-legacy-s3-column-deleter` |
-| 53 | Retained debate/member enrichment and classification scripts | pending |
+| 52 | S3 Column Deleter | complete and published |
+| 53 | Retained debate/member enrichment and classification scripts | lineage matrix draft on `docs/ipa-legacy-enrichment-lineage` |
 | 54 | Experimental/editorial content-generation workflows | pending |
 
 ## Verified P3 findings
 
-- **47 Constituency Images Indexer:** retained image index remains an explicit source for the newer Oireachtas constituency-image enrichment/compatibility layer; full retirement is not established.
-- **48 Debate Issue Classifier:** retained legacy classifier still produces issue labels; the newer Oireachtas layer validates/adapts that classified CSV and does not call OpenAI itself.
-- **49 LLM Column Creator:** no separate current implementation remains; the old concept is superseded/generalized by the current Reusable LLM Task Runner Framework.
-- **50 Member Images Pipeline:** retained scraper remains the photo-discovery producer; newer Oireachtas photo enrichment consumes the legacy nested/root fallback CSV and does not scrape new pages. Full scraper retirement is not established.
-- **51 Member Summaries Table:** retained background summarizer still generates `background`; newer Oireachtas enrichment consumes that table without calling OpenAI. The same table is also shared by current generic LLM tasks, with different column-preservation semantics.
-- **52 S3 Column Deleter:** current implementation remains a manually dispatchable destructive in-place S3 utility. `STRICT=1` only requires the target column to exist in both representations before writes; it is not a dry-run, backup, confirmation, rollback, or isolation mode. Current safety/operating guidance belongs to the P2 maintenance reference, while the archive page preserves the historical utility identity and lineage.
+- Targets 47/48/50/51 reveal a common transitional pattern: retained producer → legacy mutable S3 output → newer Unified Oireachtas enrichment/review adapter → compatibility product → current contracts/consumers.
+- **47 Constituency Images Indexer:** newer Oireachtas code consumes the legacy image index and does not discover/create images.
+- **48 Debate Issue Classifier:** newer Oireachtas code consumes existing classified speech output and does not call OpenAI.
+- **49 LLM Column Creator:** historical concept is superseded by the current reusable LLM task runner; no separate current implementation remains.
+- **50 Member Images Pipeline:** newer Oireachtas member-photo enrichment consumes retained legacy photo-index output and does not scrape member pages.
+- **51 Member Summaries Table:** newer Oireachtas summaries enrichment consumes the retained summary table and does not generate summaries; that legacy table is also shared by generic LLM tasks.
+- **52 S3 Column Deleter:** retained destructive implementation remains manually dispatchable; current operational/safety guidance belongs to the P2 maintenance reference.
+- **53 cross-cutting lineage:** the four `extract/oireachtas/enrichment_*` modules are adapter/review/compatibility layers, not complete upstream replacements. Full retirement is not established for the corresponding legacy producers. Older scheduled debate/member extraction also coexists with the canonical Oireachtas platform and still feeds parts of the legacy enrichment lineage.
 
 ## Discovery state
 
 - [x] P0 complete
 - [x] P1 complete
 - [x] P2 target 38 complete
-- [x] P3 targets 47–51 complete
-- [x] P3 target 52 archive/current-operation reconciliation audited
-- [ ] P3 target 53 retained enrichment/classification lineage
-- [ ] P3 target 54 experimental/editorial workflows
+- [x] P3 targets 47–52 complete
+- [x] P3 target 53 cross-cutting lineage/status audit drafted
+- [ ] P3 target 54 experimental/editorial workflow status audit
 
 ## PR ledger
 
@@ -75,9 +76,10 @@ Current implementation/configuration outranks runtime evidence, handoffs, archiv
 | P3 Debate Issue Classifier | #109 | `31240199572` success | `31240218461` success | complete |
 | P3 LLM Column Creator | #110 | `31240280395` success | `31240290648` success | complete |
 | P3 Member Images Pipeline | #111 | `31240361712` success | `31240378449` success | complete |
-| P3 Member Summaries Table | #112 | `31240455460` success | `31240471450` success; SHA `8e2eca79cc4ee33a7c47e0bdbda529645735e82e` | complete |
-| P3 S3 Column Deleter | pending PR | pending | pending | draft in progress |
+| P3 Member Summaries Table | #112 | `31240455460` success | `31240471450` success | complete |
+| P3 S3 Column Deleter | #113 | `31240538235` success | `31240557035` success; SHA `fa969d428a37306137cd99a8075d2f34c44a423a` | complete |
+| P3 legacy enrichment/classification lineage | pending PR | pending | pending | draft in progress |
 
 ## Next action
 
-Validate, merge, and exact-SHA Pages-verify target 52. Only after that succeeds, begin target 53 retained enrichment/classification lineage from current `main`.
+Validate, merge, and exact-SHA Pages-verify target 53. Only after that succeeds, begin target 54 experimental/editorial workflow status audit from current `main`.
