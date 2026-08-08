@@ -47,7 +47,7 @@ All six P0 components are complete and published.
 
 | Order | Component | State |
 | --- | --- | --- |
-| 17 | Instagram / constituency campaign rendering system | merged; second exact-SHA Pages retry on `docs/ipa-instagram-rendering-pages-retry-2` |
+| 17 | Instagram / constituency campaign rendering system | merged; third exact-SHA Pages retry on `docs/ipa-instagram-rendering-pages-retry-3` |
 | 18 | AI member-profile / Instagram content workflow | blocked on target 17 Pages gate |
 | 19 | Member Profile Metrics Builder | discovery complete enough to draft |
 | 20 | Reusable LLM Task Runner Framework | discovery complete enough to draft |
@@ -89,13 +89,14 @@ All six P0 components are complete and published.
 | Orchestration publication retry | #84 | `31229212100` success | `31229230209` success; `9b68becb6e2ca69c58c57cf1b2104948ec6a60d0` | complete |
 | P0 policies/contracts | #85 | `31229340996` success | `31229357085` success; `021db2fe9fb9ea6b1d581b121508bdd8cd81bb83` | complete |
 | P1 Instagram/constituency rendering | #90 | `31229511638` success | `31229551593` cancelled after successful Jekyll build for SHA `b471aeacaba092610ce85f278bc74824ae0eee4a` | superseded by retry |
-| P1 rendering publication retry #1 | #93 | `31229645985` success | `31229661485` cancelled after successful Jekyll build for SHA `2b02a5ca8f3e531f6fe4df7945719aa9314bd7bf` when newer `main` run `31229684812` entered the lane | superseded by retry #2 |
-| P1 rendering publication retry #2 | pending PR | pending | pending | in progress |
+| P1 rendering publication retry #1 | #93 | `31229645985` success | `31229661485` cancelled after successful Jekyll build for SHA `2b02a5ca8f3e531f6fe4df7945719aa9314bd7bf` | superseded by retry #2 |
+| P1 rendering publication retry #2 | #95 | `31229754311` success | `31229768879` cancelled before build/deploy for SHA `9d82f01e4bbff0608d3ae4859a21d4c837d46334` when newer `main` run `31229772219` entered the lane | superseded by retry #3 |
+| P1 rendering publication retry #3 | pending PR | pending | pending | in progress |
 
 ## Publication-gate note
 
-Parallel `main` changes have repeatedly pre-empted exact-SHA Pages deployment after successful Jekyll builds. This is a deployment-concurrency issue, not a target-17 content-validation failure. The workstream continues to require a successful exact-SHA Pages deployment before target 18 starts.
+Parallel `main` changes have repeatedly pre-empted exact-SHA Pages deployment. Target 17 has passed documentation validation and successful Jekyll builds; the remaining issue is deployment concurrency. The workstream still requires successful exact-SHA Pages deployment before target 18 starts.
 
 ## Next action
 
-Complete target-17 retry #2: validate, merge, and exact-SHA Pages-verify. Only then begin the AI member-profile / Instagram content workflow from current `main`.
+Complete target-17 retry #3: validate, merge, and exact-SHA Pages-verify. Only then begin the AI member-profile / Instagram content workflow from current `main`.
