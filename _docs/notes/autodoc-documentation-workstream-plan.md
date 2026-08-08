@@ -21,227 +21,202 @@ tags:
 
 ## Purpose
 
-This page is the persistent continuation plan for the complete AutoDoc documentation workstream. It coordinates evidence review, source sanitization, focused PRs, validation, merge, Pages deployment checks, and the next safe documentation action so another capable agent can continue without conversation history.
+Persistent continuation plan for the complete AutoDoc documentation workstream. It tracks evidence authority, sanitized source, focused PRs, validation/merge/Pages gates, security findings, current component, and next safe action.
 
 The owner-wide target catalogue remains read-only scope coordination during routine AutoDoc work.
 
 ## Assigned Scope
 
-### P0
+- **P0:** repository/system architecture; Appsmith intake/configuration; config schema/project index; pipeline orchestration/trust; reviewed-document website publication.
+- **P1:** enrichment/source resolution; LLM section-fact extraction; template/Markdown rendering; LLM review/concision.
+- **P2:** generated/reviewed artifact lifecycle and manual recovery.
+- **P3:** historical `docs/eirepolitic/pipeline/*` artifacts.
 
-- `autodoc` repository and system architecture.
-- AutoDoc Appsmith intake/configuration application.
-- AutoDoc configuration schema and project-index registry.
-- AutoDoc creation-pipeline orchestration and trust boundaries.
-- AutoDoc reviewed-document website publication boundary.
-
-### P1
-
-- Asset enrichment/source resolution.
-- LLM section-fact extraction.
-- Template and Markdown rendering.
-- LLM review/concision.
-
-### P2
-
-- Generated/reviewed artifact lifecycle and manual recovery workflows.
-
-### P3
-
-- Historical AutoDoc-generated `docs/eirepolitic/pipeline/*` artifacts.
-
-Excluded except where cross-reference is required: the full Irish Politics Analytics implementation, `bb-comp-prices`, `degenerate_investigator`, and Overlord.
+Full Irish Politics Analytics, `bb-comp-prices`, `degenerate_investigator`, and Overlord remain outside this workstream except for required cross-references.
 
 ## Evidence Hierarchy
 
-For current backend behavior:
+For backend claims:
 
 ```text
 current workflow/Python source
-  > current configuration/intermediate contracts
+  > current config/intermediate contracts
   > generated/reviewed outputs
   > historical handoff/generated prose
 ```
 
-For Appsmith:
+For Appsmith claims:
 
 ```text
 current sanitized live export
   > historical repository handoff
 ```
 
-The user-supplied AutoDoc Appsmith export dated `2026-08-07` is authoritative captured current Appsmith evidence. The raw export is not committed because it contained GitHub PAT values; sanitized evidence is persisted in `_docs/high-director/autodoc-appsmith-live-source-2026-08-07.md`.
+The user-supplied `2026-08-07` Appsmith export is current captured-state authority for Appsmith. The raw export is not committed because it contained credentials. Sanitized evidence is persisted at `_docs/high-director/autodoc-appsmith-live-source-2026-08-07.md`.
 
-Conflicts must be retained as historical/drift evidence rather than silently overwritten.
+Conflicting older evidence is retained as drift/history rather than silently overwritten.
 
 ## Completed Components
 
 ### Repository/system architecture
 
-Published pages:
-
 ```text
-_docs/repositories/autodoc.md
-_docs/systems/autodoc.md
-```
-
-Gate record:
-
-```text
+Docs:
+  _docs/repositories/autodoc.md
+  _docs/systems/autodoc.md
 PR #76
-Validate documentation run #126: success
-merge commit: dd410f89e5b0259b7224593c3feaf6b136ba1a1c
-Pages run #182: success for that merge commit
+Validate documentation #126: success
+Merge: dd410f89e5b0259b7224593c3feaf6b136ba1a1c
+Pages #182: success for merge commit
 ```
 
 ### Appsmith/configuration/index boundary
 
-Published pages/evidence:
-
 ```text
-_docs/systems/autodoc-appsmith-intake.md
-_docs/data/autodoc-configuration-and-project-index.md
-_docs/high-director/autodoc-appsmith-live-source-2026-08-07.md
+Docs:
+  _docs/systems/autodoc-appsmith-intake.md
+  _docs/data/autodoc-configuration-and-project-index.md
+  _docs/high-director/autodoc-appsmith-live-source-2026-08-07.md
+Stale PR #120: closed without merge after branch became non-clean
+Replacement PR #121
+Validate documentation #231: success
+Merge: 382093fb826520c0b99dc08b4b609d7f0c40f4f1
+Pages #225: success for merge commit
 ```
 
-The first branch became non-clean after `main` advanced; stale PR `#120` was closed without merge and rebuilt from current `main`.
+Verified live Appsmith drift includes `DocsViewer`, direct review/publication workflow dispatch, `.gitkeep` project creation, create value `create`, and current staged backend behavior replacing historical generator descriptions.
 
-Gate record:
+### Automatic pipeline orchestration/trust boundaries
 
 ```text
-PR #121
-Validate documentation run #231: success
-merge commit: 382093fb826520c0b99dc08b4b609d7f0c40f4f1
-Pages run #225: success for that merge commit
+Doc:
+  _docs/systems/autodoc-pipeline-orchestration.md
+PR #123
+Validate documentation #240: success
+Merge: 39b3729389d03de9ea3f09e01a010245c2838e26
+Pages #228: success for merge commit
 ```
 
-Current verified Appsmith drift includes:
-
-- `Submit` plus `DocsViewer` rather than intake-only UI;
-- direct dispatch of `review_doc.yml` and `publish_to_website.yml`;
-- project `.gitkeep` creation through `GitHub_EnsureProject`;
-- create-mode value `create` instead of historical `new`;
-- current staged enrich/extract/render/review backend rather than the historical single-generator description.
+Verified automatic sequence is `enrich -> extract -> render`; review remains separate. The component documents config filtering, `contents: write`, concurrency, bot recursion guard, secret names, rebase/stash/index regeneration, manual recovery workflows, and trust boundaries.
 
 ## Active Component
 
 Branch:
 
 ```text
-docs/autodoc-pipeline-trust
+docs/autodoc-publication-boundary
 ```
 
 Target:
 
 ```text
-P0 AutoDoc creation-pipeline orchestration and trust boundaries
+P0 reviewed-document website publication boundary
 ```
 
 Draft page:
 
 ```text
-_docs/systems/autodoc-pipeline-orchestration.md
+_docs/systems/autodoc-publication-boundary.md
 ```
 
-Verified current orchestration facts:
+Current verified publication facts:
 
-- `autodoc_pipeline.yml` triggers on pushes touching `doc_configs/**/*.json`.
-- It filters the triggering commit to base configs, excluding `_index.json` and `*.enriched.json`.
-- Automatic stage sequence is `enrich -> extract -> render`.
-- The automatic workflow does not call `review_doc.py`.
-- Review is a separate `workflow_dispatch` boundary.
-- Automatic concurrency group is `autodoc-pipeline`, `cancel-in-progress: false`.
-- GitHub Actions bot commits are excluded from the automatic job.
-- Automatic/manual stage workflows that commit outputs declare `contents: write`.
-- Automatic processing uses secret names `OPENAI_API_KEY` and `AUTODOC_GITHUB_TOKEN` with `GITHUB_TOKEN` fallback; values are never documented.
-- Generated changes are stashed, rebased onto current `main`, restored, then affected project indexes are regenerated authoritatively before commit/push.
-- Current review workflow sets `AUTODOC_MODEL=gpt-4.1`.
+- workflow: `.github/workflows/publish_to_website.yml`, name `Publish reviewed doc to website`;
+- trigger: `workflow_dispatch`;
+- required inputs: `project`, `type`, `doc_key`, `dest_type`; optional `overwrite`, default `"true"`;
+- source workflow permissions: `contents: read`;
+- reviewed source path: `docs/<project>/<type>/reviewed/<doc_key>.md`;
+- rejects empty values, values containing `..`, or leading `/`; additionally `dest_type` cannot contain `/`;
+- requires source reviewed file and pre-existing website destination directory;
+- cross-repository write credential name: `WEBSITE_PAT` only;
+- destination: `projects/<dest_type>/<doc_key>.md`;
+- overwrite=false blocks an existing destination; current Appsmith dispatch uses overwrite=true;
+- identical content produces no commit;
+- changed content is committed and directly `git push`ed in the cloned website repository;
+- workflow does not create a branch/PR, run documentation validation, merge through governance, or wait for matching Pages success.
 
 ## Security Finding
 
-The supplied Appsmith export contained two distinct GitHub PAT values repeated in exported datasource/action definitions.
+The supplied Appsmith export contained two distinct GitHub PAT values repeated in datasource/action definitions.
 
-Documentation handling is complete:
+Completed documentation response:
 
-- values were not reproduced;
-- values were not committed;
-- raw export was not committed;
-- only sanitized implementation/security evidence was persisted.
+- values not reproduced;
+- values not committed;
+- raw export not committed;
+- sanitized implementation/security evidence persisted.
 
-Security action remains outside this documentation workstream:
+Outstanding security action requiring explicit user handling/approval:
 
 ```text
 rotate/revoke both exposed GitHub PATs and replace the active Appsmith credential configuration
 ```
 
-Credential rotation/storage changes are security/access-control decisions and are not performed automatically.
+Do not perform credential rotation/storage/access changes automatically.
 
 ## Publication Governance
 
-Every focused component follows:
+For every focused component:
 
 1. branch from current `main` using `docs/autodoc-*`;
-2. open PR;
-3. confirm `Validate documentation` succeeds;
+2. open focused PR;
+3. confirm `Validate documentation` succeeds on latest head;
 4. merge;
-5. identify the merge commit;
-6. confirm matching GitHub Pages success for that exact commit;
+5. identify merge commit;
+6. confirm matching Pages build/deploy succeeds for that exact commit;
 7. only then begin the next major component.
 
-If a branch becomes non-clean as parallel work advances `main`, do not force the merge. Rebuild/synchronize from current `main` and close the stale PR when appropriate.
+If parallel work makes a branch non-clean, do not force the merge; rebuild/synchronize from current `main`.
 
 ## Publication Architecture Mismatch
 
-Keep these labels distinct:
-
 ### CURRENT VERIFIED BEHAVIOR
 
-Current `autodoc/.github/workflows/publish_to_website.yml` clones `eirepolitic.github.io` using `WEBSITE_PAT`, copies a reviewed Markdown file, commits it, and pushes directly.
+`publish_to_website.yml` clones `eirepolitic.github.io` using `WEBSITE_PAT`, copies reviewed Markdown under `projects/<dest_type>/`, commits if changed, and pushes directly.
 
 ### CURRENT DOCUMENTATION GOVERNANCE
 
-Documentation changes require branch/PR -> `Validate documentation` -> merge -> matching Pages success.
+Material documentation changes require branch/PR -> `Validate documentation` -> merge -> matching Pages build/deploy success -> live verification.
 
-Do not redesign the Appsmith/workflow publication path without explicit architecture/security approval.
+The workflow does not currently implement that governance. Document the mismatch; do not redesign it without explicit architecture/security approval.
 
 ## Work Sequence
 
 1. Repository/system architecture — **complete**.
 2. Appsmith/config/index — **complete**.
-3. Automatic pipeline orchestration/trust boundaries — **active**.
-4. Reviewed-document website-publication boundary — next P0 component.
+3. Automatic pipeline orchestration/trust — **complete**.
+4. Reviewed-document website publication — **active**.
 5. Asset enrichment/source resolution.
 6. LLM section-fact extraction.
 7. Template/Markdown rendering.
 8. LLM review/concision.
 9. Generated/reviewed lifecycle and manual recovery.
 10. Historical `docs/eirepolitic/pipeline/*` artifact classification.
-11. Final cross-page/current-`main` consistency review.
+11. Final current-`main` synchronization and cross-page consistency review.
 
 ## Failure and Recovery Rules
 
-- Backend/handoff conflict: current executable backend wins; retain handoff as drift.
-- Appsmith/live-handoff conflict: supplied live export wins for current Appsmith; retain historical handoff.
-- Stale `_index.json`: regenerate from base configs through `process/update_index.py`.
-- Validation failure: fix reported documentation errors; do not merge around the gate.
-- Pages failure: do not begin the next major component until the matching deployment is healthy.
-- Branch conflict/non-clean state: rebuild/sync from current `main`; do not force unrelated changes.
-- Secret found in supplied source: sanitize and persist only safe evidence; never commit secret-bearing source.
+- Current executable backend wins over historical backend prose; retain drift evidence.
+- Current sanitized live Appsmith export wins over historical Appsmith handoff.
+- Stale registry: rebuild `_index.json` from base configs using `process/update_index.py`.
+- Validation failure: fix the reported documentation issue; never merge around the gate.
+- Pages failure: do not begin the next major component.
+- Non-clean branch: sync/rebuild from current `main`, do not force unrelated changes.
+- Secret-bearing supplied source: persist only sanitized evidence.
 
 ## Outstanding Work
 
-- Complete/publish pipeline orchestration and trust-boundary documentation.
-- Document reviewed-document website publication, including exact workflow trigger/inputs, source/destination path checks, credential boundary, overwrite behavior, git push behavior, failure handling, and governance mismatch.
-- Complete P1 stage pages with exact source modes, CSV contract, templates, OpenAI models/configuration, retry/error behavior, and artifact paths.
+- Validate, merge, and deploy the publication-boundary component.
+- Complete P1 stage documentation with exact resolver modes, CSV contracts, templates, OpenAI models/configuration, retries/error behavior, and artifact paths.
 - Complete P2 lifecycle/manual recovery runbook.
 - Complete P3 historical artifact classification.
-- Perform final current-`main` synchronization and cross-page/link/evidence consistency review.
+- Perform final current-`main` and cross-page/link/evidence consistency review.
 
 ## Next Safe Development Action
 
-Fix and rerun validation for the orchestration/trust PR. Merge only after `Validate documentation` succeeds, then confirm matching Pages success. After that, create a fresh branch from `main` for the reviewed-document website-publication boundary.
+Open the focused publication-boundary PR, confirm `Validate documentation`, merge, and confirm matching Pages success. Then start asset enrichment/source resolution on a fresh branch from updated `main`.
 
-Do not rotate credentials, change PAT scopes/storage, alter workflow permissions, change OpenAI models, modify publication architecture, or change Appsmith access control without explicit approval.
+Do not rotate credentials, change PAT scopes/storage, alter workflow permissions, change models, modify publication architecture, or change Appsmith access control without explicit approval.
 
 ## Related Documents
 
@@ -251,10 +226,11 @@ Do not rotate credentials, change PAT scopes/storage, alter workflow permissions
 - [AutoDoc configuration and project index](/projects/data/autodoc-configuration-and-project-index/)
 - [Sanitized Appsmith live source](/projects/high-director/autodoc-appsmith-live-source-2026-08-07/)
 - [AutoDoc pipeline orchestration](/projects/systems/autodoc-pipeline-orchestration/)
+- [AutoDoc publication boundary](/projects/systems/autodoc-publication-boundary/)
 
 ## Verification Record
 
 - Last verified: `2026-08-07` local programme date.
 - Verified by: High Director.
-- Verified against: current `eirepolitic.github.io` `main`; PR/validation/merge/Pages records above; current `autodoc` workflows/Python/configs; supplied Appsmith export via the sanitized evidence record.
+- Verified against: current `eirepolitic.github.io` `main`; gate records above; current `autodoc` workflows/Python/configs; sanitized Appsmith evidence; current documentation publishing runbooks.
 - Unverified external state: exact PAT scopes, current Appsmith workspace membership, repository-rule enforcement, and external-service availability.
