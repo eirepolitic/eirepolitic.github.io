@@ -52,8 +52,8 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | 2 | `eirepolitic-data-pipeline` repository | complete and published |
 | 3 | Unified Oireachtas Data Platform | complete and published |
 | 4 | Oireachtas canonical data-product catalogue | complete and published after exact-SHA Pages retry |
-| 5 | Oireachtas refresh/validation orchestration | draft on `docs/ipa-oireachtas-orchestration` |
-| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft |
+| 5 | Oireachtas refresh/validation orchestration | merged; exact-SHA Pages retry on `docs/ipa-oireachtas-orchestration-pages-retry` |
+| 6 | Oireachtas write policies and downstream contracts | discovery complete enough to draft; blocked on orchestration Pages gate |
 
 ## Discovery checklist
 
@@ -105,12 +105,13 @@ Use this evidence order: current implementation/configuration; observed runtime 
 | P0 Unified Oireachtas platform | `docs/ipa-oireachtas-platform` / PR #68 | `31220172926` success | `31220199307` success; SHA `74aa6405164440b62d28e6ac64d76f01388a7957` | complete |
 | P0 data-product catalogue | `docs/ipa-oireachtas-catalogue` / PR #70 | `31220389309` success | initial exact-SHA run `31220425800` cancelled by newer parallel Pages deployment | superseded by retry |
 | P0 catalogue Pages retry | `docs/ipa-oireachtas-catalogue-pages-retry` / PR #73 | `31220665186` success | `31220683272` success; SHA `6f5c9c1d9685addeed5ec75a05a6d701de04733d` | complete |
-| P0 orchestration | `docs/ipa-oireachtas-orchestration` | pending | pending | draft in progress |
+| P0 orchestration | `docs/ipa-oireachtas-orchestration` / PR #74 | validation passed; merged | exact-SHA Pages run `31220883662` cancelled by newer parallel `main` deployment during Jekyll | superseded by retry |
+| P0 orchestration Pages retry | `docs/ipa-oireachtas-orchestration-pages-retry` | pending | pending | in progress |
 | P0 policies/contracts | pending | pending | pending | pending |
 
 ## Publication-gate incident note
 
-The first Pages deployment for catalogue PR #70 was cancelled because a newer parallel `main` commit entered the Pages deployment lane while the catalogue build was running. A focused retry was required rather than accepting another SHA's success. Retry PR #73 passed validation and Pages succeeded for its exact merge SHA, satisfying the workstream gate before orchestration work began.
+Parallel `main` activity has twice cancelled a matching Pages deployment while Jekyll was running, without a documentation-content failure: first for the catalogue, then for orchestration. The catalogue was resolved with a focused retry and exact-SHA Pages success. The same exact-SHA retry discipline is now being applied to the orchestration runbook before P0 policies/contracts begins.
 
 ## Unknowns to resolve
 
@@ -120,4 +121,4 @@ The first Pages deployment for catalogue PR #70 was cancelled because a newer pa
 
 ## Next action
 
-Validate and publish the Oireachtas refresh/validation orchestration runbook. After its exact Pages deployment succeeds, create the P0 write-policy/downstream-contract reference from current `main`. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
+Complete the orchestration publication retry: validate, merge, and require Pages success for the retry merge SHA. Only then create the P0 write-policy/downstream-contract reference from current `main`. No architecture, security, cost, access-control, or irreversible runtime change is authorized by this workstream.
