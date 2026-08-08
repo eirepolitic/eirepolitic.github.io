@@ -116,13 +116,13 @@ No separate news-service API integration was verified in source. If live AWS/IAM
 - [x] Publish/merge P1-27 and P1-28; Pages succeeded for `cb7be00a986f5da4ae9a84e97afc4bfa1ae23e34`.
 - [x] Publish/merge P1-29 and P1-30; Pages succeeded for `30dd2d6622386a56db5289c1c771a2af5d744c19`.
 - [x] Publish/merge P1-31; Pages succeeded for `ea398791da2415ad44d1810635cf2810295ff857`.
-- [x] Publish/merge P1-32 and P1-33 in PR #87; original Pages run for merge SHA `6210e0bc5da013747f0e8d0edfedb7bb11187dd6` was cancelled by a newer parallel `main` deployment before build completion.
-- [ ] Complete a fresh validated checkpoint merge containing P1-32/P1-33 and confirm its matching Pages deployment succeeds.
-- [ ] Complete P2-43 publication workflow documentation.
+- [x] Publish/merge P1-32 and P1-33 in PR #87; original Pages run for `6210e0bc5da013747f0e8d0edfedb7bb11187dd6` was cancelled by a newer parallel deployment.
+- [x] Re-gate P1-32/P1-33 through PR #88; matching Pages deployment succeeded for `ed5c425e6edc5602a4406678d7f992e78cfe38b8`.
+- [ ] Publish and merge P2-43 report-publication workflow documentation.
 - [ ] Final cross-link and continuation review.
 
 ## Current continuation point
 
-Current branch: `docs/degenerate-inference-report-pages-checkpoint-20260807`.
+Current branch: `docs/degenerate-report-publication-20260807`.
 
-Current task: validate and merge the P1-32/P1-33 deployment checkpoint from current `main`, confirm its matching Pages deployment, then start P2-43 report publication.
+Current task: validate and merge P2-43 S3-to-repository report-publication documentation, confirm its matching Pages deployment, then perform the final degenerate_investigator consistency pass before handing off to the isolated Overlord sequence.
