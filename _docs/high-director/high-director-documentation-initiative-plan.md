@@ -46,9 +46,9 @@ The documentation-build initiative explicitly states that no build phase remains
 ## Related Documents
 
 - [High Director overview](/projects/high-director/)
-- [High Director verification record](/docs/high-director/verification-record/)
-- [High Director operations and deployment](/docs/runbooks/high-director-operations-and-deployment/)
-- [High Director troubleshooting and handoff](/docs/runbooks/high-director-troubleshooting-and-handoff/)
+- [High Director verification record](/projects/high-director/verification-record/)
+- [High Director operations and deployment](/projects/runbooks/high-director-operations-and-deployment/)
+- [High Director troubleshooting and handoff](/projects/runbooks/high-director-troubleshooting-and-handoff/)
 
 ## Verification Record
 
