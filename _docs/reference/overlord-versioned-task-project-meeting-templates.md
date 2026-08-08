@@ -1,7 +1,7 @@
 ---
 title: Overlord Versioned Task, Project, and Meeting Templates
 summary: Source-grounded reference for the three current Overlord v1 Markdown templates, their naming/version convention, identical body structure, relationship to record metadata, and current limitations.
-section: reference
+section: notes
 doc_type: reference
 status: active
 owner: High Director
