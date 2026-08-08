@@ -47,8 +47,8 @@ All six P0 components are complete and published.
 
 | Order | Component | State |
 | --- | --- | --- |
-| 17 | Instagram / constituency campaign rendering system | merged; fourth exact-SHA Pages retry on `docs/ipa-instagram-rendering-pages-retry-4` |
-| 18 | AI member-profile / Instagram content workflow | blocked on target 17 Pages gate |
+| 17 | Instagram / constituency campaign rendering system | complete and published after fourth exact-SHA retry |
+| 18 | AI member-profile / Instagram content workflow | draft on `docs/ipa-instagram-ai-content` |
 | 19 | Member Profile Metrics Builder | discovery complete enough to draft |
 | 20 | Reusable LLM Task Runner Framework | discovery complete enough to draft |
 
@@ -63,13 +63,24 @@ All six P0 components are complete and published.
 - Bannerbear and Placid provider adapters are implemented with explicit mappings and local-HTML fallback, but live provider credentials/templates/successful current renders are unverified in this workstream.
 - Constituency/provider-test paths still default to older compatibility/legacy S3 inputs, while the current member-profile campaign reads `processed/members/member_profile_metrics_2025.csv`.
 
+## Verified P1 AI-content discoveries
+
+- Current checked-in Option 5 AI work consists of two manual experimental workflows: member-profile template editing and constituency-cover background generation.
+- Neither Option 5 workflow publishes/schedules/approves Instagram content or generates captions/social copy.
+- Member-profile editing uses a checked-in template, exact source-truth sidecar, two OpenAI image-edit calls, and one structured Responses API vision-validation call; the second image edit always runs and there is no final automatic v2 approval.
+- Constituency generation uses `images.generate()` only for a decorative background and overlays exact visible constituency text through the deterministic renderer; the review sheet remains manual/blank by default.
+- The member-profile workflow still invokes legacy `build_dail_votes_member_records.py`, but the current `build_member_profile_metrics_2025.py` wrapper delegates to the generic builder whose default vote input is the Unified Oireachtas compatibility dataset. The legacy extraction is therefore a current redundant side effect unless input keys are overridden.
+- Observed runtime: constituency Option 5 run `24966222811` succeeded on 2026-04-26; member-profile runs `24970078480` and `24970547529` succeeded after initial run `24969650417` failed at the AI-edit step. These runs are historical-revision evidence, not a fresh current-main execution.
+- Workflow-registry entries named `Instagram Content Factory ...` are not treated as current implementation when their corresponding workflow file is absent from current `main`.
+
 ## Discovery state
 
 - [x] full P0 implementation/configuration/runtime audit and all six P0 documentation components
 - [x] complete `instagram/`, `process/instagram*`, and Instagram workflow trees
 - [x] campaign renderer/spec, deterministic renderer, copy pack, queue, S3 preview path
 - [x] constituency HTML renderer, local renderer test, and provider-adapter architecture
-- [ ] AI member-profile / Option 5 implementation and workflows at documentation depth
+- [x] AI member-profile Option 5 workflow, implementation, spec, source-truth/validation behavior, runtime evidence and data-lineage drift
+- [x] constituency Option 5 workflow, prompt/job/image/review/deterministic-overlay behavior and runtime evidence
 - [ ] Member Profile Metrics Builder at dedicated component depth
 - [ ] Reusable LLM Task Runner Framework at dedicated component depth
 - [ ] P2 maintenance/repair/backfill utility status and safety procedures
@@ -88,16 +99,17 @@ All six P0 components are complete and published.
 | P0 orchestration | #74 | validation passed | first exact-SHA deployment cancelled by parallel `main` activity | superseded by retry |
 | Orchestration publication retry | #84 | `31229212100` success | `31229230209` success; `9b68becb6e2ca69c58c57cf1b2104948ec6a60d0` | complete |
 | P0 policies/contracts | #85 | `31229340996` success | `31229357085` success; `021db2fe9fb9ea6b1d581b121508bdd8cd81bb83` | complete |
-| P1 Instagram/constituency rendering | #90 | `31229511638` success | `31229551593` cancelled after successful Jekyll build for SHA `b471aeacaba092610ce85f278bc74824ae0eee4a` | superseded by retry |
-| P1 rendering publication retry #1 | #93 | `31229645985` success | `31229661485` cancelled after successful Jekyll build for SHA `2b02a5ca8f3e531f6fe4df7945719aa9314bd7bf` | superseded by retry #2 |
-| P1 rendering publication retry #2 | #95 | `31229754311` success | `31229768879` cancelled before build/deploy for SHA `9d82f01e4bbff0608d3ae4859a21d4c837d46334` | superseded by retry #3 |
-| P1 rendering publication retry #3 | #98 | `31229842314` success | `31229861674` cancelled during Jekyll for SHA `3c5c33ea575aa0851f2182238721cda1be9f62c8` when newer `main` run `31229877033` entered the lane | superseded by retry #4 |
-| P1 rendering publication retry #4 | pending PR | pending | pending | in progress |
+| P1 Instagram/constituency rendering | #90 | `31229511638` success | first exact-SHA deployment cancelled | superseded by retries |
+| P1 rendering publication retry #1 | #93 | `31229645985` success | `31229661485` cancelled after successful Jekyll build | superseded |
+| P1 rendering publication retry #2 | #95 | `31229754311` success | `31229768879` cancelled before build/deploy | superseded |
+| P1 rendering publication retry #3 | #98 | `31229842314` success | `31229861674` cancelled during Jekyll | superseded |
+| P1 rendering publication retry #4 | #100 | `31229949203` success | `31229966372` success; `925938a0db20c0d58f5fda33f1fb361bc53dcf1d` | complete |
+| P1 AI member-profile / Instagram content | pending PR | pending | pending | draft in progress |
 
 ## Publication-gate note
 
-Parallel `main` changes have repeatedly pre-empted exact-SHA Pages deployment. Target 17 has passed documentation validation and successful Jekyll builds; the remaining issue is deployment concurrency. The workstream still requires successful exact-SHA Pages deployment before target 18 starts.
+Parallel `main` changes repeatedly pre-empted target 17's exact-SHA Pages deployment. The fourth focused retry completed validation, Jekyll build, Pages deploy, and reporting successfully for merge SHA `925938a0db20c0d58f5fda33f1fb361bc53dcf1d`; target 18 began only after that gate succeeded.
 
 ## Next action
 
-Complete target-17 retry #4: validate, merge, and exact-SHA Pages-verify. Only then begin the AI member-profile / Instagram content workflow from current `main`.
+Validate, merge, and exact-SHA Pages-verify the AI member-profile / Instagram content workflow page. Only after that gate succeeds, begin the Member Profile Metrics Builder from current `main`.
