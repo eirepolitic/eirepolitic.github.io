@@ -56,47 +56,27 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 
 | Order | Component | State |
 | --- | --- | --- |
-| 17 | Instagram / constituency campaign rendering system | draft on `docs/ipa-instagram-rendering` |
-| 18 | AI member-profile / Instagram content workflow | discovery in progress |
+| 17 | Instagram / constituency campaign rendering system | merged; exact-SHA Pages retry on `docs/ipa-instagram-rendering-pages-retry` |
+| 18 | AI member-profile / Instagram content workflow | blocked on target 17 Pages gate |
 | 19 | Member Profile Metrics Builder | discovery complete enough to draft |
 | 20 | Reusable LLM Task Runner Framework | discovery complete enough to draft |
-
-## Verified P0 facts
-
-- Canonical registry: 31 confirmed products — 23 silver, 5 gold, 3 control.
-- Current source acquisition uses the public Oireachtas API with complete offset pagination, 429/5xx retry, repeated-page detection, and incomplete-pagination failure.
-- Production publication uses immutable batches plus `production`/`previous` pointers; active candidate reads are isolated from production fallback.
-- Weekly defaults: incremental, rolling 35-day window, page size 100. Monthly: incremental, previous month plus seven-day leading overlap, page size 200. Yearly: full previous calendar year, page size 200.
-- Only the high-level refresh-validation orchestrator is scheduled; cadence wrappers are manual.
-- Write strategies are `snapshot_replace`, `upsert`, `append`, and `rebuild`; all 31 products have policy coverage.
-- Downstream validation currently contains six dataset contracts plus two legacy/reference comparison threshold sets.
-- Auxiliary enrichment staging enforces source freshness before copying into a candidate.
-- Production pointer mutation is guarded separately from candidate publication.
-- **Observed runtime:** scheduled orchestrator run `30740881592` on 2026-08-02 completed refresh, validation, promotion, and pointer verification successfully.
-- Historical July packet-status statements that scheduled observation was pending are stale relative to August runtime evidence.
 
 ## Verified P1 rendering discoveries
 
 - `Instagram Campaign Render (Manual)` is the current review-oriented campaign workflow and does not publish, schedule, or approve Instagram content.
 - `process/instagram_render_campaign.py` currently supports only `member_profile_batch_v1` and initializes generated review rows as `needs_review` / `publish_ready=no`.
 - `instagram/renderer/template_renderer.py` is a deterministic Pillow renderer for JSON layouts/palettes plus YAML/JSON bindings; it emits PNGs, source-value metadata, render manifests, and warnings.
-- deterministic caption/alt-text generation is separate from rendering and does not use an LLM.
-- publish-queue generation is gated by explicit approval state, `publish_ready`, and empty `safety_notes`; it creates files only and performs no social-platform publishing.
+- Deterministic caption/alt-text generation is separate from rendering and does not use an LLM.
+- Publish-queue generation is gated by explicit approval state, `publish_ready`, and empty `safety_notes`; it creates files only and performs no social-platform publishing.
 - `process/instagram_render_post.py` remains the executable constituency Jinja2/Playwright renderer and has a local fixture regression test.
 - Bannerbear and Placid provider adapters are implemented with explicit mappings and local-HTML fallback, but live provider credentials/templates/successful current renders are unverified in this workstream.
-- constituency/provider-test paths still default to older compatibility/legacy S3 inputs, while the current member-profile campaign reads `processed/members/member_profile_metrics_2025.csv`.
+- Constituency/provider-test paths still default to older compatibility/legacy S3 inputs, while the current member-profile campaign reads `processed/members/member_profile_metrics_2025.csv`.
 
 ## Discovery state
 
 ### Completed for P0
 
-- [x] documentation standard/templates/catalogue/discovery plan and representative pages
-- [x] complete `eirepolitic-data-pipeline` tree and dependency inventory
-- [x] Oireachtas configs, package, process helpers, workflows, tests, handoffs and current runtime evidence
-- [x] all canonical registry products, schemas-as-column-lists, PKs, cadences, endpoints and builder locations
-- [x] write-policy coverage, merge semantics, relationship helpers and tests
-- [x] downstream contract config, staging, compatibility adapters, comparison/mismatch behavior and contract tests
-- [x] batch control, seeding, reassembly, promotion and rollback behavior
+- [x] full P0 implementation/configuration/runtime audit and all six P0 documentation components
 
 ### P1 discovery
 
@@ -129,12 +109,13 @@ Each major documentation component uses a focused `docs/ipa-*` PR. Before moving
 | P0 orchestration | #74 | validation passed | first exact-SHA deployment cancelled by parallel `main` activity | superseded by retry |
 | Orchestration publication retry | #84 | `31229212100` success | `31229230209` success; `9b68becb6e2ca69c58c57cf1b2104948ec6a60d0` | complete |
 | P0 policies/contracts | #85 | `31229340996` success | `31229357085` success; `021db2fe9fb9ea6b1d581b121508bdd8cd81bb83` | complete |
-| P1 Instagram/constituency rendering | pending PR | pending | pending | draft in progress |
+| P1 Instagram/constituency rendering | #90 | `31229511638` success | `31229551593` cancelled after successful Jekyll build for SHA `b471aeacaba092610ce85f278bc74824ae0eee4a` when newer `main` Pages run `31229577006` entered deployment lane | superseded by retry |
+| P1 rendering publication retry | pending PR | pending | pending | in progress |
 
 ## Publication-gate note
 
-Parallel `main` changes cancelled the first matching Pages deployment for both the catalogue and orchestration components while Jekyll was running. Neither cancellation reported a content-build failure. Both were resolved with focused retry PRs and successful Pages deployments for the retry merge SHA before subsequent work began.
+Parallel `main` changes have cancelled matching Pages deployments for the catalogue, orchestration, and now Instagram rendering. The first two were resolved with focused retry PRs and exact-SHA Pages success. Target 17 is using the same retry discipline; target 18 must not begin until the retry merge SHA deploys successfully.
 
 ## Next action
 
-Validate, merge, and exact-SHA Pages-verify the Instagram/constituency campaign rendering system page. After that gate succeeds, begin the AI member-profile / Instagram content workflow from current `main`.
+Complete the target-17 publication retry: validate, merge, and exact-SHA Pages-verify. Only then begin the AI member-profile / Instagram content workflow from current `main`.
