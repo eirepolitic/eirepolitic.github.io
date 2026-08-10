@@ -445,7 +445,7 @@ No architecture should be selected until that comparison is complete.
 
 - [High Director overview](/projects/high-director/)
 - [High Director runtime architecture](/projects/high-director/runtime-architecture/)
-- [High Director capability/component inventory](/projects/high-director/capability-component-inventory/)
+- [High Director capability/component inventory](/docs/high-director/capability-component-inventory/)
 - [High Director security and configuration reference](/projects/high-director/security-configuration-reference/)
 - [High Director documentation inventory](/docs/high-director/repository-documentation-inventory/)
 
