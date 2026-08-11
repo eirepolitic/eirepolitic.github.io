@@ -1,6 +1,6 @@
 ---
-title: Overlord Phase 0 — Implementation Plan
-summary: Concrete Phase 0 implementation contract for the Overlord successor control plane, defining repository structure, domain models, interfaces, local stack, tests, security boundaries, and acceptance gates before agent/runtime integration begins.
+title: Overlord — Phase 0 Implementation Plan
+summary: Detailed pre-development implementation contract for establishing the Overlord repository, domain model, interfaces, local control-plane spine, tests, security boundaries, and Phase 0 acceptance gates.
 section: notes
 doc_type: note
 status: active
@@ -12,169 +12,195 @@ order: 123
 permalink: /projects/notes/overlord-phase-0-implementation-plan/
 tags:
   - overlord
-  - high-director
-  - successor
-  - implementation
+  - high-director-successor
+  - implementation-plan
   - phase-0
   - architecture
   - python
   - postgres
+  - dbos
 ---
 
-# Overlord Phase 0 — Implementation Plan
+# Overlord — Phase 0 Implementation Plan
 
 ## Purpose
 
-This document turns the approved High Director successor architecture into a concrete **Phase 0 implementation contract** for the existing `Overlord` repository.
+This document converts the approved High Director successor architecture into the concrete implementation contract for **Phase 0** of the `Overlord` repository.
 
-Phase 0 is intentionally narrow. Its purpose is to create the durable application spine and stable internal interfaces that later Manager Agents, Developer Agents, LLM providers, GitHub tooling, mobile clients, and cloud workers will use.
+Phase 0 is intentionally narrow. It establishes the repository foundation, domain model, provider/runtime-neutral interfaces, local development environment, tests, and architectural guardrails that later phases will build on.
 
-Phase 0 must **not** couple Overlord to one LLM provider, one coding-agent runtime, or one cloud host.
+Phase 0 does **not** provision recurring cloud infrastructure, create remote Developer Agent workers, enable broad production credentials, or build the phone/PWA interface.
 
-No recurring cloud infrastructure is required for Phase 0.
+The goal is to make the expensive architectural decisions explicit before application code begins to accumulate around accidental framework choices.
 
-## Approved Product Decisions Carried Into Phase 0
+## Approved Inputs
 
-The following decisions are already approved and should not be reopened during Phase 0 unless implementation evidence shows a material problem:
+The Phase 0 plan is based on the following owner-approved decisions:
 
-- project/repository: `Overlord`;
-- prototype monthly spending ceiling: USD `$50`, treated as a spending ceiling rather than a user-message quota;
-- MVP integration scope: GitHub development lifecycle first;
-- Manager runtime direction: Pydantic AI behind an Overlord-owned interface;
-- durable workflow direction: DBOS + PostgreSQL;
-- Developer runtime direction: benchmark OpenHands and OpenCode behind the same Overlord-owned adapter;
-- owner-facing client direction: installable PWA;
-- authentication direction: passkeys/WebAuthn;
-- voice direction: push-to-talk STT plus optional short TTS summaries;
-- automation identity: GitHub App;
-- runtime secrets direction: GitHub Actions Secrets for CI/CD and a runtime secret-store abstraction, with AWS Secrets Manager as the current production candidate;
-- durable state must live outside provider/agent conversations;
-- disposable Developer Workers rather than permanently running coding-agent machines;
-- first-version tool interoperability should prefer MCP where it helps portability;
-- ACP may be used for coding-agent adapters;
-- A2A is deferred until independent remote-agent services are actually required.
+- successor repository: `Overlord`;
+- monthly prototype spending ceiling: **USD $50 total**;
+- the ceiling is a spending guardrail, **not an intended usage quota**;
+- product design should make ordinary use feel effectively unrestricted by minimizing marginal cost through model routing, caching, compact context, mocked/local testing, and ephemeral compute;
+- MVP integration scope begins with GitHub development workflows;
+- broader AWS, Google Workspace, Appsmith, Power BI, and Power Automate capabilities remain future extension points;
+- GitHub Actions Secrets are intended for CI/CD secrets;
+- runtime long-lived secrets will use a replaceable `SecretStore` interface, with AWS Secrets Manager as the current recommended hosted implementation when remote runtime deployment begins;
+- PWA/mobile, remote workers, voice, notifications, and production deployment are later phases.
 
-## Phase 0 Goal
+## Existing `Overlord` Repository State
 
-At the end of Phase 0, Overlord must be able to represent, validate, persist, retrieve, and test the lifecycle:
+The repository is effectively a clean application slate.
 
-```text
-Owner Work Request
-       |
-       v
-Plan
-       |
-       v
-Development Task(s)
-       |
-       +--> Agent Run reference
-       |
-       +--> Event history
-       |
-       +--> Decision / Approval if required
-       |
-       v
-Completion / Failure / Cancellation
-```
-
-This must work **without** requiring a real LLM provider, OpenHands/OpenCode, GitHub App, remote worker, phone app, or cloud deployment.
-
-That requirement is fundamental. If the lifecycle only exists inside a model or coding-agent session, Phase 0 has failed.
-
-## Existing Repository State
-
-The current `Overlord` repository is effectively a clean application slate.
-
-Existing content consists of:
+Existing material consists of:
 
 - a small README;
-- several Markdown task fixtures under `tasks/`;
-- task templates under `templates/tasks/`.
+- test-task Markdown files;
+- task-template Markdown files.
 
-These files should be preserved during Phase 0. They may later be converted into test fixtures or migrated into the new task model, but there is no need to delete or restructure them before the application foundation exists.
+Those files should be retained during Phase 0. They are useful historical fixtures and may later become seed inputs for task-schema compatibility tests.
+
+No current application architecture needs to be preserved.
+
+## Phase 0 Objectives
+
+Phase 0 should establish these foundations:
+
+1. a production-shaped Python package structure;
+2. a clear domain model independent of Pydantic AI, DBOS, OpenHands, OpenCode, or any single database ORM;
+3. PostgreSQL-backed persistence with migrations;
+4. durable workflow interfaces and one minimal DBOS-backed workflow proof;
+5. provider-neutral model capability profiles;
+6. runtime-neutral Developer Agent contracts;
+7. tool/policy/approval contracts;
+8. provider-neutral secret, notification, speech, and artifact interfaces even though most implementations are deferred;
+9. a deterministic event/audit model;
+10. local Docker-based development;
+11. automated unit/integration tests;
+12. lint/type/test CI;
+13. architecture tests that prevent framework leakage into the domain layer;
+14. local cost/budget policy primitives;
+15. documentation sufficient for another developer/agent to work in the repository safely.
+
+## Non-Goals
+
+Do **not** implement these in Phase 0:
+
+- production cloud deployment;
+- DigitalOcean/Fly/Hetzner worker provisioning;
+- AWS Secrets Manager integration beyond an interface/stub if useful;
+- GitHub App installation or broad write permissions;
+- OpenHands integration;
+- OpenCode integration;
+- real Developer Agent execution;
+- PWA/mobile UI;
+- passkeys;
+- Web Push;
+- STT/TTS;
+- MCP servers;
+- ACP/A2A integration;
+- vector search;
+- pgvector;
+- Temporal;
+- Kubernetes;
+- realtime voice;
+- autonomous repository modification.
+
+Those are later phases and should not expand Phase 0 scope.
 
 ## Technology Baseline
 
 ### Language
 
-Use **Python 3.13** for the initial backend/control-plane implementation.
+**Python 3.13**.
 
 Rationale:
 
-- fully compatible with the selected Python ecosystem direction;
-- conservative enough to avoid making the project depend immediately on the newest interpreter release;
-- easy later migration path;
-- current Pydantic AI and DBOS requirements are below this baseline.
+- modern async/runtime support;
+- broad compatibility with the selected Python ecosystem;
+- conservative relative to adopting the newest interpreter immediately;
+- easy later migration once dependency compatibility is proven.
 
-Python version should be declared centrally and enforced in CI.
+The repository should declare the supported Python range explicitly rather than silently depending on one developer machine.
 
-### Packaging and dependency management
+Initial target:
 
-Use standard `pyproject.toml` packaging.
+```text
+>=3.13,<3.14
+```
 
-Recommended approach:
-
-- `uv` for local environment/dependency management and lockfile generation;
-- PEP 621 project metadata;
-- no globally installed project dependencies required;
-- committed lockfile for reproducible local/CI installs.
-
-If a later CI/environment constraint makes `uv` problematic, the project metadata should remain usable with standard Python tooling.
+Re-evaluate Python 3.14 after the core dependency set is exercised in CI.
 
 ### API framework
 
-Use **FastAPI** for the HTTP control-plane API.
+**FastAPI**.
 
-Phase 0 will expose only development/health/domain endpoints required to validate the architecture; owner-facing production authentication is not yet implemented.
+Use it only at the HTTP boundary. Domain and application services must not import FastAPI objects.
 
-### Validation/domain schemas
+### Domain validation / schemas
 
-Use **Pydantic v2** for API/configuration/domain boundary validation.
+**Pydantic v2** for external/application boundary schemas where useful.
 
-Do not make Pydantic models themselves the persistence schema. Domain records and persistence mappings remain separately controlled.
+Domain entities should remain plain Python dataclasses/enums/value objects where this keeps framework coupling lower. Pydantic models should not automatically become the canonical domain model.
+
+### Manager-agent library
+
+**Pydantic AI**, behind Overlord-owned interfaces.
+
+Phase 0 should define the adapter boundary and one minimal structured-output proof, not build the full Manager Agent.
+
+### Durable workflow engine
+
+**DBOS**, behind Overlord-owned workflow/application services.
+
+Phase 0 should prove durable execution/restart semantics locally.
 
 ### Database
 
-Use **PostgreSQL**.
+**PostgreSQL**.
 
-Local Phase 0 Postgres should run through Docker Compose.
+Use PostgreSQL from the beginning rather than SQLite for application integration tests because DBOS durability and later production behavior depend on Postgres semantics.
 
-The database is the authoritative store for application-domain state.
+### ORM / SQL layer
 
-### Database access
+**SQLAlchemy 2.x** with **Alembic** migrations.
 
-Use **SQLAlchemy 2.x** with explicit repository/unit-of-work boundaries.
+Important rule: SQLAlchemy ORM models live in the persistence layer and map to/from domain objects. Domain code must not import SQLAlchemy.
 
-Use **Alembic** for schema migrations.
+### PostgreSQL driver
 
-The domain layer must not import SQLAlchemy models directly.
+Use a modern supported PostgreSQL driver consistently across SQLAlchemy/DBOS needs. Prefer one driver family rather than mixing multiple clients unless a framework requires it.
 
-### Durable workflow
+The exact sync/async driver choice should be verified during the first implementation PR against DBOS and SQLAlchemy integration behavior.
 
-Add **DBOS** only after the core domain/persistence lifecycle is working.
-
-DBOS is Phase 0 scope because we need to prove durable pause/resume semantics, but it should be integrated after basic domain state so DBOS internals do not become the domain model.
-
-### Tests
-
-Use:
+### Testing
 
 - `pytest`;
-- `pytest-asyncio` where asynchronous tests are required;
-- HTTP client integration tests against FastAPI;
-- real Postgres integration tests for persistence/migrations;
-- mocks/fakes only at external-adapter boundaries.
+- `pytest-asyncio` where asynchronous integration tests require it;
+- containerized PostgreSQL integration tests;
+- mocks/fakes for LLMs, secrets, tools, Developer Agents, notifications, and external services.
 
-### Static quality tooling
+### Quality tooling
 
-Use:
+Initial recommendation:
 
-- `ruff` for linting and formatting;
-- `mypy` for static typing;
-- `pytest` for behavior;
-- coverage reporting with a meaningful threshold after initial scaffolding stabilizes.
+- **Ruff** for linting/formatting;
+- **mypy** for static typing;
+- **pytest** for tests.
 
-Do not add overlapping formatters/linters unless there is a demonstrated need.
+Keep the initial toolchain small. Do not add overlapping linters/formatters without evidence they catch additional meaningful problems.
+
+### Packaging/dependency management
+
+Use standard `pyproject.toml` packaging.
+
+Prefer a lockfile-capable workflow. The exact package installer (`uv` or another standards-compatible tool) may be selected during the first repository bootstrap PR, provided:
+
+- CI is deterministic;
+- dependencies are locked;
+- local setup remains simple;
+- no proprietary package manager becomes required.
+
+Current recommendation: **`uv`** for fast local/CI environment management, while retaining standards-compatible `pyproject.toml` metadata.
 
 ## Proposed Repository Structure
 
@@ -183,318 +209,253 @@ Overlord/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
-│
 ├── docs/
-│   ├── architecture/
-│   ├── decisions/
-│   └── development/
-│
+│   ├── architecture.md
+│   ├── development.md
+│   ├── domain-model.md
+│   ├── security-boundaries.md
+│   └── decisions/
 ├── migrations/
-│   ├── env.py
-│   └── versions/
-│
+│   ├── versions/
+│   └── env.py
 ├── src/
 │   └── overlord/
 │       ├── __init__.py
-│       │
 │       ├── api/
 │       │   ├── app.py
 │       │   ├── dependencies.py
 │       │   └── routes/
-│       │
+│       ├── application/
+│       │   ├── services/
+│       │   ├── commands/
+│       │   └── queries/
 │       ├── domain/
+│       │   ├── entities/
 │       │   ├── enums.py
-│       │   ├── errors.py
-│       │   ├── models/
-│       │   └── services/
-│       │
-│       ├── persistence/
-│       │   ├── database.py
-│       │   ├── orm/
-│       │   ├── repositories/
-│       │   └── unit_of_work.py
-│       │
-│       ├── workflows/
-│       │   ├── manager.py
-│       │   └── task_lifecycle.py
-│       │
-│       ├── agents/
-│       │   ├── manager.py
-│       │   └── developer.py
-│       │
-│       ├── policies/
-│       │   ├── approvals.py
-│       │   ├── budgets.py
-│       │   └── permissions.py
-│       │
-│       ├── tools/
-│       │   ├── contracts.py
-│       │   └── registry.py
-│       │
+│       │   ├── events.py
+│       │   ├── policies.py
+│       │   └── value_objects.py
+│       ├── ports/
+│       │   ├── agent.py
+│       │   ├── developer.py
+│       │   ├── llm.py
+│       │   ├── repositories.py
+│       │   ├── tools.py
+│       │   ├── secrets.py
+│       │   ├── artifacts.py
+│       │   ├── notifications.py
+│       │   ├── speech.py
+│       │   └── clock.py
 │       ├── adapters/
 │       │   ├── llm/
+│       │   │   └── pydantic_ai.py
 │       │   ├── developer/
 │       │   ├── github/
 │       │   ├── secrets/
+│       │   ├── artifacts/
 │       │   ├── notifications/
-│       │   ├── speech/
-│       │   └── object_store/
-│       │
-│       ├── events/
-│       │   ├── models.py
-│       │   └── publisher.py
-│       │
+│       │   └── speech/
+│       ├── persistence/
+│       │   ├── db.py
+│       │   ├── models/
+│       │   ├── mappings/
+│       │   └── repositories/
+│       ├── workflows/
+│       │   ├── dbos_runtime.py
+│       │   └── manager_workflow.py
+│       ├── policy/
+│       │   ├── approvals.py
+│       │   ├── budgets.py
+│       │   └── permissions.py
 │       ├── config/
 │       │   ├── settings.py
-│       │   └── logging.py
-│       │
+│       │   └── model_profiles.py
 │       └── observability/
 │           ├── logging.py
 │           └── metrics.py
-│
 ├── tests/
 │   ├── unit/
 │   ├── integration/
-│   ├── contract/
-│   └── fixtures/
-│
-├── tasks/
-│   └── ... existing files preserved
-├── templates/
-│   └── ... existing files preserved
-│
+│   ├── architecture/
+│   ├── fixtures/
+│   └── conftest.py
+├── tasks/                 # existing fixtures retained
+├── templates/             # existing templates retained
 ├── .env.example
 ├── .gitignore
-├── alembic.ini
 ├── docker-compose.yml
+├── Dockerfile
+├── alembic.ini
 ├── pyproject.toml
-├── uv.lock
-└── README.md
+├── README.md
+└── uv.lock                # if uv selected
 ```
 
-This structure is a starting contract, not a requirement to create empty modules for every future component immediately. Create a package only when Phase 0 code/tests require it.
+## Layering Rules
 
-## Architectural Dependency Rule
-
-The intended dependency direction is:
+The key dependency direction should be:
 
 ```text
-api / workflows / adapters
-          |
-          v
-application/domain services
-          |
-          v
-domain contracts/models
+API / adapters / persistence / workflows
+                  |
+                  v
+             application
+                  |
+                  v
+                domain
 ```
 
-Persistence, Pydantic AI, DBOS, GitHub, OpenHands, OpenCode, AWS, or other vendor-specific objects must not leak into core domain models.
+`domain` must not depend on:
 
-Examples:
+- FastAPI;
+- SQLAlchemy;
+- DBOS;
+- Pydantic AI;
+- OpenHands;
+- OpenCode;
+- provider SDKs;
+- GitHub SDK/API clients;
+- AWS SDKs.
 
-- `Task` must not contain an `OpenHandsConversation` object;
-- `ModelProfile` must not require an OpenAI-specific request class;
-- `ApprovalRequest` must not depend on DBOS internals;
-- domain services must not require FastAPI request objects;
-- worker/task state must not be identified solely by an external runtime ID.
+`ports` define interfaces required by application/domain services.
 
-## Identifier Strategy
+`adapters` implement those ports using external libraries/services.
 
-Use application-generated UUIDs for durable entities.
-
-Recommended identifiers:
-
-- `conversation_id`;
-- `message_id`;
-- `work_request_id`;
-- `plan_id`;
-- `task_id`;
-- `agent_run_id`;
-- `decision_id`;
-- `approval_request_id`;
-- `tool_call_id`;
-- `event_id`;
-- `external_resource_id`.
-
-External IDs such as GitHub PR numbers, OpenHands conversation IDs, OpenCode session IDs, DBOS workflow IDs, or model-provider request IDs are stored as references, never as the application's primary identity.
+This is the principal mechanism that keeps the successor replaceable over time.
 
 ## Domain Model v1
 
-### Conversation
+Phase 0 should implement the minimum durable concepts needed for the Manager/Developer workflow.
 
-Represents one owner/Manager conversational thread.
+### `Conversation`
 
-Core fields:
+Represents the durable owner/Manager conversation.
+
+Minimum fields:
 
 ```text
 id
+kind
 status
 created_at
 updated_at
 ```
 
-Phase 0 needs only one conceptual owner, but the schema should not embed the owner's identity into conversation IDs or application globals.
+### `Message`
 
-### Message
+Provider-neutral canonical message/event content.
 
-Canonical text/event message stored independently of provider format.
-
-Core fields:
+Minimum fields:
 
 ```text
 id
 conversation_id
 author_type
 content_type
-text
+content
 created_at
 source_mode
-related_task_id?
-model_call_id?
-metadata
+provider_metadata_ref? 
 ```
 
-Initial `author_type` values:
+The canonical text/content must remain usable without provider-native message objects.
 
-```text
-OWNER
-MANAGER
-DEVELOPER
-SYSTEM
-TOOL
-```
+### `WorkRequest`
 
-Initial `source_mode` values:
+Represents what the owner is asking Overlord to accomplish.
 
-```text
-TEXT
-VOICE_TRANSCRIPT
-AGENT
-TOOL
-SYSTEM
-```
-
-### WorkRequest
-
-Represents the owner's requested outcome.
-
-Core fields:
+Minimum fields:
 
 ```text
 id
 conversation_id
 title
-description
+objective
 status
 created_at
 updated_at
 ```
 
-Suggested statuses:
+### `Plan`
 
-```text
-DRAFT
-ACTIVE
-WAITING_FOR_OWNER
-COMPLETED
-CANCELLED
-FAILED
-```
+A versioned implementation plan associated with a Work Request.
 
-### Plan
-
-A versioned plan for satisfying one WorkRequest.
-
-Core fields:
+Minimum fields:
 
 ```text
 id
 work_request_id
 version
-summary
 status
+summary
 created_at
-created_by
+supersedes_plan_id?
 ```
 
-Plans should be append/version oriented rather than overwritten invisibly.
+Plans are immutable versions after publication; revisions create a new version.
 
-### Task
+### `Task`
 
-Durable unit of executable development work.
+The durable unit delegated to a Developer Agent or internal workflow.
 
-Core fields:
+Minimum fields:
 
 ```text
 id
 work_request_id
 plan_id
+parent_task_id?
 title
-description
+objective
 status
 priority
+repository_ref?
 created_at
 updated_at
-repository_ref?
 ```
 
-Suggested statuses:
+### `TaskDependency`
+
+Explicit dependency edges between tasks.
+
+Minimum fields:
 
 ```text
-PENDING
-READY
-RUNNING
-WAITING_FOR_OWNER
-BLOCKED
-VALIDATING
-COMPLETED
-FAILED
-CANCELLED
-```
-
-### TaskDependency
-
-Represents ordering/dependency relationships between tasks.
-
-Core fields:
-
-```text
-predecessor_task_id
-successor_task_id
+upstream_task_id
+downstream_task_id
 dependency_type
 ```
 
-Phase 0 only needs simple blocking dependencies.
+### `AgentRun`
 
-### AgentRun
+Represents one execution attempt using a Manager or Developer runtime.
 
-Represents one attempt to perform or supervise work using an agent runtime/model.
-
-Core fields:
+Minimum fields:
 
 ```text
 id
-task_id
+task_id?
+conversation_id?
 agent_role
-runtime_adapter
-model_profile
+runtime_type
+runtime_session_id?
+model_profile_id?
 status
 started_at
-ended_at
-external_session_id?
+ended_at?
 ```
 
-`runtime_adapter` is a normalized identifier such as `fake`, `openhands`, or `opencode`, not a runtime-specific object.
+A runtime session ID is adapter metadata, not the canonical task identity.
 
-### DecisionRequest
+### `DecisionRequest`
 
 Represents a question that genuinely requires owner input.
 
-Core fields:
+Minimum fields:
 
 ```text
 id
-work_request_id?
+work_request_id
 task_id?
 category
 question
@@ -505,450 +466,663 @@ created_at
 resolved_at?
 ```
 
-Suggested categories:
+### `DecisionOption`
 
-```text
-REQUIREMENTS
-ARCHITECTURE
-SECURITY
-ACCESS
-COST
-DESTRUCTIVE_ACTION
-PRIVACY
-EXTERNAL_COMMITMENT
-AMBIGUITY
-```
+Structured choices when applicable.
 
-### DecisionResponse
-
-Stores the owner's exact response separately from the Manager's interpretation.
-
-Core fields:
+Minimum fields:
 
 ```text
 id
 decision_request_id
-response_text
-selected_option?
+key
+label
+description
+cost_impact?
+risk_level?
+```
+
+### `Decision`
+
+Canonical record of the owner's answer.
+
+Minimum fields:
+
+```text
+id
+decision_request_id
+selected_option_key?
+freeform_response?
 created_at
 ```
 
-### ApprovalRequest
+### `ApprovalRequest`
 
-Represents permission to execute a potentially sensitive action.
+Separate from a product decision. Represents permission to execute a restricted action.
 
-This is distinct from a product/architecture decision.
+Examples:
 
-Core fields:
+- destructive operation;
+- security/access change;
+- spending increase;
+- privileged merge/deployment action.
+
+Minimum fields:
 
 ```text
 id
 task_id?
-action_type
-resource
-risk_class
+policy_rule
+requested_action
+resource_scope
 status
-expires_at?
 created_at
+expires_at?
 ```
 
-### ExternalResource
+### `ToolCall`
 
-Normalized pointer to a resource owned by another system.
+Canonical proposed/executed tool invocation.
 
-Examples:
-
-- repository;
-- branch;
-- commit;
-- PR;
-- GitHub workflow run;
-- deployment;
-- object-storage artifact;
-- external agent session.
-
-Core fields:
+Minimum fields:
 
 ```text
 id
-resource_type
-provider
-external_id
-uri?
-metadata
+agent_run_id
+idempotency_key
+tool_name
+action
+resource_scope
+request_payload
+status
+created_at
+completed_at?
+```
+
+### `ToolResult`
+
+Minimum fields:
+
+```text
+id
+tool_call_id
+success
+summary
+artifact_ref?
+structured_result?
 created_at
 ```
 
-### AuditEvent
+### `DomainEvent`
 
-Append-oriented record of important state transitions and privileged operations.
+Append-oriented state transition/event record.
 
-Core fields:
+Minimum fields:
 
 ```text
 id
 event_type
+aggregate_type
+aggregate_id
 actor_type
 actor_id?
-work_request_id?
-task_id?
-correlation_id?
+correlation_id
+causation_id?
 payload
 created_at
 ```
 
-Phase 0 event types should include at least:
+### `UsageRecord`
+
+Normalizes model/compute usage.
+
+Minimum fields:
 
 ```text
-WORK_REQUEST_CREATED
-PLAN_CREATED
-PLAN_ACTIVATED
-TASK_CREATED
-TASK_STATUS_CHANGED
-AGENT_RUN_CREATED
-AGENT_RUN_STATUS_CHANGED
-DECISION_REQUIRED
-DECISION_RECORDED
-APPROVAL_REQUIRED
-APPROVAL_RECORDED
-WORK_REQUEST_COMPLETED
+id
+work_request_id?
+task_id?
+agent_run_id?
+provider
+model_or_resource
+usage_type
+quantity
+unit
+cost_usd
+price_profile_id?
+created_at
 ```
 
-## Domain Invariants
+### `BudgetPolicy`
 
-The first implementation should enforce these rules in application/domain services rather than relying only on UI behavior.
+Initial prototype budget configuration.
 
-1. A Task belongs to exactly one WorkRequest.
-2. An active Task must reference a Plan belonging to the same WorkRequest.
-3. A completed WorkRequest cannot contain non-terminal required Tasks.
-4. A Task cannot become `RUNNING` while a blocking dependency is incomplete.
-5. A Task cannot become `COMPLETED` directly from `PENDING` without an explicitly allowed transition.
-6. A DecisionRequest in `PENDING` state can place the relevant WorkRequest/Task into `WAITING_FOR_OWNER`.
-7. Recording a DecisionResponse does not automatically authorize destructive actions; approval policy remains separate.
-8. External agent-session deletion must not delete the Task or WorkRequest.
-9. Audit events for important transitions are append-only through normal application code.
-10. Every mutable domain record carries timestamps and safe concurrency/version semantics where needed.
-
-## State-Transition Services
-
-Do not let API routes update status fields arbitrarily.
-
-Create explicit application/domain services such as:
+Minimum fields:
 
 ```text
-create_work_request()
-create_plan()
-activate_plan()
-create_task()
-mark_task_ready()
-start_task()
-block_task()
-request_owner_decision()
-record_owner_decision()
-start_agent_run()
-complete_agent_run()
-start_validation()
-complete_task()
-fail_task()
-complete_work_request()
+id
+scope_type
+scope_id?
+period
+soft_limit_usd?
+hard_limit_usd
+status
 ```
 
-These services should validate allowed state transitions and emit audit events.
+The global prototype policy begins at **$50/month**.
 
-## Persistence Architecture
+The budget layer should optimize use rather than block ordinary interaction prematurely. Low-cost Manager chat/summarization should continue whenever possible even as the system approaches the ceiling; expensive execution should be the first thing constrained.
 
-Use repository interfaces in the domain/application layer and SQLAlchemy implementations in the persistence layer.
+## Required State Machines
 
-Initial repository contracts:
+Statuses should be explicit enums with validated transitions rather than arbitrary strings.
+
+### Work Request
 
 ```text
-ConversationRepository
-MessageRepository
-WorkRequestRepository
-PlanRepository
-TaskRepository
-AgentRunRepository
-DecisionRepository
-ApprovalRepository
-ExternalResourceRepository
-AuditEventRepository
+DRAFT
+PLANNING
+READY
+IN_PROGRESS
+AWAITING_OWNER
+VALIDATING
+COMPLETED
+CANCELLED
+FAILED
 ```
 
-Use a unit-of-work boundary so one domain transition and its audit event commit atomically.
-
-Example:
+### Task
 
 ```text
-begin transaction
-  change Task -> RUNNING
-  create AgentRun
-  append TASK_STATUS_CHANGED
-  append AGENT_RUN_CREATED
-commit
+PENDING
+BLOCKED
+READY
+RUNNING
+AWAITING_OWNER
+VALIDATING
+SUCCEEDED
+FAILED
+CANCELLED
 ```
 
-Do not publish external side effects from inside an uncommitted database transaction.
-
-## Database Migration Rules
-
-1. All schema changes use Alembic migrations.
-2. CI must prove migrations apply to an empty database.
-3. CI should prove migration head matches ORM metadata expectations.
-4. No manual production schema edits.
-5. Destructive migration patterns require explicit review in later phases.
-6. Seed/example data must not be embedded into production migrations unless genuinely required.
-
-## Configuration Model
-
-Use a single typed Settings model loaded from environment variables/local `.env` during development.
-
-Initial settings groups:
+### Agent Run
 
 ```text
-APP_*
-DATABASE_*
-DBOS_*
-LOG_*
-MODEL_*
-GITHUB_*        # placeholders only in Phase 0
-SECRET_STORE_*  # placeholders only in Phase 0
+CREATED
+STARTING
+RUNNING
+PAUSED
+SUCCEEDED
+FAILED
+CANCELLED
 ```
 
-`.env.example` contains names and safe example values only.
-
-Never commit credentials.
-
-Phase 0 should include a `LocalSecretStore`/environment-backed adapter behind the production `SecretStore` interface.
-
-## Core Interfaces to Freeze in Phase 0
-
-The word "freeze" here means establish tested semantics before external integrations; minor refinement remains possible.
-
-### LLM service
-
-Conceptual interface:
+### Decision Request
 
 ```text
-complete(request: ModelRequest) -> ModelResponse
-stream(request: ModelRequest) -> event stream
+OPEN
+ANSWERED
+CANCELLED
+SUPERSEDED
 ```
 
-Normalized `ModelRequest` should carry:
+### Approval Request
 
-- capability profile;
+```text
+PENDING
+APPROVED
+DENIED
+EXPIRED
+CANCELLED
+```
+
+Transitions must be centrally validated and covered by unit tests.
+
+## Core Port / Interface Contracts
+
+Phase 0 should define these as Python `Protocol`/ABC-style interfaces with fake implementations used in tests.
+
+## `ModelGateway`
+
+Purpose: provider-neutral Manager/subtask model access.
+
+Conceptual methods:
+
+```python
+async def generate(request: ModelRequest) -> ModelResponse
+async def stream(request: ModelRequest) -> AsyncIterator[ModelEvent]
+```
+
+`ModelRequest` should include:
+
+- capability profile, not only provider/model name;
 - messages/context;
-- tool definitions;
-- structured-output requirement;
-- budget/token hints;
-- correlation/task identifiers.
+- structured-output schema descriptor;
+- tool descriptors;
+- token/cost limits;
+- cache hints;
+- correlation/task IDs.
 
-Normalized `ModelResponse` should carry:
+`ModelResponse` should normalize:
 
-- canonical assistant content;
-- structured result if requested;
+- canonical output;
+- structured result;
 - tool requests;
-- provider/model identifiers;
-- token/cache/cost usage where known;
+- provider/model identity;
+- token/cache usage;
+- estimated/actual cost;
 - finish/error classification.
 
-Phase 0 implementation: **fake deterministic adapter only**.
+## `DeveloperAgent`
 
-Do not call paid LLM APIs during Phase 0 tests.
+Purpose: interchangeable OpenHands/OpenCode/future coding runtime.
 
-### Developer Agent
+Conceptual methods:
 
-Conceptual interface:
-
-```text
-create_task(task_spec) -> runtime_handle
-send_instruction(runtime_handle, instruction)
-stream_events(runtime_handle, cursor?)
-get_status(runtime_handle)
-request_summary(runtime_handle)
-cancel(runtime_handle)
-resume(runtime_handle)
-get_usage(runtime_handle)
-finalize(runtime_handle)
+```python
+async def create_task(spec: DeveloperTaskSpec) -> DeveloperSession
+async def send_instruction(session_id: str, message: str) -> None
+async def events(session_id: str, cursor: str | None = None) -> AsyncIterator[DeveloperEvent]
+async def status(session_id: str) -> DeveloperStatus
+async def summarize(session_id: str) -> DeveloperSummary
+async def cancel(session_id: str) -> None
+async def resume(session_id: str) -> None
+async def usage(session_id: str) -> DeveloperUsage
+async def finalize(session_id: str) -> DeveloperResult
 ```
 
-Phase 0 implementation: fake in-memory/deterministic Developer Agent adapter used for contract tests.
+No OpenHands/OpenCode types should appear in the interface.
 
-### Tool service
+## `ToolExecutor`
 
-Conceptual request:
+Purpose: privileged external action boundary.
+
+Conceptual flow:
 
 ```text
-ToolInvocation
-  tool_name
-  operation
-  arguments
-  actor/task context
-  idempotency_key
+agent proposes ToolRequest
+        |
+        v
+policy evaluates request
+        |
+        +--> denied
+        +--> owner approval required
+        +--> permitted
+                 |
+                 v
+             executor
+                 |
+                 v
+           ToolResult + audit
 ```
+
+The tool interface must carry:
+
+- actor/task context;
+- idempotency key;
+- resource scope;
+- risk/action category;
+- timeout/retry policy.
+
+## `PolicyEngine`
 
 Conceptual result:
-
-```text
-ToolResult
-  status
-  normalized output
-  external resource refs
-  usage/cost metadata
-  retry classification
-```
-
-Phase 0 uses fake tools only.
-
-### Policy engine
-
-Initial conceptual decisions:
 
 ```text
 ALLOW
 DENY
 REQUIRE_OWNER_DECISION
-REQUIRE_OWNER_APPROVAL
+REQUIRE_APPROVAL
+REQUIRE_BUDGET_APPROVAL
 ```
 
-Inputs should include:
+The policy engine should be deterministic application code/configuration. The LLM may supply context or recommendations but cannot override policy results.
 
-- actor/role;
-- requested action;
-- target resource;
-- task/work-request context;
-- risk category;
-- estimated cost/blast radius where available.
+## `SecretStore`
 
-Phase 0 policy may be simple rule-based Python.
+Conceptual methods:
 
-Do not use an LLM as the security policy engine.
+```python
+async def get_secret(ref: SecretRef) -> SecretValue
+async def get_metadata(ref: SecretRef) -> SecretMetadata
+```
 
-### Secret store
+Do not expose a generic “list every secret value” method.
 
-Conceptual interface:
+Implementations later may include:
+
+- environment/local development;
+- AWS Secrets Manager;
+- SOPS/bootstrap;
+- OpenBao.
+
+## `ArtifactStore`
+
+Provider-neutral binary/large-object store.
+
+Conceptual methods:
+
+```python
+async def put(...)
+async def get(...)
+async def delete(...)
+async def metadata(...)
+```
+
+Local-filesystem fake/implementation is sufficient in Phase 0.
+
+## `NotificationService`
+
+Define the interface and severity model only.
 
 ```text
-get_secret(name)
-put_secret(name, value)      # may be unsupported by some runtime adapters
-remove_secret(name)
+INFO
+MILESTONE
+OWNER_INPUT_REQUIRED
+SECURITY_COST_ALERT
+TASK_COMPLETE
 ```
 
-Phase 0 uses an environment/local fake adapter only.
+No Web Push implementation is required yet.
 
-### Event publisher
+## `SpeechToText` / `TextToSpeech`
 
-Domain code should emit normalized application events through an interface independent of future Web Push, WebSocket, email, or queue products.
+Define interfaces only to prevent future phone code from depending on one speech vendor.
 
-Phase 0 implementation writes persisted AuditEvents and may expose an in-process test subscriber.
+No Phase 0 speech calls are required.
 
-## Manager Agent Boundary in Phase 0
+## Repository Interfaces
 
-Phase 0 does **not** implement the real Pydantic AI Manager.
+Define persistence ports around domain concepts rather than passing SQLAlchemy sessions throughout the application.
 
-Instead, define the Manager application contract and a deterministic fake implementation.
-
-Conceptual input:
+Examples:
 
 ```text
-ManagerTurnContext
-  conversation
-  work request
-  active plan
-  tasks
-  pending decisions
-  recent messages
-  retrieved context
+ConversationRepository
+WorkRequestRepository
+PlanRepository
+TaskRepository
+DecisionRepository
+ApprovalRepository
+EventRepository
+UsageRepository
+BudgetRepository
 ```
 
-Conceptual output:
+Application services should operate through these interfaces.
+
+## Event Taxonomy v1
+
+At minimum define stable event names for:
 
 ```text
-ManagerTurnResult
-  owner_message?
-  proposed_plan?
-  proposed_tasks[]
-  developer_instructions[]
-  decision_request?
-  proposed_tool_calls[]
-  workflow_directive
+CONVERSATION_CREATED
+MESSAGE_RECORDED
+WORK_REQUEST_CREATED
+WORK_REQUEST_STATUS_CHANGED
+PLAN_CREATED
+PLAN_SUPERSEDED
+TASK_CREATED
+TASK_DEPENDENCY_ADDED
+TASK_STATUS_CHANGED
+AGENT_RUN_CREATED
+AGENT_RUN_STATUS_CHANGED
+TOOL_CALL_REQUESTED
+TOOL_CALL_AUTHORIZED
+TOOL_CALL_DENIED
+TOOL_CALL_COMPLETED
+OWNER_DECISION_REQUIRED
+OWNER_DECISION_RECORDED
+APPROVAL_REQUESTED
+APPROVAL_GRANTED
+APPROVAL_DENIED
+BUDGET_WARNING
+BUDGET_BLOCKED
+WORK_REQUEST_COMPLETED
 ```
 
-This lets Phase 1 connect Pydantic AI without changing the surrounding workflow/domain model.
+Event payloads must be versionable. Include an event schema version from the start.
 
-## DBOS Integration Plan
+## Configuration Model
 
-DBOS should be introduced after basic domain/persistence tests are green.
+All configuration should be centralized through typed settings.
 
-Phase 0 durable workflow scenario:
+Categories:
+
+```text
+app
+api
+database
+dbos
+logging
+model_profiles
+budget
+security
+feature_flags
+external_adapters
+```
+
+### `.env.example`
+
+Must contain names and explanatory placeholders only—never usable credentials.
+
+Example categories:
+
+```text
+OVERLORD_ENV
+OVERLORD_DATABASE_URL
+OVERLORD_LOG_LEVEL
+OVERLORD_MONTHLY_BUDGET_USD=50
+OVERLORD_MODEL_PROFILE_MANAGER=balanced
+OVERLORD_MODEL_PROFILE_EFFICIENT=efficient
+```
+
+Provider-specific credentials should remain optional in Phase 0 because tests should use fake model adapters by default.
+
+## Model Capability Configuration
+
+Do not encode provider names directly into Manager logic.
+
+Conceptual configuration:
+
+```yaml
+profiles:
+  efficient:
+    purpose: low-cost routine transformations
+    provider_model: test/fake-efficient
+    max_cost_per_call_usd: 0.05
+
+  balanced:
+    purpose: normal manager reasoning
+    provider_model: test/fake-balanced
+    max_cost_per_call_usd: 0.50
+
+  frontier:
+    purpose: difficult escalation
+    provider_model: test/fake-frontier
+    requires_budget_check: true
+```
+
+Production provider/model identifiers replace the fake values later without changing domain/application logic.
+
+## Budget Semantics
+
+The owner explicitly does not want cost limits to discourage use.
+
+Therefore the budget architecture should distinguish **interaction availability** from **expensive execution**.
+
+Recommended order when projected spend approaches the hard ceiling:
+
+1. route routine transformations to cheaper capable models;
+2. increase cache/context reuse;
+3. compact context more aggressively;
+4. avoid unnecessary duplicate review calls;
+5. prefer existing running worker capacity where safe;
+6. prevent new frontier-model escalation unless essential;
+7. prevent new costly Developer Agent execution if it would exceed the ceiling;
+8. keep low-cost owner/Manager interaction available where possible;
+9. notify the owner with measured spend/projected impact before requesting a budget increase.
+
+The **$50/month** ceiling should therefore function like a resource governor, not a message-count quota.
+
+Phase 0 only implements the policy primitives and test cases; it does not yet know real provider economics.
+
+## Persistence Design
+
+### Migration-first development
+
+Schema changes require Alembic migrations from the beginning.
+
+Do not use application startup `create_all()` as the normal database migration mechanism.
+
+### Database schema organization
+
+A single application schema is acceptable initially.
+
+Tables should use:
+
+- UUID-style stable IDs generated by the application;
+- timezone-aware timestamps;
+- explicit enum/check constraints where appropriate;
+- foreign keys;
+- unique constraints for idempotency keys;
+- JSONB only for legitimately flexible payloads, not to avoid modeling core fields.
+
+### Transaction boundary
+
+Application commands should define transactional units of work.
+
+Tool/network calls should not be hidden inside database transactions that can remain open for long periods.
+
+External side effects need explicit idempotency handling.
+
+## DBOS Phase 0 Proof
+
+Phase 0 should contain one deliberately small workflow proving the architecture.
+
+### Scenario
 
 ```text
 1. Create WorkRequest.
-2. Start Manager workflow.
-3. Fake Manager creates Plan + Task.
-4. Task reaches a rule requiring owner input.
-5. Persist DecisionRequest.
-6. Workflow pauses durably.
-7. Stop application process.
-8. Restart application.
-9. Record DecisionResponse.
-10. Resume exact workflow.
-11. Fake Developer Agent completes Task.
-12. WorkRequest completes.
+2. Start ManagerPlanningWorkflow.
+3. Workflow creates a Plan and one Task using fake model output.
+4. Policy determines an owner decision is required.
+5. Workflow persists DecisionRequest and pauses.
+6. Application process is stopped/restarted.
+7. Owner answer is recorded.
+8. Exact workflow resumes.
+9. Task moves to READY.
+10. Workflow completes.
 ```
 
-Acceptance requires database evidence that no duplicate Task/Decision/AgentRun is created during restart/retry.
+No real Developer Agent or GitHub write operation is required.
 
-## Idempotency Rules
+### Required proof
 
-Idempotency must be designed before real GitHub/cloud tools are added.
+The test must demonstrate that restart/retry does not:
 
-Phase 0 should define and test:
+- duplicate the plan;
+- duplicate the task;
+- duplicate the decision request;
+- lose the correlation between owner answer and workflow;
+- emit duplicate non-idempotent domain events.
 
-- client-generated request IDs for owner messages/work requests;
-- tool-call idempotency keys;
-- external-action correlation IDs;
-- duplicate-event handling;
-- workflow retry behavior;
-- safe re-processing after process crash.
+## Minimal Manager-Agent Proof
 
-A repeated request with the same idempotency key must return/reuse the original logical operation rather than silently creating duplicates.
+Pydantic AI should be used only after the workflow/domain foundation exists.
 
-## API Scope for Phase 0
+The first Manager proof should accept a deterministic test input such as:
 
-The API is developer-facing only and can be intentionally small.
+```text
+"Update repository X so CI verifies documentation links."
+```
+
+It should produce a structured application-level result containing:
+
+```text
+objective
+repository_candidates
+plan_steps
+decisions_required
+task_drafts
+risk_summary
+```
+
+For CI/unit tests this should use a deterministic fake/test model.
+
+An optional manually triggered integration test may use a real provider, but it must:
+
+- not run automatically on every CI build;
+- have a strict low dollar cap;
+- record provider/model/usage;
+- be safe to skip when no API credential is configured.
+
+## API Surface in Phase 0
+
+Keep the API deliberately small.
 
 Suggested endpoints:
 
 ```text
 GET  /health
 GET  /ready
-
-POST /api/v1/conversations
-POST /api/v1/conversations/{id}/messages
-GET  /api/v1/conversations/{id}
-
-POST /api/v1/work-requests
-GET  /api/v1/work-requests/{id}
-
-GET  /api/v1/work-requests/{id}/plans
-GET  /api/v1/work-requests/{id}/tasks
-
-GET  /api/v1/tasks/{id}
-GET  /api/v1/tasks/{id}/events
-
-GET  /api/v1/decisions/{id}
-POST /api/v1/decisions/{id}/responses
+POST /v1/conversations
+POST /v1/conversations/{id}/messages
+POST /v1/work-requests
+GET  /v1/work-requests/{id}
+GET  /v1/work-requests/{id}/tasks
+GET  /v1/decisions/{id}
+POST /v1/decisions/{id}/answer
+GET  /v1/events
+GET  /v1/usage/summary
 ```
 
-No public deployment or production authentication is required yet.
+This is an internal prototype API, not yet the final mobile contract.
 
-API error responses should use one consistent structured schema.
+Do not add broad generic CRUD endpoints for every table. Expose application actions/use cases.
+
+## Authentication in Phase 0
+
+Do not implement production passkeys yet.
+
+Local API options:
+
+- loopback/local-only development; or
+- a simple development-only bearer token controlled through environment configuration.
+
+The authentication boundary must be isolated so WebAuthn/passkeys can replace the dev mechanism later.
+
+Never accidentally deploy the development bypass to a publicly reachable environment.
+
+## Security Boundaries in Phase 0
+
+Even before real credentials exist, enforce structural boundaries.
+
+### Domain/application code must never receive raw global credentials.
+
+It receives secret references or scoped adapter interfaces.
+
+### Logs must redact secrets.
+
+Implement a redaction utility/test for common secret-bearing configuration fields.
+
+### External tool calls require policy evaluation.
+
+Even fake GitHub tools in Phase 0 should go through `PolicyEngine` + `ToolExecutor` rather than being called directly from an agent adapter.
+
+### No provider payload is authoritative.
+
+Normalize required information into Overlord state before considering a workflow step complete.
+
+### No arbitrary code execution in the control-plane process.
+
+Developer code execution arrives later in isolated workers.
 
 ## Observability
 
-Phase 0 should establish structured logging before agent/tool integrations.
+Phase 0 should establish structured logs from the beginning.
 
-Every request/workflow/event log should include relevant IDs where available:
+Every significant log/event should carry relevant correlation identifiers:
 
 ```text
 request_id
@@ -956,542 +1130,349 @@ conversation_id
 work_request_id
 task_id
 agent_run_id
-correlation_id
+tool_call_id
+workflow_id
 ```
 
 Do not log:
 
-- secrets;
-- environment-variable values;
-- authorization headers;
-- raw future provider credentials;
-- raw audio.
+- secret values;
+- full authorization headers;
+- unnecessary raw provider payloads;
+- unredacted environment dumps.
 
-Initial logs may be JSON to stdout.
+Metrics infrastructure can remain lightweight, but the application should expose enough internal counters/timers that a later metrics backend can be attached.
 
-Metrics infrastructure can remain lightweight, but code should expose/collect at least:
-
-- workflow counts/status;
-- task counts/status;
-- decision wait duration;
-- errors;
-- later cost counters.
-
-## Security Boundaries in Phase 0
-
-Even before real credentials exist, implement the boundaries that later protect them.
-
-### Required rules
-
-- application code retrieves secrets only through the `SecretStore` interface;
-- domain models never contain secret values;
-- API responses never expose secret values;
-- `.env` ignored by Git;
-- `.env.example` contains no working credential;
-- external adapters receive only the credential they require;
-- fake Developer Agent has no direct persistence/database object access;
-- future worker APIs will be separate from owner APIs;
-- policy authorization is explicit before external tool execution.
-
-### Not yet required
-
-- AWS Secrets Manager configuration;
-- GitHub App key;
-- WebAuthn;
-- TLS termination;
-- private VPC;
-- remote worker bootstrap credentials.
-
-Those begin in later phases after the local boundaries exist.
-
-## Budget Architecture in Phase 0
-
-The `$50/month` ceiling must be represented as application configuration/policy, but Phase 0 should not impose arbitrary message quotas.
-
-Create normalized usage concepts now:
-
-```text
-UsageRecord
-  category
-  provider
-  model_or_resource
-  input_units
-  output_units
-  cached_units
-  quantity
-  estimated_cost_usd
-  actual_cost_usd?
-  task_id?
-  timestamp
-```
-
-Initial categories:
-
-```text
-LLM
-DEVELOPER_COMPUTE
-SPEECH_TO_TEXT
-TEXT_TO_SPEECH
-TOOL
-STORAGE
-OTHER
-```
-
-Phase 0 tests should prove that budget policy can:
-
-- accumulate cost records;
-- calculate month-to-date total;
-- expose remaining budget;
-- reject a simulated operation that would exceed a configured hard ceiling;
-- allow unlimited zero-cost fake operations.
-
-This establishes the desired behavior: **usage itself is not limited; spend is limited.**
-
-## Existing Task Fixtures
-
-Preserve existing `tasks/` and `templates/tasks/` content.
-
-During Phase 0, add tests that parse at least one existing task Markdown file into a temporary import structure or fixture representation.
-
-Do not make Markdown files the canonical production task store.
-
-Later migration can map useful historical fields into Postgres while retaining the files as fixtures/history.
-
-## Local Development Stack
-
-Minimum local stack:
-
-```text
-Python 3.13 application
-PostgreSQL container
-```
-
-`docker-compose.yml` should run Postgres only unless another dependency becomes necessary.
-
-The application itself should normally run directly through the local Python environment for fast development/debugging.
-
-Recommended developer commands:
-
-```text
-uv sync
-uv run alembic upgrade head
-uv run pytest
-uv run ruff check .
-uv run ruff format --check .
-uv run mypy src
-uv run uvicorn overlord.api.app:app --reload
-```
-
-Provide friendly Makefile/task-runner shortcuts only if they materially improve usability; do not hide the canonical underlying commands.
-
-## CI Workflow
-
-Create `.github/workflows/ci.yml`.
-
-On PRs and pushes to `main`, CI should:
-
-1. install the pinned Python version;
-2. install dependencies from lockfile;
-3. run Ruff lint;
-4. run formatting check;
-5. run mypy;
-6. start Postgres service;
-7. apply all Alembic migrations to a clean database;
-8. run unit tests;
-9. run integration tests;
-10. run contract tests;
-11. report test coverage.
-
-No paid service credentials should be required for CI.
-
-Do not add automatic production deployment in Phase 0.
-
-## Test Strategy
+## Testing Strategy
 
 ### Unit tests
 
-Cover:
+Must cover:
 
-- state-transition rules;
-- policy decisions;
-- budget calculations;
-- model/developer/tool normalized schemas;
-- task dependency behavior;
-- decision/approval semantics;
-- idempotency logic.
+- state-machine transitions;
+- domain invariants;
+- budget policy;
+- approval policy;
+- event creation;
+- model-profile routing decisions;
+- idempotency keys;
+- adapter normalization;
+- configuration validation;
+- log redaction.
 
-### Persistence integration tests
+### Integration tests
 
-Use real Postgres for:
+Against real local PostgreSQL:
 
-- repository CRUD/queries;
-- transaction rollback;
-- unique/idempotency constraints;
-- migration correctness;
-- event + state atomicity;
-- status/history queries.
+- migrations up/down where practical;
+- repository persistence;
+- transactional behavior;
+- JSON/event payload round trip;
+- full-text-search groundwork if implemented in Phase 0;
+- DBOS workflow pause/restart/resume;
+- duplicate-retry protection.
 
-### API integration tests
+### Architecture tests
 
-Cover:
+Add tests or static checks proving:
 
-- conversation/message creation;
-- work-request lifecycle;
-- task listing;
-- decision response;
-- error schema;
-- idempotent request behavior.
+- `domain` does not import FastAPI/SQLAlchemy/DBOS/Pydantic AI/provider SDKs;
+- `application` does not import concrete external adapters;
+- provider-specific modules do not leak into canonical domain types.
+
+These tests are especially important because automated coding agents will later modify this repository.
 
 ### Contract tests
 
-Every adapter interface should have reusable contract tests.
-
-Examples:
+Create reusable contract suites for future adapter implementations:
 
 ```text
-DeveloperAgentContractTests
-LLMServiceContractTests
-SecretStoreContractTests
-ToolServiceContractTests
+DeveloperAgentContract
+ModelGatewayContract
+SecretStoreContract
+ArtifactStoreContract
+ToolExecutorContract
 ```
 
-The fake adapters must pass them first. Later OpenHands/OpenCode/provider adapters must pass the same tests.
+Fake adapters must pass them first. OpenHands/OpenCode/provider implementations inherit the same contract later.
 
-### Workflow recovery test
+## Existing Task Fixtures
 
-Must include a real process/restart or equivalent durable-recovery test demonstrating the DBOS pause/resume scenario.
+Do not delete `tasks/` or `templates/`.
 
-## Documentation Inside `Overlord`
+During Phase 0:
 
-Phase 0 should add concise repository-local documentation:
+- document them as legacy/prototype fixtures;
+- add them to test fixture discovery if useful;
+- do not treat their current Markdown schema as the canonical new domain model;
+- later create explicit import/parsing compatibility only if there is value.
+
+## CI Workflow
+
+Create one initial GitHub Actions workflow triggered on pull requests and `main` pushes.
+
+Minimum jobs:
 
 ```text
-README.md
-  project purpose
-  local quick start
-  architecture summary
-  test commands
-
-docs/architecture/domain-model.md
-docs/architecture/interfaces.md
-docs/architecture/state-and-events.md
-docs/development/local-setup.md
-docs/development/testing.md
-docs/decisions/
+lint
+format-check
+type-check
+unit-tests
+integration-tests-postgres
+architecture-tests
+migration-check
 ```
 
-Architecture Decision Records should be used only for material decisions likely to matter later.
+Use GitHub Actions service containers or an equivalent ephemeral Postgres service for integration tests.
 
-Initial ADR candidates:
+Real provider/LLM tests should **not** be required for normal CI.
 
-```text
-0001-python-313.md
-0002-postgres-canonical-state.md
-0003-provider-neutral-agent-contracts.md
-0004-dbos-durable-workflows.md
-```
+### CI secret usage
 
-Do not create ADRs for trivial formatting/package choices.
+GitHub Actions Secrets are appropriate for future optional integration/deployment jobs.
 
-## Phase 0 Implementation Sequence
+No production/runtime secret should be copied into normal unit-test jobs.
 
-### P0.1 — Project scaffold
+## Branch and Pull Request Discipline
 
-Create:
-
-- `pyproject.toml`;
-- lockfile;
-- package skeleton;
-- `.gitignore`;
-- `.env.example`;
-- basic settings/logging;
-- FastAPI health endpoint;
-- Postgres Docker Compose;
-- initial CI.
-
-Gate:
-
-- clean install works;
-- `/health` works;
-- CI lint/type/test scaffold passes.
-
-### P0.2 — Domain model and transition rules
-
-Implement:
-
-- enums/IDs/errors;
-- WorkRequest;
-- Plan;
-- Task;
-- TaskDependency;
-- AgentRun;
-- DecisionRequest/Response;
-- ApprovalRequest;
-- ExternalResource;
-- AuditEvent;
-- UsageRecord;
-- domain transition services.
-
-Gate:
-
-- unit tests cover legal/illegal transitions;
-- no persistence/framework imports in domain layer.
-
-### P0.3 — Postgres persistence
-
-Implement:
-
-- SQLAlchemy mappings;
-- repositories;
-- unit of work;
-- Alembic migrations;
-- integration tests.
-
-Gate:
-
-- fresh database migration succeeds;
-- domain lifecycle persists and reloads;
-- transaction + event atomicity proven.
-
-### P0.4 — API lifecycle
-
-Implement development APIs for:
-
-- conversations/messages;
-- work requests;
-- plans/tasks retrieval;
-- decision responses;
-- event timeline.
-
-Gate:
-
-- complete fake lifecycle can be driven through API calls;
-- duplicate client request is idempotent.
-
-### P0.5 — Adapter contracts and fake implementations
-
-Implement normalized interfaces plus deterministic fake adapters for:
-
-- LLM service;
-- Manager;
-- Developer Agent;
-- tools;
-- secret store;
-- event publisher.
-
-Gate:
-
-- reusable adapter contract tests exist and pass;
-- no paid/external service required.
-
-### P0.6 — DBOS durable lifecycle
-
-Implement Manager/task orchestration with the fake adapters.
-
-Gate:
-
-- pause on owner decision;
-- stop/restart;
-- resume exact workflow;
-- no duplicate tasks/agent runs/decisions;
-- final WorkRequest completes.
-
-### P0.7 — Budget/policy enforcement
-
-Implement:
-
-- `$50` configurable hard monthly ceiling;
-- usage aggregation;
-- simulated action estimate;
-- policy allow/deny/decision/approval outcomes.
-
-Gate:
-
-- zero-cost operations remain unrestricted;
-- simulated over-budget spend is blocked/escalated;
-- domain history records the reason.
-
-### P0.8 — Documentation and Phase 0 closeout
-
-Update:
-
-- README;
-- local setup;
-- domain/interface docs;
-- ADRs;
-- exact acceptance evidence.
-
-Gate:
-
-- fresh-clone setup documented and tested;
-- CI green;
-- Phase 0 acceptance checklist completed.
-
-## Phase 0 Acceptance Criteria
-
-Phase 0 is complete only when all criteria below are true.
-
-### Repository
-
-- application package exists under `src/overlord`;
-- dependency versions are reproducible;
-- current legacy task/template files remain preserved;
-- no working secrets committed.
-
-### Domain independence
-
-- complete request/plan/task/decision lifecycle exists in Overlord domain state;
-- deleting/replacing a fake agent runtime reference does not delete domain state;
-- vendor/framework classes do not appear in core domain model signatures.
-
-### Persistence
-
-- clean Postgres database can be created solely through migrations;
-- state survives application restart;
-- event/state transitions commit atomically;
-- important history is queryable without an agent/provider API.
-
-### Durable workflow
-
-- workflow pauses waiting for owner input;
-- application can restart;
-- owner decision resumes correct workflow;
-- no duplicate side-effect records occur during retry/recovery.
-
-### Adapter portability
-
-- fake LLM passes LLM contract tests;
-- fake Developer Agent passes Developer contract tests;
-- fake SecretStore passes SecretStore tests;
-- fake tools pass Tool contract tests;
-- adapter-specific IDs are stored as external references only.
-
-### Policy/security
-
-- sensitive operation paths require policy evaluation;
-- secrets only enter application through SecretStore abstraction;
-- secret values are absent from domain state and logs;
-- budget policy is deterministic application logic, not model judgment.
-
-### Cost model
-
-- `$50` monthly spending ceiling is configurable;
-- unlimited zero-cost local/fake actions are permitted;
-- usage records aggregate correctly;
-- simulated spend crossing the ceiling produces a deterministic block/escalation.
-
-### Quality
-
-- Ruff clean;
-- formatting check clean;
-- mypy clean for project code at the agreed strictness;
-- pytest green;
-- migrations tested;
-- CI green;
-- local setup documentation works from a clean clone.
-
-## Explicitly Out of Scope for Phase 0
-
-Do **not** add these during Phase 0 unless needed to resolve a blocker in the approved contract:
-
-- real OpenAI/Anthropic/Google API calls;
-- Pydantic AI Manager implementation;
-- OpenHands;
-- OpenCode;
-- GitHub App creation/credentials;
-- live GitHub mutation tools;
-- DigitalOcean/Fly/Hetzner worker provisioning;
-- AWS Secrets Manager configuration;
-- S3 backup jobs;
-- passkey authentication;
-- PWA frontend;
-- Web Push;
-- speech services;
-- MCP servers;
-- ACP/A2A networking;
-- pgvector;
-- LiteLLM;
-- Temporal;
-- OpenBao;
-- production hosting/deployment.
-
-Keeping these out is deliberate: Phase 0 exists to make all of them replaceable integrations rather than foundational dependencies.
-
-## Pull Request Strategy
-
-Do not implement Phase 0 as one giant PR.
+Phase 0 should be delivered through focused PRs rather than one large bootstrap commit.
 
 Recommended sequence:
 
-1. `phase0/project-scaffold`
-2. `phase0/domain-model`
-3. `phase0/postgres-persistence`
-4. `phase0/api-lifecycle`
-5. `phase0/adapter-contracts`
-6. `phase0/durable-workflow`
-7. `phase0/policy-budget`
-8. `phase0/closeout`
+### PR 0A — Repository foundation
 
-Each PR should:
+- `pyproject.toml`;
+- package skeleton;
+- Docker/local Postgres;
+- basic FastAPI health endpoint;
+- lint/type/test configuration;
+- CI workflow;
+- development documentation.
 
-- have focused scope;
-- include tests for its behavior;
-- update repository-local docs when the public/internal contract changes;
-- keep `main` runnable;
-- pass CI before merge.
+### PR 0B — Domain model and events
 
-The documentation website should be updated at meaningful architectural milestones rather than for every small code commit.
+- domain entities/value objects/enums;
+- state transitions;
+- events;
+- budget/policy primitives;
+- unit tests.
 
-## Phase 1 Entry Gate
+### PR 0C — Persistence
 
-Do not begin the real Manager Agent or paid-provider integration until Phase 0 closeout proves:
+- SQLAlchemy models/mappings;
+- repository interfaces/implementations;
+- Alembic migrations;
+- Postgres integration tests.
+
+### PR 0D — Ports and fake adapters
+
+- ModelGateway;
+- DeveloperAgent;
+- ToolExecutor;
+- PolicyEngine;
+- SecretStore;
+- ArtifactStore;
+- Notification/Speech interfaces;
+- reusable contract tests;
+- deterministic fake implementations.
+
+### PR 0E — DBOS durable workflow proof
+
+- DBOS configuration;
+- planning workflow;
+- durable pause/restart/resume scenario;
+- idempotency tests.
+
+### PR 0F — Minimal Manager structured-output proof
+
+- Pydantic AI adapter;
+- deterministic fake model in CI;
+- structured planning output;
+- optional manual real-provider smoke test;
+- usage normalization.
+
+### PR 0G — Phase 0 closeout
+
+- architectural consistency review;
+- README/developer docs finalization;
+- local clean-build test;
+- recovery/restart demonstration;
+- Phase 0 verification record.
+
+Each PR should pass CI before merging.
+
+## Documentation Required Inside `Overlord`
+
+Phase 0 should leave the repository self-documenting.
+
+Minimum docs:
+
+### `docs/architecture.md`
+
+- dependency/layer diagram;
+- authoritative state boundaries;
+- runtime/provider replaceability rules.
+
+### `docs/domain-model.md`
+
+- entities;
+- state machines;
+- event taxonomy;
+- identifiers/correlation semantics.
+
+### `docs/security-boundaries.md`
+
+- secret/reference rules;
+- policy/tool boundary;
+- log redaction;
+- future worker isolation assumptions.
+
+### `docs/development.md`
+
+- prerequisites;
+- environment setup;
+- database start/migrate/reset;
+- running API/tests/lint/type checks;
+- how to add an adapter safely.
+
+### `docs/decisions/`
+
+Use lightweight architecture decision records for choices that materially constrain the design.
+
+Initial ADRs should include:
 
 ```text
-Overlord owns the state.
-Overlord owns the workflow.
-Overlord owns the policy boundary.
-Overlord owns the adapter contracts.
-External agents/models can disappear without destroying the task history.
+0001-control-plane-owns-canonical-state.md
+0002-postgres-as-primary-state-store.md
+0003-provider-neutral-model-gateway.md
+0004-developer-agent-adapter-boundary.md
+0005-db-os-for-phase-0-durability.md
+0006-cost-ceiling-is-resource-governor-not-usage-quota.md
 ```
 
-Once that is proven, Phase 1 can safely introduce Pydantic AI and the first real model provider behind the existing contract.
+## Phase 0 Acceptance Criteria
 
-## Decisions Deferred Until Later Evidence
+Phase 0 is complete only when all of these are true.
 
-Phase 0 must not force these choices:
+### Repository
 
-- final LLM provider/model;
-- OpenHands versus OpenCode default;
-- DigitalOcean versus Fly/Hetzner host;
-- STT/TTS provider;
-- LiteLLM gateway requirement;
-- pgvector requirement;
-- native versus wrapped mobile client;
-- OpenBao versus managed secrets long term;
-- Temporal/Kubernetes requirement.
+- application installs from a clean clone;
+- local setup is documented;
+- CI is green;
+- all dependencies are declared/locked;
+- existing `tasks/` and `templates/` remain available.
 
-## Immediate Next Action After Approval
+### Architecture
 
-Begin **P0.1 — Project Scaffold** in the `Overlord` repository using a focused branch/PR.
+- canonical domain model contains no provider/runtime-specific types;
+- adapter contracts exist for models, Developer Agents, secrets, tools, artifacts, notifications and speech;
+- architecture tests enforce dependency direction.
 
-The first code PR should contain infrastructure-free application scaffolding only:
+### Database
 
-- Python project metadata;
-- lockfile;
-- package skeleton;
-- settings/logging;
-- `/health` endpoint;
-- local Postgres Compose definition;
-- basic test/lint/type setup;
-- CI workflow;
-- local setup documentation.
+- Postgres starts locally through the supported development workflow;
+- migrations build a fresh database;
+- migrations are not replaced by startup `create_all()`;
+- domain entities round-trip through repository implementations;
+- event/idempotency uniqueness works.
 
-No paid provider credentials or recurring cloud resources should be needed.
+### Workflow durability
+
+- test Work Request starts planning workflow;
+- workflow pauses on an owner decision;
+- application can restart;
+- the exact workflow resumes after answer;
+- no duplicate Plan/Task/Decision/Event is produced.
+
+### Manager abstraction
+
+- Manager structured planning call works through `ModelGateway`;
+- default CI uses a deterministic fake model;
+- switching the configured fake/provider profile requires configuration/adapter changes only, not domain changes;
+- usage/cost result is normalized.
+
+### Policy and cost
+
+- `$50/month` global hard ceiling is represented in budget policy;
+- policy distinguishes cheap interaction from expensive execution;
+- tests prove a costly action can be blocked while low-cost interaction remains permitted;
+- LLM cannot bypass policy by requesting a tool directly.
+
+### Security
+
+- test secret values are redacted from logs;
+- domain/application services do not expose a secret-listing mechanism;
+- tool actions require policy evaluation;
+- no production credential is required to run normal CI.
+
+### Recovery/developer usability
+
+- a new developer/agent can clone the repository, start Postgres, migrate, run the API, and pass tests using only repository documentation;
+- stopped/restarted services recover durable test state;
+- Phase 0 closeout document records evidence.
+
+## Definition of Done
+
+Phase 0 does **not** mean Overlord is usable as the final successor.
+
+It means the core application has a durable, testable, provider-neutral spine that is safe to extend.
+
+At completion, it should be possible to begin Phase 1/2 work without revisiting fundamental questions such as:
+
+- where canonical state lives;
+- what a Work Request/Plan/Task/Decision is;
+- how agents are represented;
+- how provider models are swapped;
+- how coding runtimes are swapped;
+- how privileged tools are authorized;
+- how cost is enforced;
+- how external implementations are kept out of the domain model.
+
+## What Happens Immediately After Phase 0
+
+The next development stage should be the **local control-plane functional loop**, then the Developer Agent benchmark.
+
+Expected sequence:
+
+```text
+Phase 0
+repository + contracts + durability spine
+      |
+      v
+Phase 1
+working local Manager conversation/planning loop
+      |
+      v
+Phase 2
+OpenHands vs OpenCode benchmark through same DeveloperAgent interface
+      |
+      v
+Phase 3
+GitHub App and complete branch/PR/Actions lifecycle
+      |
+      v
+Phase 4
+remote ephemeral workers
+      |
+      v
+Phase 5
+phone/PWA + notifications + voice
+```
+
+No new broad architecture research is required before Phase 0 implementation unless a concrete dependency incompatibility appears.
+
+## Implementation Approval Gate
+
+This document is the final pre-code Phase 0 review artifact.
+
+After owner approval, implementation should begin with **PR 0A — Repository foundation** in `Overlord`.
+
+The implementation should not silently expand scope. Any proposed change that materially affects recurring cost, security boundaries, canonical state ownership, framework/provider lock-in, or the approved MVP scope should return to the owner as a decision rather than being hidden inside a coding PR.
 
 ## Related Documents
 
-- [High Director Successor — Consolidated Architecture and MVP Proposal](/projects/notes/high-director-successor-consolidated-design/)
 - [High Director Successor — Initial System Concept](/projects/notes/high-director-successor-concept/)
+- [High Director Successor — Consolidated Architecture and MVP Proposal](/projects/notes/high-director-successor-consolidated-design/)
 - [Research 01 — Agent Runtime and Control Plane](/projects/notes/high-director-successor-research-01/)
 - [Research 02 — Hosting and Cost Architecture](/projects/notes/high-director-successor-research-02/)
 - [Research 03 — Mobile, Notifications, Authentication, and Voice](/projects/notes/high-director-successor-research-03/)
@@ -1502,7 +1483,7 @@ No paid provider credentials or recurring cloud resources should be needed.
 ## Verification Record
 
 - Last verified: `2026-08-10`
-- Verified against: the approved consolidated successor architecture; current `Overlord` repository tree/README/task fixtures/templates; current official Python/Pydantic AI/DBOS compatibility information used to select the implementation baseline.
+- Verified against: approved successor architecture and owner decisions; current `Overlord` repository tree/fixtures; current documented compatibility direction for Pydantic AI, DBOS, FastAPI, SQLAlchemy/Alembic and PostgreSQL.
 - Verified by: High Director
-- Verification scope: Phase 0 scope, repository structure, language/runtime baseline, domain ownership, adapter boundaries, persistence/workflow approach, testing/CI, security/cost boundaries, implementation sequence, and acceptance criteria.
-- Unverified areas: real adapter behavior, external-provider SDK integration, worker isolation, cloud hosting, mobile behavior, and actual model cost; intentionally deferred to later prototype phases.
+- Verification scope: Phase 0 scope, repository structure, domain model, interfaces, persistence/workflow approach, local development boundaries, test/CI strategy, cost semantics, security rules, implementation sequence and acceptance criteria.
+- Unverified areas: exact PostgreSQL driver combination with the final DBOS/SQLAlchemy versions, exact lockfile tool choice, and real-provider Pydantic AI behavior; these are intentionally resolved through PR 0A/0F compatibility tests rather than architecture assumptions.
