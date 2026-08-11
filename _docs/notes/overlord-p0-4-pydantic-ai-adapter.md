@@ -1,6 +1,6 @@
 ---
 title: Overlord P0.4 — Pydantic AI Manager Adapter
-summary: Implementation record for Overlord P0.4, connecting the provider-neutral LLM port to Pydantic AI v2 with explicit capability-tier model configuration, normalized usage metadata, offline contract testing, and an opt-in real-provider smoke path.
+summary: Implementation record for Overlord P0.4, connecting the provider-neutral LLM port to Pydantic AI v2 with capability-tier model routing, offline test-model coverage, normalized usage metadata, and an explicitly guarded real-provider smoke path.
 section: notes
 doc_type: note
 status: active
@@ -26,7 +26,9 @@ tags:
 
 P0.4 of the approved Overlord Phase 0 implementation plan is complete.
 
-Overlord now has a real LLM runtime implementation behind the existing provider-neutral `LLMPort`. Application services continue to depend on Overlord's own contracts; Pydantic AI and any upstream model provider remain replaceable adapter/runtime dependencies rather than canonical state owners.
+Overlord now has a real Pydantic AI implementation of its existing provider-neutral `LLMPort`. Application services still depend only on Overlord contracts; Pydantic AI is an adapter that can be replaced without changing the canonical planning/domain model.
+
+Normal repository acceptance remains offline and credential-free. Pydantic AI's built-in `test` model is used to exercise the real adapter without making a provider API call.
 
 ## Source Delivery
 
@@ -36,21 +38,23 @@ Overlord now has a real LLM runtime implementation behind the existing provider-
 - Exact post-merge CI: run `#88`
 - CI conclusion: `success`
 
+The source PR was merged only after the exact feature-branch head passed the full permanent CI workflow. Post-merge CI then passed again on the exact merge SHA above.
+
 ## Runtime Dependency
 
-P0.4 adds Pydantic AI v2 through the repository dependency contract:
+The merged repository now includes:
 
 ```text
 pydantic-ai>=2.0,<3.0
 ```
 
-The dependency is included in the committed `uv.lock`, so normal repository installation remains reproducible.
+The refreshed `uv.lock` is committed, so normal setup continues to use locked dependency resolution.
 
-Pydantic AI is only imported inside the LLM adapter layer. `PlanningService`, domain models, persistence, and API contracts do not import provider-specific model SDKs.
+P0.4 deliberately keeps Pydantic AI behind `LLMPort`. The domain, persistence, planning, and future workflow layers do not import provider-specific model SDKs directly.
 
-## Capability-Tier Configuration
+## Capability-Tier Routing
 
-Overlord preserves the existing capability vocabulary:
+Overlord retains its three provider-neutral capability tiers:
 
 ```text
 EFFICIENT
@@ -58,7 +62,7 @@ BALANCED
 FRONTIER
 ```
 
-Each tier can be mapped independently to a Pydantic AI model string through typed settings:
+Runtime settings expose independent model mappings:
 
 ```text
 OVERLORD_MODEL_EFFICIENT
@@ -66,111 +70,42 @@ OVERLORD_MODEL_BALANCED
 OVERLORD_MODEL_FRONTIER
 ```
 
-Model mappings are unconfigured by default. `require_model_id()` rejects an unset tier before any model/provider request can occur.
+Each mapping is a Pydantic AI-compatible model identifier. Switching one tier therefore changes configuration rather than application-service code or database schema.
 
-This keeps model/provider selection explicit and allows future model changes without changing the planning service, database schema, or canonical work state.
+### Safe defaults
+
+All three tiers default to:
+
+```text
+test
+```
+
+This is Pydantic AI's offline test model. The default configuration therefore cannot accidentally create a paid provider request simply because `PydanticAIAdapter` is selected.
+
+A tier may also be deliberately set to `None` / left unusable in explicit configuration, in which case `require_model_id()` raises `ModelConfigurationError` before a provider call is attempted.
 
 ## Pydantic AI Adapter
 
-`PydanticAIAdapter` implements `LLMPort`.
+`src/overlord/adapters/llm/pydantic_ai.py` implements `LLMPort`.
 
-Its flow is:
+The adapter currently:
 
-```text
-ModelRequest
-    |
-    v
-resolve capability tier
-    |
-    v
-build Pydantic AI Agent
-    |
-    v
-run structured request
-    |
-    v
-validate requested output type
-    |
-    v
-normalize provider/model/usage metadata
-    |
-    v
-ModelResponse
-```
+1. receives Overlord's provider-neutral `ModelRequest`;
+2. resolves the configured model for the requested capability tier;
+3. constructs a Pydantic AI `Agent` with the requested structured `output_type`;
+4. renders the current canonical planning messages into a deterministic prompt;
+5. executes the selected Pydantic AI model;
+6. validates that the returned structured object matches the requested output type;
+7. normalizes model/provider identity and stable token usage into Overlord's `ModelResponse`;
+8. preserves any provider response ID only as an optional external reference.
 
-### Adapter inputs
+The adapter does not make provider-native conversation/session state authoritative.
 
-The adapter consumes Overlord-owned fields such as:
+## Structured Output Boundary
 
-- capability tier;
-- system instructions;
-- canonical prompt messages;
-- expected Pydantic structured-output type;
-- request metadata.
+P0.3 already required the Manager to return a validated `PlanningResult`.
 
-### Adapter outputs
-
-The adapter returns Overlord's `ModelResponse`, including normalized:
-
-- structured output;
-- provider;
-- model;
-- input tokens;
-- cached-input tokens;
-- output tokens;
-- best-effort reported USD cost where available;
-- finish reason;
-- external provider response ID where available.
-
-Provider-native result objects do not leave the adapter boundary.
-
-## Structured Output Safety
-
-The adapter validates that the returned object matches the `output_type` requested by `ModelRequest`.
-
-If an adapter/provider returns the wrong structured type, Overlord raises an error rather than passing malformed data into `PlanningService` or persistence.
-
-The P0.3 planning validations therefore remain the next protection layer after model-runtime structured output.
-
-## Offline Test Path
-
-Normal CI does not require an OpenAI, Anthropic, Google, or other hosted-model API key.
-
-P0.4 contract tests explicitly configure Pydantic AI's offline `test` model and exercise the real `PydanticAIAdapter` implementation. This proves that:
-
-- Pydantic AI can instantiate through the Overlord adapter;
-- structured output crosses the adapter correctly;
-- normalized usage metadata is available;
-- the `LLMPort` boundary remains intact;
-- no billable provider call is required for repository acceptance.
-
-The full test suite also verifies capability routing and rejection of unconfigured tiers.
-
-## Explicit Real-Provider Smoke Path
-
-The repository includes:
-
-```text
-scripts/smoke_pydantic_ai.py
-```
-
-This path is deliberately disabled unless:
-
-```text
-OVERLORD_RUN_REAL_LLM_SMOKE=1
-```
-
-is explicitly set.
-
-The script also rejects the offline `test` model and requires a configured real balanced-tier model before it will run.
-
-The smoke path is therefore a deliberate manual operation rather than part of normal CI.
-
-No real provider credential was added to the repository during P0.4, and no paid provider request was required for P0.4 acceptance.
-
-## Provider Independence
-
-The P0.4 implementation preserves the intended replacement boundary:
+P0.4 proves that the same structured-output contract can now be supplied by a real model runtime without changing `PlanningService`:
 
 ```text
 PlanningService
@@ -181,43 +116,91 @@ LLMPort
       +--> FakeLLMAdapter
       |
       +--> PydanticAIAdapter
-                 |
-                 +--> configured provider/model
+              |
+              +--> test
+              +--> future OpenAI mapping
+              +--> future Anthropic mapping
+              +--> future Google mapping
 ```
 
-Changing a provider or model does not require:
+`PlanningService` does not know which branch is being used.
 
-- rewriting `PlanningService`;
-- changing canonical Plan/Task/Decision records;
-- changing the PostgreSQL schema;
-- migrating provider-owned conversation state;
-- changing the Developer Agent contract.
+## Usage Normalization
 
-Pydantic AI itself can also be replaced later by another `LLMPort` implementation if required.
+The Pydantic AI adapter maps stable usage fields into Overlord's provider-neutral `ModelUsage`:
 
-## Tests
+```text
+input_tokens
+cached_input_tokens
+output_tokens
+```
 
-P0.4 adds/extends coverage for:
+`ModelUsage.cost_usd` remains part of the wider Overlord contract, but P0.4 does not make a framework/provider price estimate authoritative. Cost calculation and hard-budget enforcement remain Overlord control-plane responsibilities.
 
-- configured capability-tier routing;
-- model-provider string switching;
-- unconfigured tier rejection before provider execution;
-- normalized structured adapter response;
+This preserves the ability to change provider/pricing sources without redefining the LLM port.
+
+## Compatibility Handling
+
+The adapter includes a small compatibility layer around Pydantic AI result metadata so that Overlord can obtain usage and the final model response without exposing Pydantic AI message/result classes through application services.
+
+If provider/model metadata is unavailable on the final response, the adapter falls back to the configured model identifier for audit metadata.
+
+The special `test` model is normalized as provider/model `test`.
+
+## Offline Adapter Tests
+
+P0.4 adds contract coverage for the real adapter without requiring a network call.
+
+The tests prove:
+
+- capability-tier model resolution;
+- deterministic Overlord message rendering;
+- structured output validation;
+- normalized input/cache/output token metadata;
 - provider/model metadata mapping;
-- token/cache usage mapping;
-- external response identifiers;
-- wrong structured output rejection;
-- real Pydantic AI adapter operation using the offline test model.
+- optional external response ID mapping;
+- rejection of a deliberately unconfigured capability tier;
+- rejection of the wrong structured output type;
+- execution through Pydantic AI's actual offline `test` model.
 
-The final repository suite contained 31 tests during the P0.4 diagnostic/acceptance cycle and passed after configuration expectations were aligned.
+The final suite contained 31 passing tests during the P0.4 source gate.
+
+## Real-Provider Smoke Boundary
+
+`scripts/smoke_pydantic_ai.py` provides an explicitly opt-in real-provider proof path.
+
+The command refuses to make a provider request unless:
+
+```text
+OVERLORD_RUN_REAL_LLM_SMOKE=1
+```
+
+is set and the balanced tier has been changed from `test` to a real provider/model identifier.
+
+This smoke path is not part of normal CI.
+
+Therefore:
+
+- no paid provider credential is required to merge P0.4;
+- no paid model is selected by default;
+- no billable LLM request is required for repository acceptance;
+- deliberately testing a hosted model remains an explicit operator action.
+
+## Security Boundary
+
+P0.4 does not add provider credentials to source control or canonical state.
+
+Provider API keys remain runtime/adapter secrets. The planning/domain/persistence layers do not depend on provider API-key names.
+
+Production runtime secret retrieval remains behind `SecretStorePort`; hosted secret-store wiring is still deferred.
 
 ## CI Gate
 
-The exact post-merge Overlord CI run `#88` succeeded on commit:
+The exact post-merge Overlord CI run `#88` succeeded on:
 
 `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`
 
-The gate included:
+The permanent gate included:
 
 ```text
 docker compose config --quiet
@@ -230,18 +213,22 @@ uv run alembic upgrade head
 uv run pytest
 ```
 
+All substantive checks and the complete test suite passed on the exact merge commit.
+
 ## Boundaries Preserved
 
 P0.4 did **not** introduce:
 
-- a permanently selected hosted LLM provider/model;
-- a provider API key in GitHub or source control;
-- billable model calls in CI;
+- a permanent OpenAI model choice;
+- a permanent Anthropic model choice;
+- a permanent Google model choice;
+- a paid-provider credential requirement for CI;
+- provider-native canonical conversation state;
 - DBOS workflow execution;
 - OpenHands or OpenCode;
 - remote Developer Workers;
-- production GitHub App credentials;
-- production AWS Secrets Manager configuration;
+- production GitHub App automation;
+- AWS Secrets Manager runtime wiring;
 - mobile/PWA functionality;
 - recurring cloud infrastructure.
 
@@ -251,16 +238,17 @@ The next approved work package is **P0.5 — DBOS Durable Manager Workflow**.
 
 Planned scope includes:
 
-- add DBOS behind the workflow/application boundary;
-- create a durable Manager planning workflow;
-- persist a canonical owner `DecisionRequest` before waiting;
-- suspend durably while owner input is absent;
-- survive application-process restart;
-- resume the exact workflow after the owner decision is recorded;
-- use stable workflow IDs and idempotency keys;
-- prove replay/retry does not duplicate Plans, Tasks, Decisions, or AuditEvents.
+- add DBOS to the local control-plane runtime;
+- execute Manager planning through a durable workflow;
+- persist a canonical `DecisionRequest` before waiting for owner input;
+- pause durably while owner input is outstanding;
+- stop/restart the application process;
+- resolve the owner decision;
+- resume the exact workflow;
+- use stable workflow/idempotency identifiers so replay/retry does not duplicate Plans, Tasks, Decisions, or AuditEvents;
+- keep DBOS internal state separate from canonical Overlord domain state.
 
-P0.5 should continue to keep canonical work state in the Overlord domain/PostgreSQL schema rather than making DBOS internal state the only authority.
+P0.5 acceptance should prove the restart/pause/resume behavior with no paid model credential required.
 
 ## Related Documents
 
@@ -273,6 +261,6 @@ P0.5 should continue to keep canonical work state in the Overlord domain/Postgre
 ## Verification Record
 
 - Last verified: `2026-08-11`.
-- Verified against: `Overlord` PR #5, merge commit `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`, the final source tree on `main`, and exact successful post-merge CI run #88.
+- Verified against: `Overlord` PR #5, merge commit `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`, merged `pyproject.toml`, adapter/configuration/tests on that SHA, and exact successful post-merge CI run #88.
 - Verified by: High Director.
-- Verification scope: Pydantic AI dependency/version boundary, capability configuration, adapter normalization, structured-output validation, offline test execution, guarded real-provider smoke path, provider-neutral application boundary, and final CI result.
+- Verification scope: Pydantic AI dependency, capability-tier routing, offline test defaults, structured adapter boundary, usage normalization, provider metadata, smoke-test guard, locked dependencies, and final CI result.
