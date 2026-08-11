@@ -1,6 +1,6 @@
 ---
 title: Overlord P0.2 — Domain Model and Persistence
-summary: Implementation record for Overlord P0.2, establishing canonical provider-neutral domain state, PostgreSQL persistence, explicit Alembic migrations, and real database integration tests.
+summary: Implementation record for Overlord P0.2, establishing provider-neutral canonical domain state, PostgreSQL persistence, Alembic migrations, repository adapters, and database-backed validation tests.
 section: notes
 doc_type: note
 status: active
@@ -18,7 +18,6 @@ tags:
   - postgres
   - sqlalchemy
   - alembic
-  - persistence
 ---
 
 # Overlord P0.2 — Domain Model and Persistence
@@ -27,110 +26,139 @@ tags:
 
 P0.2 of the approved Overlord Phase 0 implementation plan is complete.
 
-Overlord now has an owner-controlled canonical state model that can be loaded independently of any LLM provider conversation, Developer Agent session, or external agent runtime.
+Overlord now has a provider-neutral canonical domain model and a PostgreSQL persistence layer that can reload important application state without depending on an LLM-provider conversation, Developer Agent runtime, or framework-native session object.
 
 ## Source Delivery
 
-Primary feature delivery:
-
 - Repository: `Overlord`
-- Pull request: `#2` — `feat: add P0.2 domain model and persistence`
-- Feature merge commit: `03f685ecff5370ca801eaa37b2cd1cd02033c120`
-
-Final corrective delivery:
-
-- Pull request: `#3` — `fix: clean up P0.2 merged diagnostics and formatting`
-- Final verified `main` commit: `492a0cac1ba19b662c350128800e6f227c443907`
+- Feature pull request: `#2` — `feat: add P0.2 domain model and persistence`
+- Corrective pull request: `#3` — `fix: clean up P0.2 merged diagnostics and formatting`
+- Final `main` commit: `492a0cac1ba19b662c350128800e6f227c443907`
 - Exact post-merge CI: run `#37`
 - CI conclusion: `success`
 
-## Implemented Domain State
+PR #2 merged while the final branch formatting/diagnostic cleanup was still landing. PR #3 was therefore used as a focused corrective change to apply the final formatted persistence implementation and remove temporary diagnostic artifacts. It did not expand P0.2 scope.
 
-The canonical domain layer now covers:
+## Implemented Domain Layer
+
+The repository now defines framework-independent canonical records for:
 
 - conversations;
-- provider-neutral messages;
+- messages;
 - work requests;
 - versioned plans;
 - tasks;
 - task dependencies;
-- decision requests;
-- decision options;
-- immutable owner decisions;
+- decision requests and options;
+- owner decisions;
 - agent runs;
-- normalized model usage/cost calls;
-- append-oriented audit events.
+- model calls and normalized usage/cost metadata;
+- audit events.
 
-Domain state uses Overlord-owned IDs and enums. Provider/runtime session identifiers remain optional external references rather than canonical task or conversation identifiers.
+The domain layer also defines stable enum vocabularies for conversation/work/task state, decision categories, agent roles, capability tiers, actors, dependency types, and message source modes.
 
-## Persistence Layer
+### Domain invariants
 
-P0.2 adds:
+P0.2 enforces important invariants before execution/persistence, including:
 
-- SQLAlchemy 2.x typed PostgreSQL mappings;
-- Psycopg 3 database connectivity;
-- transactional session management with rollback on failure;
-- repository adapters that return domain objects rather than ORM rows;
-- explicit parent-before-child flush ordering while preserving a single transaction;
-- deterministic task-parent insertion ordering;
-- task dependency validation and cycle checks;
-- decision bundle persistence;
-- agent/model-cost persistence;
-- audit-event persistence;
-- provider-neutral message persistence.
+- non-blank canonical work/message/task/decision text;
+- plan versions greater than or equal to one;
+- task priority constrained to `0–100`;
+- non-negative token/cost counters;
+- no task self-dependencies;
+- no dependency references outside the supplied plan;
+- no cyclic task dependency graph;
+- task parent references must remain inside the supplied plan;
+- task parent hierarchies cannot contain cycles.
 
-The application/domain layer does not use provider-native or ORM objects as its authoritative representation of work state.
+## Persistence Architecture
 
-## Schema and Migrations
+The persistence layer uses SQLAlchemy 2.x typed mappings behind separate domain/repository adapters.
 
-Alembic is now the authoritative schema migration mechanism.
+The canonical domain records remain usable without a SQLAlchemy session. ORM rows are an implementation detail of the persistence adapter rather than the application business model.
 
-Current revisions:
+The database schema now includes:
 
-1. `0001_domain_state` — creates the initial canonical control-plane tables and constraints.
-2. `0002_messages_alignment` — adds canonical messages and aligns task/dependency/index constraints with the domain model.
+```text
+conversations
+messages
+work_requests
+plans
+tasks
+task_dependencies
+decision_requests
+decision_options
+owner_decisions
+agent_runs
+model_calls
+audit_events
+```
 
-The CI gate proves that an empty PostgreSQL database can migrate to `head` before integration tests run.
+Database constraints reinforce domain invariants such as unique plan versions per work request, valid priority ranges, non-self task dependencies, and non-negative model usage/cost values.
 
-## Database Constraints and Invariants
+## Canonical Message Persistence
 
-The implementation enforces or tests important rules including:
+P0.2 includes explicit persistence for the canonical `Message` record.
 
-- plan versions must be positive;
-- each work request cannot persist duplicate plan version numbers;
-- task priority stays within the supported range;
-- a task cannot depend on itself;
-- supplied task dependency graphs cannot contain cycles;
-- parent tasks must belong to the same supplied plan graph;
-- task-parent hierarchy cannot contain a cycle;
-- decision options and owner decisions must belong to the matching decision request;
-- model token counts and reported cost cannot be negative;
-- dependent persistence records are inserted only after required parents exist.
+This is important to the successor architecture because the owner/Manager conversation must survive replacement of the LLM provider. A provider-native message/session identifier can be stored as optional metadata, but it is not required to reload the canonical message history.
 
-## Integration and Transaction Tests
+An integration test proves that a persisted owner message round-trips through PostgreSQL independently of any provider conversation object.
 
-P0.2 tests now exercise a real migrated PostgreSQL instance in CI.
+## Repository Adapters and Transaction Ordering
+
+`SqlAlchemyRepository` provides explicit add/read operations for the P0.2 aggregates and evidence records.
+
+The persistence mapping deliberately does not rely on SQLAlchemy ORM relationships to become the application graph. Because of that design, the repository explicitly flushes parent records before dependent records while keeping the entire operation inside the same transaction.
+
+Examples include:
+
+```text
+Conversation -> WorkRequest
+WorkRequest -> Plan
+Plan -> Tasks
+Tasks -> TaskDependencies
+DecisionRequest -> DecisionOptions -> OwnerDecision
+WorkRequest -> AgentRun -> ModelCall
+```
+
+This preserves foreign-key ordering without coupling domain navigation to SQLAlchemy relationship objects. Transaction rollback still applies to the full unit of work.
+
+## Alembic Migrations
+
+P0.2 establishes the repository's Alembic migration framework and current migration chain:
+
+- `0001_domain_state.py`
+- `0002_messages_and_constraint_alignment.py`
+
+The second revision aligns the initial schema with the final P0.2 contract by adding canonical messages, enforcing the final task-priority constraint, aligning the dependency-type default, and adding the required decision-option index.
+
+CI proves the complete migration chain can upgrade an empty PostgreSQL database to `head`.
+
+## Tests
+
+P0.2 adds database-backed integration coverage in addition to domain unit tests.
 
 Coverage includes:
 
-- canonical message round-trip without relying on provider conversation state;
-- conversation/work-request persistence;
-- plan/task/dependency graph round-trip;
-- decision request/options/owner-decision round-trip;
-- agent-run persistence;
-- model usage/cost round-trip;
-- audit-event round-trip;
-- duplicate plan-version rejection;
-- transaction rollback without partial graph persistence;
-- domain validation for invalid dependencies and cycles.
+- domain text/range validation;
+- self-dependency rejection;
+- task dependency cycle detection;
+- valid acyclic dependency graphs;
+- aggregate persistence round-trip;
+- canonical Message round-trip;
+- decision option and owner-decision round-trip;
+- agent/model/audit state round-trip;
+- duplicate plan-version database constraint;
+- transaction rollback after an integrity violation;
+- settings behavior under CI environment overrides.
 
 ## CI Gate
 
-The permanent CI workflow now verifies:
+The permanent Overlord CI now runs:
 
 ```text
 docker compose config --quiet
-docker compose up -d postgres
+PostgreSQL start/readiness
 uv sync --locked --all-groups
 uv run ruff check .
 uv run ruff format --check .
@@ -139,46 +167,40 @@ uv run alembic upgrade head
 uv run pytest
 ```
 
-Exact post-merge CI run `#37` passed on final `main` commit `492a0cac1ba19b662c350128800e6f227c443907`.
+The exact post-merge run `#37` succeeded on commit `492a0cac1ba19b662c350128800e6f227c443907`.
 
-## Corrective Merge Note
+## Boundaries Preserved
 
-PR #2 initially had a successful pre-merge CI run, but branch-only diagnostic automation advanced the branch again before GitHub performed the squash merge. That caused temporary diagnostic files and one unformatted source line to enter the first `main` merge snapshot.
+P0.2 did **not** introduce:
 
-Post-merge CI correctly rejected that snapshot at the lint gate.
+- paid LLM/provider credentials;
+- a real Manager LLM adapter;
+- DBOS workflow execution;
+- OpenHands or OpenCode;
+- remote Developer Workers;
+- GitHub App credentials;
+- production secret storage;
+- mobile/PWA functionality;
+- recurring cloud infrastructure.
 
-PR #3 then:
-
-- removed all temporary diagnostic/status artifacts;
-- applied the single Ruff formatting correction;
-- ran the full CI suite successfully before merge;
-- merged as the final P0.2 cleanup;
-- passed the full CI suite again on the exact resulting `main` commit.
-
-This is recorded explicitly so the failed intermediate post-merge run is not mistaken for the final P0.2 verification state.
-
-## Cost and Infrastructure Boundary
-
-P0.2 introduced no paid model calls, no remote Developer Workers, no production cloud deployment, and no recurring infrastructure beyond the already-approved local development environment.
-
-The approved USD $50 monthly prototype ceiling remains configuration/policy rather than a fixed interaction quota.
+The persistence design is intended to support those later components without making any of them the canonical state owner.
 
 ## Next Work Package
 
-The next approved work package is **P0.3 — Ports, fake adapters, and planning contract**.
+The next approved work package is **P0.3 — Ports, Fake Adapters, and Planning Contract**.
 
 Planned scope includes:
 
-- provider-neutral `LLMPort`;
+- `LLMPort`;
 - `DeveloperAgentPort`;
 - `SecretStorePort`;
-- narrow future-facing GitHub port where needed;
+- a skeletal `GitHubPort` only where the planning context contract needs it;
 - deterministic fake adapters;
-- structured Manager planning input/output contract;
-- PlanningService that validates model output before creating domain state;
-- contract tests proving adapter replacement does not alter canonical state.
+- provider-neutral planning request/result schemas;
+- `PlanningService`;
+- contract tests for the fake adapters and planning boundary.
 
-P0.3 should begin as a separate focused source PR.
+The P0.3 acceptance gate is that a `WorkRequest` can produce a validated, persisted `Plan` and `Task` graph using only deterministic fake integrations, with no provider-native object required to reload or continue the result.
 
 ## Related Documents
 
@@ -189,6 +211,6 @@ P0.3 should begin as a separate focused source PR.
 ## Verification Record
 
 - Last verified: `2026-08-10`.
-- Verified against: `Overlord` PR #2, feature merge `03f685ecff5370ca801eaa37b2cd1cd02033c120`, corrective PR #3, final `main` commit `492a0cac1ba19b662c350128800e6f227c443907`, repository tree on `main`, and successful exact post-merge CI run #37.
+- Verified against: `Overlord` feature PR #2, corrective PR #3, final `main` commit `492a0cac1ba19b662c350128800e6f227c443907`, and successful exact post-merge CI run #37.
 - Verified by: High Director.
-- Verification scope: canonical domain records, provider-neutral message state, PostgreSQL mappings/repositories, Alembic migrations, transaction ordering/rollback, integration tests, dependency lock, repository documentation, and final CI state.
+- Verification scope: domain records/invariants, SQLAlchemy persistence mappings, canonical message persistence, transaction ordering/rollback, Alembic migrations, PostgreSQL integration tests, repository cleanup, and final CI result.
