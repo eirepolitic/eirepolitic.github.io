@@ -31,22 +31,26 @@ Overlord now has a real LLM runtime implementation behind the existing provider-
 ## Source Delivery
 
 - Repository: `Overlord`
-- Pull request: `#5` — `feat: add P0.4 Pydantic AI Manager adapter`
-- Merge commit: `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`
-- Exact post-merge CI: run `#88`
+- Feature pull request: `#5` — `feat: add P0.4 Pydantic AI Manager adapter`
+- Feature merge commit: `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`
+- Corrective pull request: `#6` — `chore: complete P0.4 post-merge cleanup`
+- Final `main` commit: `8bfd15b017d1a889eb51fd1b8fdce2163ae10724`
+- Exact final post-merge CI: run `#90`
 - CI conclusion: `success`
+
+PR #5 merged while two temporary pytest diagnostic workflows were still present. PR #6 removed those workflows only; it did not change application code, dependencies, model configuration, or runtime behavior.
 
 ## Runtime Dependency
 
 P0.4 adds Pydantic AI v2 through the repository dependency contract:
 
 ```text
-pydantic-ai>=2.0,<3.0
+pydantic-ai-slim[anthropic,google,openai]>=2.27,<3.0
 ```
 
 The dependency is included in the committed `uv.lock`, so normal repository installation remains reproducible.
 
-Pydantic AI is only imported inside the LLM adapter layer. `PlanningService`, domain models, persistence, and API contracts do not import provider-specific model SDKs.
+Pydantic AI is imported only inside the LLM adapter layer. `PlanningService`, domain models, persistence, and API contracts do not import provider-specific model SDKs.
 
 ## Capability-Tier Configuration
 
@@ -58,7 +62,7 @@ BALANCED
 FRONTIER
 ```
 
-Each tier can be mapped independently to a Pydantic AI model string through typed settings:
+Each tier can be mapped independently through typed settings:
 
 ```text
 OVERLORD_MODEL_EFFICIENT
@@ -118,7 +122,6 @@ The adapter returns Overlord's `ModelResponse`, including normalized:
 - input tokens;
 - cached-input tokens;
 - output tokens;
-- best-effort reported USD cost where available;
 - finish reason;
 - external provider response ID where available.
 
@@ -144,7 +147,7 @@ P0.4 contract tests explicitly configure Pydantic AI's offline `test` model and 
 - the `LLMPort` boundary remains intact;
 - no billable provider call is required for repository acceptance.
 
-The full test suite also verifies capability routing and rejection of unconfigured tiers.
+The suite also verifies capability routing, provider-string switching, wrong structured-output rejection, and rejection of unconfigured tiers before any provider execution.
 
 ## Explicit Real-Provider Smoke Path
 
@@ -162,9 +165,7 @@ OVERLORD_RUN_REAL_LLM_SMOKE=1
 
 is explicitly set.
 
-The script also rejects the offline `test` model and requires a configured real balanced-tier model before it will run.
-
-The smoke path is therefore a deliberate manual operation rather than part of normal CI.
+The script requires a configured real balanced-tier model before it will run. It is a deliberate manual operation rather than part of normal CI.
 
 No real provider credential was added to the repository during P0.4, and no paid provider request was required for P0.4 acceptance.
 
@@ -209,13 +210,13 @@ P0.4 adds/extends coverage for:
 - wrong structured output rejection;
 - real Pydantic AI adapter operation using the offline test model.
 
-The final repository suite contained 31 tests during the P0.4 diagnostic/acceptance cycle and passed after configuration expectations were aligned.
+The final repository suite contained 31 tests during the P0.4 acceptance cycle and passed on the final cleaned `main` state.
 
 ## CI Gate
 
-The exact post-merge Overlord CI run `#88` succeeded on commit:
+The exact final post-merge Overlord CI run `#90` succeeded on commit:
 
-`37ca4b1ec739bf083ebb5bdb1df059e44ec68382`
+`8bfd15b017d1a889eb51fd1b8fdce2163ae10724`
 
 The gate included:
 
@@ -229,6 +230,8 @@ uv run mypy src
 uv run alembic upgrade head
 uv run pytest
 ```
+
+The final `main` tree contains only the permanent `ci.yml` workflow; temporary P0.4 formatting, lock-bootstrap, and pytest diagnostic workflow files are not present.
 
 ## Boundaries Preserved
 
@@ -273,6 +276,6 @@ P0.5 should continue to keep canonical work state in the Overlord domain/Postgre
 ## Verification Record
 
 - Last verified: `2026-08-11`.
-- Verified against: `Overlord` PR #5, merge commit `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`, the final source tree on `main`, and exact successful post-merge CI run #88.
+- Verified against: `Overlord` feature PR #5, feature merge `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`, corrective PR #6, final `main` commit `8bfd15b017d1a889eb51fd1b8fdce2163ae10724`, final source tree, and exact successful post-merge CI run #90.
 - Verified by: High Director.
-- Verification scope: Pydantic AI dependency/version boundary, capability configuration, adapter normalization, structured-output validation, offline test execution, guarded real-provider smoke path, provider-neutral application boundary, and final CI result.
+- Verification scope: Pydantic AI dependency/version boundary, explicit capability configuration, adapter normalization, structured-output validation, offline test execution, guarded real-provider smoke path, provider-neutral application boundary, post-merge cleanup, and final CI result.
