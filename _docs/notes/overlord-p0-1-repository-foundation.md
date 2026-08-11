@@ -3,7 +3,7 @@ title: Overlord P0.1 — Repository Foundation
 summary: Implementation record for the first Overlord source-code milestone, replacing the obsolete repository contents with the new Python control-plane foundation.
 section: notes
 doc_type: note
-status: complete
+status: active
 created: 2026-08-10
 updated: 2026-08-10
 last_verified: 2026-08-10
