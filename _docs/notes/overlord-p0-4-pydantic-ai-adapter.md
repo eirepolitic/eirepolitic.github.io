@@ -33,12 +33,15 @@ Normal repository acceptance remains offline and credential-free. Pydantic AI's 
 ## Source Delivery
 
 - Repository: `Overlord`
-- Pull request: `#5` — `feat: add P0.4 Pydantic AI Manager adapter`
-- Merge commit: `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`
-- Exact post-merge CI: run `#88`
-- CI conclusion: `success`
+- Feature pull request: `#5` — `feat: add P0.4 Pydantic AI Manager adapter`
+- Feature merge commit: `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`
+- Final cleanup pull request: `#6` — `chore: complete P0.4 post-merge cleanup`
+- Exact cleanup PR head: `392e413dfe2a6d596d7d5f7ce0034ef4aad9fa9e`
+- Cleanup PR CI: run `#89` — `success`
+- Final P0.4 `main` commit: `8bfd15b017d1a889eb51fd1b8fdce2163ae10724`
+- Exact final post-merge CI: run `#90` — `success`
 
-The source PR was merged only after the exact feature-branch head passed the full permanent CI workflow. Post-merge CI then passed again on the exact merge SHA above.
+PR #5 delivered the Pydantic AI adapter. PR #6 established the final P0.4 repository state after temporary verification workflows were cleaned up. The exact PR #6 head passed the permanent CI workflow before merge, and the exact resulting `main` SHA passed the same workflow again after merge.
 
 ## Runtime Dependency
 
@@ -48,7 +51,7 @@ The merged repository now includes:
 pydantic-ai>=2.0,<3.0
 ```
 
-The refreshed `uv.lock` is committed, so normal setup continues to use locked dependency resolution.
+The P0.4 dependency-lock workflow eventually succeeded on its seventh run and committed the refreshed `uv.lock`. Final permanent CI then passed `uv sync --locked --all-groups` on the exact final `main` SHA, proving that the committed lockfile is current for the merged dependency set.
 
 P0.4 deliberately keeps Pydantic AI behind `LLMPort`. The domain, persistence, planning, and future workflow layers do not import provider-specific model SDKs directly.
 
@@ -194,11 +197,15 @@ Provider API keys remain runtime/adapter secrets. The planning/domain/persistenc
 
 Production runtime secret retrieval remains behind `SecretStorePort`; hosted secret-store wiring is still deferred.
 
+## Temporary Workflow Cleanup
+
+The temporary branch-only lock workflow `.github/workflows/p04-lock.yml` was removed after the lockfile was successfully refreshed. The final `main` workflow tree contains only the permanent `.github/workflows/ci.yml`; P0.4 lock, formatting, and pytest diagnostic workflows are not part of the final repository state.
+
 ## CI Gate
 
-The exact post-merge Overlord CI run `#88` succeeded on:
+The final P0.4 `main` CI run `#90` succeeded on:
 
-`37ca4b1ec739bf083ebb5bdb1df059e44ec68382`
+`8bfd15b017d1a889eb51fd1b8fdce2163ae10724`
 
 The permanent gate included:
 
@@ -213,7 +220,7 @@ uv run alembic upgrade head
 uv run pytest
 ```
 
-All substantive checks and the complete test suite passed on the exact merge commit.
+All substantive checks and the complete test suite passed on the exact final P0.4 `main` commit.
 
 ## Boundaries Preserved
 
@@ -261,6 +268,6 @@ P0.5 acceptance should prove the restart/pause/resume behavior with no paid mode
 ## Verification Record
 
 - Last verified: `2026-08-11`.
-- Verified against: `Overlord` PR #5, merge commit `37ca4b1ec739bf083ebb5bdb1df059e44ec68382`, merged `pyproject.toml`, adapter/configuration/tests on that SHA, and exact successful post-merge CI run #88.
+- Verified against: `Overlord` PR #5, cleanup PR #6, lock workflow run #7, exact cleanup PR-head CI run #89, final `main` commit `8bfd15b017d1a889eb51fd1b8fdce2163ae10724`, exact post-merge CI run #90, merged `pyproject.toml`, adapter/configuration/tests, and the final `.github/workflows` tree.
 - Verified by: High Director.
-- Verification scope: Pydantic AI dependency, capability-tier routing, offline test defaults, structured adapter boundary, usage normalization, provider metadata, smoke-test guard, locked dependencies, and final CI result.
+- Verification scope: Pydantic AI dependency, capability-tier routing, offline test defaults, structured adapter boundary, usage normalization, provider metadata, smoke-test guard, locked dependencies, temporary workflow removal, and exact final CI result.
