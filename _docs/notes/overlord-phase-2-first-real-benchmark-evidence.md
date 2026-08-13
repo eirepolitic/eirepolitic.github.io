@@ -5,8 +5,8 @@ section: notes
 doc_type: note
 status: active
 created: 2026-08-12
-updated: 2026-08-12
-last_verified: 2026-08-12
+updated: 2026-08-13
+last_verified: 2026-08-13
 owner: High Director
 order: 139
 permalink: /projects/notes/overlord-phase-2-first-real-benchmark-evidence/
@@ -129,12 +129,15 @@ The second run was not intended as an additional completed comparison.
 Containment actions were:
 
 1. no further real benchmark dispatches were made;
-2. the repository secret `OVERLORD_BENCHMARK_OPENAI_API_KEY` was deleted;
-3. the duplicate run was observed until GitHub cancelled it during its model-execution step;
-4. its comparison summary step was skipped;
-5. it is excluded from completed-trial evidence.
+2. an attempted delete of repository secret `OVERLORD_BENCHMARK_OPENAI_API_KEY` returned `404` and therefore was **not** treated as verified deletion;
+3. the repository secret was successfully overwritten with a harmless invalid containment value;
+4. the duplicate run was observed until GitHub cancelled it during its model-execution step;
+5. its comparison summary step was skipped;
+6. it is excluded from completed-trial evidence.
 
-Deleting the repository secret did not retroactively remove the credential from the already-started duplicate job because the job had already materialized its environment. The repository secret remains absent after containment.
+Overwriting the repository secret did not retroactively remove the original credential from the already-started duplicate job because GitHub had already materialized that value into the running job environment.
+
+The repository secret name may still exist, but its configured value is deliberately invalid and unusable for OpenAI API access. A fresh valid benchmark key is required before any future approved paid benchmark run.
 
 The OpenAI project-level hard spending ceiling remained the external cost backstop throughout the incident.
 
@@ -202,15 +205,17 @@ If another dispatch enters the same concurrency group, GitHub is instructed to c
 
 The workflow also starts both runtime environments with `PYTHONDONTWRITEBYTECODE=1` to reduce interpreter-generated `__pycache__` noise in future canonical Git evidence.
 
-The provider-secret check occurs before runtime installation and causes the real workflow to fail immediately when `OVERLORD_BENCHMARK_OPENAI_API_KEY` is absent.
+The provider-secret check occurs before runtime installation and causes the real workflow to fail immediately when `OVERLORD_BENCHMARK_OPENAI_API_KEY` is absent or unusable.
 
 ## Credential Boundary
 
-`OVERLORD_BENCHMARK_OPENAI_API_KEY` was deliberately removed from the `Overlord` repository during duplicate-run containment and remains absent at this checkpoint.
+`OVERLORD_BENCHMARK_OPENAI_API_KEY` does not currently contain a usable provider credential. The verified containment action was overwriting its value with an intentionally invalid sentinel after the delete attempt returned `404`.
 
 No more real Developer benchmark execution is possible through the guarded workflow until the owner deliberately supplies a fresh/current benchmark credential again.
 
 Credentials must never be committed to either repository or pasted into documentation/chat.
+
+This credential-state correction supersedes any earlier statement that the repository secret was definitely deleted or absent.
 
 ## Selection Boundary
 
@@ -228,14 +233,15 @@ The approved Phase 2 selection process still requires repeated comparable eviden
 
 ## Next Checkpoint
 
-All source-side offline hardening and documentation for the first real trial are complete.
+All source-side offline hardening for the first real trial is complete.
 
-The next owner-only action is credential restoration: revoke the prior benchmark API key if it has not already been revoked, create a fresh benchmark key, and store it in the `Overlord` repository as `OVERLORD_BENCHMARK_OPENAI_API_KEY`.
+The next owner-only action is credential restoration: revoke the original benchmark API key in the provider project if it has not already been revoked, create a fresh benchmark key, and store it in the `Overlord` repository as `OVERLORD_BENCHMARK_OPENAI_API_KEY`, replacing the current invalid containment value.
 
-No further paid benchmark run should be dispatched until that credential step is explicitly completed.
+No further paid benchmark run should be dispatched until that credential step is explicitly completed and the repeated benchmark phase is separately authorized.
 
 ## Related Documents
 
+- [Overlord Phase 2 — Real Benchmark One-Shot Arming](/projects/notes/overlord-phase-2-benchmark-one-shot-arming/)
 - [Overlord Phase 2 — Real Developer Benchmark Preflight](/projects/notes/overlord-phase-2-real-benchmark-preflight/)
 - [Overlord Phase 2 — Developer Agent Benchmark Harness](/projects/notes/overlord-phase-2-developer-benchmark-harness/)
 - [Overlord Phase 2 — Reproducible Developer Benchmark Corpus](/projects/notes/overlord-phase-2-developer-benchmark-corpus/)
@@ -245,7 +251,7 @@ No further paid benchmark run should be dispatched until that credential step is
 
 ## Verification Record
 
-- Last verified: `2026-08-12`.
-- Verified against: real benchmark run `31625963336`; trial artifact `9153151709`; duplicate run `31625965069`; source PR #20 exact head `ca7dbc1dc2a5871e150a95e6a6913c85a94f8aa2`; PR CI #226; merged source main `9745b4f8a49a6161eb3539aef7074d6d5f8de80b`; and post-merge CI #230.
+- Last verified: `2026-08-13`.
+- Verified against: real benchmark run `31625963336`; trial artifact `9153151709`; duplicate run `31625965069`; source PR #20 exact head `ca7dbc1dc2a5871e150a95e6a6913c85a94f8aa2`; PR CI #226; merged source main `9745b4f8a49a6161eb3539aef7074d6d5f8de80b`; post-merge CI #230; source PR #21 merged main `7f21d37278f8f30c3507d427b571cb64d4034691`; negative arming proof run `31627541359`; and post-merge CI #232.
 - Verified by: High Director.
-- Verification scope: first paid trial correctness/integrity/cost evidence, duplicate-run containment, credential removal, normalized token accounting, runtime status semantics, workflow concurrency hardening, exact-SHA source acceptance, and no-runtime-selection boundary.
+- Verification scope: first paid trial correctness/integrity/cost evidence, duplicate-run containment, corrected credential-state record, normalized token accounting, runtime status semantics, workflow concurrency/arming hardening, exact-SHA source acceptance, and no-runtime-selection boundary.
