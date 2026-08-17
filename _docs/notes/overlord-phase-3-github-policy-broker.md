@@ -1,6 +1,6 @@
 ---
 title: Overlord Phase 3 — GitHub Policy Broker
-summary: First Phase 3 slice establishing typed GitHub lifecycle operations, deterministic fake behavior, and fail-closed policy-driven merge authority.
+summary: First Phase 3 source slice establishing typed GitHub lifecycle operations, deterministic fake behavior, and fail-closed policy-driven merge authority.
 section: notes
 doc_type: note
 status: active
@@ -15,7 +15,7 @@ tags:
   - phase-3
   - github
   - policy
-  - opencode
+  - broker
   - merge
 ---
 
@@ -23,13 +23,9 @@ tags:
 
 ## Outcome
 
-The first Phase 3 GitHub lifecycle slice is complete.
+The first Phase 3 source slice is complete. Overlord now has a typed GitHub lifecycle boundary and an application-level policy broker that can make fail-closed merge decisions without giving the selected OpenCode Developer runtime direct GitHub API authority.
 
-Overlord now has a typed GitHub lifecycle port, a deterministic fake GitHub adapter, and an application-level `GitHubBroker` that centralizes repository write and merge authority behind explicit policy.
-
-The owner delegated routine merge authority to policy rather than requiring a manual owner confirmation for every merge. This does **not** mean unconditional auto-merge: the broker fails closed whenever required evidence is missing, stale, ambiguous, or unsuccessful.
-
-OpenCode remains behind `DeveloperAgentPort` and receives no GitHub API credential or direct merge authority.
+This slice remains offline/fake-only. It does **not** configure a real GitHub App credential and does not perform product repository writes.
 
 ## Source Acceptance
 
@@ -46,28 +42,60 @@ post-merge CI run ID:      32056948790
 post-merge CI conclusion:  success
 ```
 
-Both accepted CI gates included Compose validation, PostgreSQL startup/readiness, locked dependency synchronization, Ruff lint, Ruff format check, strict mypy, Alembic upgrade, and full pytest.
-
-## GitHub Lifecycle Contract
-
-`GitHubPort` now models typed operations for:
+Both acceptance runs passed the permanent gates:
 
 ```text
-repository planning context
-file read
-code search
-branch creation
-exact-head file commits
-pull-request create/update/read
-check inspection
-exact-head merge execution
+docker compose config --quiet
+PostgreSQL startup/readiness
+uv sync --locked --all-groups
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy src
+uv run alembic upgrade head
+uv run pytest
 ```
 
-Git/GitHub remain canonical for repository, commit, pull-request, and check state. Runtime-native Developer state is not promoted to canonical repository state.
+## GitHub Lifecycle Port
+
+`GitHubPort` now covers the repository lifecycle required by the control plane while retaining the earlier planning-context operation.
+
+The typed async surface includes:
+
+- repository planning context;
+- file reads;
+- code search;
+- branch creation;
+- exact-head file commits;
+- pull-request creation and update;
+- pull-request inspection;
+- check inspection;
+- exact-head pull-request merge.
+
+Runtime credentials never cross this port.
+
+## Deterministic Fake Adapter
+
+`FakeGitHubAdapter` implements the lifecycle without network access.
+
+It models:
+
+- branch identity and idempotent creation;
+- deterministic commit SHAs;
+- exact expected-head protection before commits;
+- file create/update/delete behavior;
+- open PR identity and updates;
+- check results keyed by ref;
+- exact-head merge protection;
+- merge-method recording;
+- deterministic merge SHAs.
+
+Normal CI therefore exercises the GitHub lifecycle and policy logic without GitHub credentials or product writes.
 
 ## Policy-Driven Merge Authority
 
-`GitHubPolicy` explicitly defines:
+`GitHubBroker` owns GitHub write/merge authority. OpenCode remains behind `DeveloperAgentPort` and receives no direct GitHub API credential.
+
+`GitHubPolicy` can constrain:
 
 ```text
 allowed_repositories
@@ -77,92 +105,55 @@ require_required_checks
 merge_method
 ```
 
-`GitHubBroker` allows a merge only when all applicable policy evidence passes. Current fail-closed checks include:
+A merge decision fails closed unless all configured evidence is acceptable.
 
-```text
-repository is allowlisted
-pull request state is open
-pull request is not draft
-mergeability is explicitly true
-base branch is allowlisted
-pull request head SHA matches the expected head SHA
-required-check policy is non-empty when required
-required checks are present
-required checks are completed
-required checks concluded successfully
-```
+The broker blocks merge when any relevant condition fails, including:
 
-A missing check, pending check, failed check, unknown mergeability, draft PR, disallowed base, non-allowlisted repository, or stale expected SHA blocks the merge and does not call the adapter merge operation.
+- repository outside the allowlist;
+- PR not open;
+- draft PR;
+- mergeability not confirmed true;
+- disallowed base branch;
+- exact expected head SHA mismatch;
+- empty required-check policy when required;
+- missing required check;
+- incomplete required check;
+- failed required check.
 
-The adapter merge call repeats the expected PR head SHA, preserving the exact-head boundary between policy assessment and write execution.
+When policy passes, the broker repeats the exact expected head SHA into the merge call. The default merge method is `squash`.
 
-## Deterministic Offline Adapter
+## Owner Authority Decision
 
-`FakeGitHubAdapter` implements the lifecycle contract for normal CI without contacting GitHub.
+The owner delegated routine merge decisions to Overlord rather than requiring manual confirmation for every merge.
 
-It models:
+Therefore Phase 3 uses **policy-driven automatic merge authority**. This is not unrestricted authority: missing, stale, unknown, or failed evidence blocks the merge.
 
-- branch creation and branch-head identity;
-- exact-head commit rejection;
-- deterministic commit identities;
-- file reads/search;
-- PR creation/update/read;
-- check state;
-- PR-head advancement after a branch commit;
-- exact-head merge execution;
-- merge-call evidence for policy tests.
+Repository scope remains explicit allowlist-only.
 
-This lets Phase 3 policy behavior remain fully testable without repository credentials.
+## Boundaries Preserved
 
-## Explicit Security Boundary
-
-OpenCode does not receive GitHub installation tokens, personal access tokens, App private keys, or merge authority.
-
-The intended product path is:
-
-```text
-OpenCode / DeveloperAgentPort
-        |
-        v
-Overlord application/control plane
-        |
-        v
-GitHubBroker policy decision
-        |
-        v
-GitHubPort adapter
-        |
-        v
-GitHub
-```
-
-Repository writes therefore remain centrally governable even though the owner does not need to approve every routine merge manually.
-
-## Scope Exclusions
-
-This slice intentionally did **not** add:
+This slice does **not** introduce:
 
 - a real GitHub App adapter;
-- GitHub credentials;
-- deployed product GitHub writes;
+- GitHub App credentials;
+- product repository writes;
 - a PostgreSQL schema migration;
-- application dependency or lockfile changes;
-- durable GitHub-operation persistence;
-- new risk-classification records;
-- direct OpenCode GitHub credentials;
-- provider/model changes;
-- paid model execution;
+- application dependency/lock changes;
+- a model/provider change;
+- additional paid benchmark/model execution;
 - Phase 4 remote worker infrastructure.
+
+Git/GitHub remain canonical for repository, branch, PR, check, and merge state. PostgreSQL remains canonical for Overlord application state.
 
 ## Next Phase 3 Slice
 
-The next slice may implement the real GitHub App adapter and durable GitHub operation/audit references behind the accepted `GitHubPort` / `GitHubBroker` boundary.
+The safest next source slice is durable GitHub operation/audit persistence before enabling a real GitHub adapter.
 
-Implementation can remain credential-free in normal CI. Any future GitHub App private key or installation credential must be configured through an external secret/runtime mechanism and must never be committed to source or pasted into chat.
+That slice should record durable references to branch/commit/PR/check/merge operations and policy decisions in PostgreSQL, using Alembic for any schema additions. After the persistence/audit contract is accepted, a real GitHub App adapter can be implemented behind `GitHubPort` and wired at a separate credential checkpoint.
 
 ## Verification Record
 
 - Last verified: `2026-08-17`.
-- Verified against: owner delegated merge-policy authority; source PR #25 final head `3665ce71d4de64df9fb16779999ef9ceaceedfde`; PR CI #325 run `32056774141`; source main `c8c606ca292fe0f336b1643166f4c5442ee1519e`; post-merge CI #326 run `32056948790`.
+- Verified against: source PR #25 final head `3665ce71d4de64df9fb16779999ef9ceaceedfde`; CI #325 run `32056774141`; merged source main `c8c606ca292fe0f336b1643166f4c5442ee1519e`; post-merge CI #326 run `32056948790`.
 - Verified by: High Director.
-- Verification scope: typed lifecycle port, fake adapter behavior, allowlist/base/head/check/mergeability merge policy, exact-head merge execution, no direct OpenCode GitHub credentials, no schema/dependency/paid-runtime expansion.
+- Verification scope: typed lifecycle port, deterministic fake adapter, exact-head protections, repository allowlist, required-check merge policy, owner-delegated policy-driven merge authority, and absence of real credentials/product writes.
