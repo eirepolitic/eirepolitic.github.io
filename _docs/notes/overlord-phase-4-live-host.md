@@ -34,7 +34,7 @@ Droplet class:        Basic / Regular SSD
 size:                 2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:           $24/month
 initial source release: 562ee774a56b89eda8c1f913abf6adf0981f9b13
-current verified release: caa854725c07814dc095d0350d947f86193ae5e2
+current verified release: 4fed04c4c0c75c3b18a3bb956680d0511ae2be58
 ```
 
 DigitalOcean improved metrics/monitoring is enabled. Managed Database and startup-script add-ons were not enabled.
@@ -72,6 +72,13 @@ DigitalOcean Overlord
 ```
 
 The production adapter path using `AwsSecretsManagerSecretStore` returned `SECRET_READ_OK True`. The control plane was not moved to EC2 merely to obtain an instance role.
+
+The production runtime also requires the two non-secret GitHub App identifiers in `/etc/overlord/overlord.env`:
+
+- `OVERLORD_GITHUB_APP_ID`;
+- `OVERLORD_GITHUB_APP_INSTALLATION_ID`.
+
+The live broker smoke initially failed closed before GitHub authentication because these identifiers had not yet been configured. They were subsequently added without exposing the GitHub App private key or any installation token.
 
 ## Live local Developer smoke acceptance — 2026-08-20
 
@@ -114,28 +121,63 @@ Two live-runtime defects were found and corrected through normal exact-head CI a
 
 These fixes did not change `DeveloperAgentPort`, secret boundaries, Docker privileges, or the decision to keep remote Developer workers deferred.
 
-## Next stage
+## Live GitHub App broker/audit smoke acceptance — 2026-08-20
 
-With AWS Secrets Manager access and the live local-container Developer path now proven, the next controlled production milestone is the live GitHub App smoke test through the existing `GitHubBroker` and durable audit path.
+A controlled production GitHub App smoke test is accepted on source release `4fed04c4c0c75c3b18a3bb956680d0511ae2be58`.
 
-The GitHub test must preserve the accepted authority boundary:
+The checked-in smoke command exercised the accepted authority path:
 
 ```text
-application service
--> GitHubBroker
--> policy / durable audit evidence
--> GitHubPort
--> GitHubAppAdapter
+production control plane
+-> AWS Secrets Manager
+-> GitHub App JWT
 -> short-lived installation token
 -> GitHub API
+-> GitHubBroker
+-> exact-head policy evaluation
+-> durable audit repository
 ```
 
-Developer containers must not receive GitHub App credentials merely to perform that test. After the broker/audit smoke is accepted, continue the existing Phase 4 plan for durable workflow integration and Manager/control-plane task lifecycle composition. `REMOTE` Developer execution remains deferred until workload evidence justifies it.
+The test used already-merged `Overlord` PR #37 and its exact verified head SHA. `GitHubPolicy` also required an intentionally impossible sentinel check, making the smoke fail-closed even if other conditions unexpectedly passed. No repository mutation was possible or attempted.
+
+Accepted result:
+
+```text
+GITHUB_BROKER_SMOKE_DECISION=denied
+GITHUB_BROKER_SMOKE_HEAD_MATCH=true
+GITHUB_BROKER_SMOKE_MUTATION=none
+GITHUB_BROKER_SMOKE_AUDIT_EVENTS=github.merge.evaluated
+GITHUB_BROKER_SMOKE_CORRELATION_ID=4c6abf5b-bda1-4ca7-83f3-4d4c4d8217ee
+```
+
+This confirms that the live DigitalOcean control plane can retrieve the GitHub App private key through the narrowly scoped AWS Secrets Manager adapter, obtain a short-lived installation token, read live GitHub PR/check state, enforce exact-head broker policy, and commit durable audit evidence without exposing GitHub App credentials to a Developer container.
+
+The GitHub App remains installed only on the `Overlord` repository. Developer containers still receive no GitHub App private key, installation token, AWS credential, or Docker socket.
+
+## Next stage
+
+The two major live Phase 4 plumbing milestones are now proven:
+
+1. local disposable Developer execution through OpenCode and OpenAI;
+2. GitHub mutation authority through `GitHubBroker`, exact-head policy, the GitHub App adapter, and durable audit.
+
+The next implementation slice should follow the existing Phase 4 plan rather than add new infrastructure:
+
+```text
+Manager / control-plane task lifecycle
+-> DBOS / durable workflow orchestration
+-> DeveloperEnvironmentExecutionService
+-> DeveloperAgentPort
+-> GitHubBroker for repository mutations
+```
+
+Priorities are deeper DBOS/durable workflow integration, making the Developer task lifecycle usable by the Manager/control plane, and recovery/idempotency coverage around those durable boundaries. `REMOTE` Developer execution remains deferred until workload evidence justifies it.
 
 ## Verification record
 
 - Last verified: `2026-08-20`.
-- Verified against: live `overlord-prod-01` deployment of accepted `Overlord/main` release `caa854725c07814dc095d0350d947f86193ae5e2`.
-- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; live local Developer/OpenCode/OpenAI smoke accepted; disposable Developer container cleanup confirmed.
-- Security checks: only the required OpenAI key was injected into the smoke container; no Docker socket, AWS credential, or GitHub App credential entered the Developer environment.
+- Verified against: live `overlord-prod-01`; accepted `Overlord/main` release `4fed04c4c0c75c3b18a3bb956680d0511ae2be58`; AWS Secrets Manager GitHub App path; live local Developer/OpenCode/OpenAI path; `GitHubBroker`; durable audit persistence.
+- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; disposable Developer cleanup confirmed; live fail-closed GitHub broker smoke accepted.
+- Security checks: no Docker socket, AWS credential, GitHub App private key, or installation token entered a Developer container; the GitHub broker smoke performed no mutation.
+- Operational follow-up: restart the `overlord` systemd service after adding the two non-secret GitHub App identifiers so the long-running service inherits the updated environment.
 - Verified by: High Director.
