@@ -5,8 +5,8 @@ section: notes
 doc_type: note
 status: active
 created: 2026-08-19
-updated: 2026-08-20
-last_verified: 2026-08-20
+updated: 2026-08-24
+last_verified: 2026-08-24
 owner: High Director
 order: 152
 permalink: /projects/notes/overlord-phase-4-live-host/
@@ -34,7 +34,7 @@ Droplet class:        Basic / Regular SSD
 size:                 2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:           $24/month
 initial source release: 562ee774a56b89eda8c1f913abf6adf0981f9b13
-current verified release: 4fed04c4c0c75c3b18a3bb956680d0511ae2be58
+current verified release: 2afdd597c3264a2b5005342ef890ebbc51497251
 ```
 
 DigitalOcean improved metrics/monitoring is enabled. Managed Database and startup-script add-ons were not enabled.
@@ -154,30 +154,105 @@ This confirms that the live DigitalOcean control plane can retrieve the GitHub A
 
 The GitHub App remains installed only on the `Overlord` repository. Developer containers still receive no GitHub App private key, installation token, AWS credential, or Docker socket.
 
+## Live bounded Developer API acceptance — 2026-08-24
+
+Production release `2afdd597c3264a2b5005342ef890ebbc51497251` is accepted for the bounded disposable Developer API path.
+
+The tested route was:
+
+```text
+POST /tasks/{task_id}/bounded-developer-runs
+-> server-owned OpenAI credential loading
+-> BoundedDeveloperExecutionService
+-> canonical AgentRun + Task persistence
+-> LocalGitCloneDeveloperWorkspaceAdapter
+-> disposable task workspace
+-> LocalDockerDeveloperEnvironmentAdapter
+-> OpenCodeDeveloperAgentAdapter
+-> OpenAI API
+-> final evidence + usage persistence
+-> workspace/container cleanup
+-> durable audit events
+```
+
+The API caller supplied only the exact source revision. The server read the OpenAI API key from its configured root-managed key file and injected only `OPENAI_API_KEY` into the disposable Developer container. The container received no GitHub App credential, AWS credential, Docker socket, or broad host filesystem access.
+
+Accepted live result:
+
+```text
+BOUNDED_SMOKE_HTTP=200
+BOUNDED_SMOKE_TASK_STATUS=completed
+BOUNDED_SMOKE_RUN_STATUS=completed
+BOUNDED_SMOKE_REVISION_MATCH=true
+BOUNDED_SMOKE_RUNTIME_STATE=idle
+BOUNDED_SMOKE_INPUT_TOKENS=9
+BOUNDED_SMOKE_OUTPUT_TOKENS=99
+BOUNDED_SMOKE_FINAL_EVIDENCE_PRESENT=true
+```
+
+Post-run cleanup was also accepted:
+
+- `/var/lib/overlord/workspaces` contained no residual task workspace;
+- no task-scoped Developer container remained.
+
+Canonical persistence and audit evidence were verified independently after the API response:
+
+```text
+BOUNDED_AUDIT_TASK_STATUS=completed
+BOUNDED_AUDIT_RUN_STATUS=completed
+BOUNDED_AUDIT_EXTERNAL_SESSION_NULL=true
+BOUNDED_AUDIT_REVISION_MATCH=true
+BOUNDED_AUDIT_FINAL_EVIDENCE_PRESENT=true
+BOUNDED_AUDIT_EVENTS=DEVELOPER_DISPATCH_CREATED,DEVELOPER_RUN_STARTED,DEVELOPER_RUN_COMPLETED
+```
+
+### Trusted source checkout Git configuration
+
+The first live bounded attempts failed before Docker/OpenCode startup at `git clone --shared --no-checkout /opt/overlord-source ...` with Git's dubious-ownership protection. The trusted production source checkout is root-managed and intentionally remains non-writable by the `overlord` service account.
+
+Because the systemd service uses `ProtectHome=true`, a user-home Git config is not a reliable service configuration path. Production therefore uses a dedicated service-visible Git config:
+
+```text
+GIT_CONFIG_GLOBAL=/etc/overlord/gitconfig
+```
+
+The file is readable by the `overlord` service account and trusts only the two required local paths:
+
+```text
+safe.directory=/opt/overlord-source
+safe.directory=/opt/overlord-source/.git
+```
+
+Both entries are required because `git clone --shared` evaluates the source Git directory as well as the working-tree path. This preserves the intended boundary: `/opt/overlord-source` stays root-managed and read-only to the service, while writable task state remains under `/var/lib/overlord/workspaces`.
+
 ## Next stage
 
-The two major live Phase 4 plumbing milestones are now proven:
+The major live Phase 4 plumbing milestones are now proven:
 
 1. local disposable Developer execution through OpenCode and OpenAI;
-2. GitHub mutation authority through `GitHubBroker`, exact-head policy, the GitHub App adapter, and durable audit.
+2. GitHub mutation authority through `GitHubBroker`, exact-head policy, the GitHub App adapter, and durable audit;
+3. bounded task-scoped Developer execution through the production API with canonical run/task persistence, final evidence, usage, cleanup, and audit events.
 
-The next implementation slice should follow the existing Phase 4 plan rather than add new infrastructure:
+The next implementation slice should add DBOS durability around bounded Developer invocation rather than add new infrastructure. The current bounded endpoint persists canonical state and audit records, but the HTTP-triggered execution itself is not yet a DBOS-recoverable workflow across control-plane process failure.
+
+Target direction:
 
 ```text
 Manager / control-plane task lifecycle
--> DBOS / durable workflow orchestration
+-> DBOS durable bounded execution workflow
+-> DeveloperWorkspaceExecutionService
 -> DeveloperEnvironmentExecutionService
 -> DeveloperAgentPort
 -> GitHubBroker for repository mutations
 ```
 
-Priorities are deeper DBOS/durable workflow integration, making the Developer task lifecycle usable by the Manager/control plane, and recovery/idempotency coverage around those durable boundaries. `REMOTE` Developer execution remains deferred until workload evidence justifies it.
+Priorities are idempotent dispatch, restart/recovery behavior, and preserving the current provider/runtime-neutral ports and security boundaries. `REMOTE` Developer execution remains deferred until workload evidence justifies it.
 
 ## Verification record
 
-- Last verified: `2026-08-20`.
-- Verified against: live `overlord-prod-01`; accepted `Overlord/main` release `4fed04c4c0c75c3b18a3bb956680d0511ae2be58`; AWS Secrets Manager GitHub App path; live local Developer/OpenCode/OpenAI path; `GitHubBroker`; durable audit persistence.
-- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; disposable Developer cleanup confirmed; live fail-closed GitHub broker smoke accepted.
-- Security checks: no Docker socket, AWS credential, GitHub App private key, or installation token entered a Developer container; the GitHub broker smoke performed no mutation.
-- Operational follow-up: restart the `overlord` systemd service after adding the two non-secret GitHub App identifiers so the long-running service inherits the updated environment.
+- Last verified: `2026-08-24`.
+- Verified against: live `overlord-prod-01`; accepted `Overlord/main` release `2afdd597c3264a2b5005342ef890ebbc51497251`; AWS Secrets Manager GitHub App path; live local Developer/OpenCode/OpenAI path; bounded Developer API; `GitHubBroker`; canonical task/run persistence; durable audit persistence.
+- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; exact-revision bounded Developer execution completed; final evidence and usage persisted; disposable workspace and container cleanup confirmed; live fail-closed GitHub broker smoke accepted.
+- Security checks: bounded API accepted only server-defined runtime configuration plus an exact revision; only `OPENAI_API_KEY` entered the Developer container; no Docker socket, AWS credential, GitHub App private key, or installation token entered a Developer container; the GitHub broker smoke performed no mutation.
+- Operational requirements: production bounded local clone requires service-visible `GIT_CONFIG_GLOBAL=/etc/overlord/gitconfig` with `safe.directory` entries for `/opt/overlord-source` and `/opt/overlord-source/.git`; restart the `overlord` systemd service after changing its environment.
 - Verified by: High Director.
