@@ -5,8 +5,8 @@ section: notes
 doc_type: note
 status: active
 created: 2026-08-19
-updated: 2026-08-24
-last_verified: 2026-08-24
+updated: 2026-08-28
+last_verified: 2026-08-28
 owner: High Director
 order: 152
 permalink: /projects/notes/overlord-phase-4-live-host/
@@ -34,7 +34,7 @@ Droplet class:        Basic / Regular SSD
 size:                 2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:           $24/month
 initial source release: 562ee774a56b89eda8c1f913abf6adf0981f9b13
-current verified release: 2afdd597c3264a2b5005342ef890ebbc51497251
+current verified release: 00d6472a3c006d2502ea1bd50a695028add9e3c4
 ```
 
 DigitalOcean improved metrics/monitoring is enabled. Managed Database and startup-script add-ons were not enabled.
@@ -42,6 +42,8 @@ DigitalOcean improved metrics/monitoring is enabled. Managed Database and startu
 ## Host access
 
 Administrative SSH uses a passphrase-protected Ed25519 key. The host has a separate repository deploy key installed on `Overlord` with write access disabled. The source checkout therefore does not require a GitHub password or personal access token.
+
+A dedicated repository-level GitHub Actions self-hosted runner named `overlord-prod-01` is also installed as a systemd service. It is used only by manually dispatched production operations workflows. Normal pull-request and `main` CI continue to run on GitHub-hosted runners.
 
 ## Running services
 
@@ -225,34 +227,85 @@ safe.directory=/opt/overlord-source/.git
 
 Both entries are required because `git clone --shared` evaluates the source Git directory as well as the working-tree path. This preserves the intended boundary: `/opt/overlord-source` stays root-managed and read-only to the service, while writable task state remains under `/var/lib/overlord/workspaces`.
 
+## Live DBOS-backed bounded Developer acceptance — 2026-08-28
+
+Production release `00d6472a3c006d2502ea1bd50a695028add9e3c4` is accepted for DBOS-backed bounded disposable Developer execution.
+
+The release was deployed by the dedicated `Deploy production` workflow on the `overlord-prod-01` self-hosted runner. The successful deployment required the exact fetched `origin/main` SHA, promoted `/opt/overlord-source` to `/opt/overlord/current`, ran `uv sync --locked`, restarted `overlord`, and passed both `/health` and `/ready`.
+
+The live acceptance then ran through the checked-in `Accept production bounded Developer` workflow. GitHub Actions run `33218577873` completed successfully. The probe created one fresh read-only canonical task and exercised:
+
+```text
+POST /tasks/{task_id}/bounded-developer-runs
+-> stable task + revision DBOS workflow identity
+-> DBOS bounded workflow
+-> canonical AgentRun recovery/reuse
+-> disposable task workspace
+-> disposable OpenCode Developer container
+-> OpenAI API
+-> result + usage + final evidence persistence
+-> DBOS workflow output/checkpoint persistence
+-> deterministic workspace/container cleanup
+```
+
+The same task and deployed revision were submitted twice. The second call reused the first canonical AgentRun rather than creating a duplicate.
+
+The acceptance workflow asserted all of the following before succeeding:
+
+```text
+TASK_STATUS=completed
+RUN_STATUS=completed
+REVISION_MATCH=true
+RUNTIME_STATE=idle
+EXTERNAL_SESSION_ID_NULL=true
+USAGE_PERSISTED=true
+FINAL_EVIDENCE_PERSISTED=true
+READ_ONLY_DIFF_COUNT=0
+CANONICAL_AGENT_RUN_COUNT=1
+RETRY_REUSED_AGENT_RUN=true
+DBOS_WORKFLOW_STATUS=SUCCESS
+DBOS_WORKFLOW_OUTPUT_PRESENT=true
+DBOS_STEP_CHECKPOINT_COUNT>=1
+WORKSPACE_CLEAN=true
+CONTAINER_CLEAN=true
+AUDIT_EVENTS=DEVELOPER_DISPATCH_CREATED,DEVELOPER_RUN_STARTED,DEVELOPER_RUN_COMPLETED
+```
+
+This proves that the production API is now using the DBOS-backed bounded path, that the durable workflow identity and checkpoint exist, and that retrying the same task + revision does not duplicate canonical control-plane state. It also confirms that the external disposable execution remains read-only for this acceptance and leaves no task-scoped local resources behind.
+
+The durability boundary remains unchanged: DBOS coordinates workflow durability/checkpointing, while canonical Task and AgentRun state remains owned by Overlord/PostgreSQL. GitHub mutation authority remains `GitHubPort -> GitHubBroker -> durable audit`; no GitHub App or AWS credentials entered the Developer container.
+
+## Automated production operations
+
+The production host now has a dedicated repository-level GitHub Actions runner named `overlord-prod-01`. The deployment workflow is manual-dispatch only and targets the custom `overlord-prod-01` runner label; ordinary CI does not execute on the production host.
+
+The deployment path now also publishes a sanitized diagnostic record on failure containing only deployment stage, exit code, target/source SHA, service state, and bounded tool/permission diagnostics. No application secrets, environment values, GitHub tokens, or model credentials are included.
+
+During automation setup, three operational defects were found and corrected through normal PR, exact-head CI, merge, and post-merge `main` gates:
+
+1. release promotion changed the persistent `.venv` ownership before `uv sync`; deployment now restores `.venv` ownership to `overlord:overlord` and owner write permissions;
+2. the GitHub runner could not traverse the protected production checkout directly; production-path `cd` and verification now run under the intended `overlord`/`sudo` account boundary;
+3. the initial health probe assumed zero startup latency after `systemctl start`; deployment now polls `/health` and `/ready` for bounded startup windows.
+
+These changes automate the already-established deployment path; they do not change the single-host architecture or Developer security boundaries.
+
 ## Next stage
 
 The major live Phase 4 plumbing milestones are now proven:
 
 1. local disposable Developer execution through OpenCode and OpenAI;
 2. GitHub mutation authority through `GitHubBroker`, exact-head policy, the GitHub App adapter, and durable audit;
-3. bounded task-scoped Developer execution through the production API with canonical run/task persistence, final evidence, usage, cleanup, and audit events.
+3. bounded task-scoped Developer execution through the production API with canonical run/task persistence, final evidence, usage, cleanup, and audit events;
+4. DBOS-backed bounded execution with stable workflow identity, persisted checkpoint/result, canonical AgentRun reuse on retry, and deterministic local resource cleanup;
+5. repository-controlled production deployment and acceptance through the dedicated self-hosted runner.
 
-The next implementation slice should add DBOS durability around bounded Developer invocation rather than add new infrastructure. The current bounded endpoint persists canonical state and audit records, but the HTTP-triggered execution itself is not yet a DBOS-recoverable workflow across control-plane process failure.
-
-Target direction:
-
-```text
-Manager / control-plane task lifecycle
--> DBOS durable bounded execution workflow
--> DeveloperWorkspaceExecutionService
--> DeveloperEnvironmentExecutionService
--> DeveloperAgentPort
--> GitHubBroker for repository mutations
-```
-
-Priorities are idempotent dispatch, restart/recovery behavior, and preserving the current provider/runtime-neutral ports and security boundaries. `REMOTE` Developer execution remains deferred until workload evidence justifies it.
+The next implementation work should build on this accepted single-host durable execution path rather than add new infrastructure. Remote Developer workers remain deferred until workload evidence justifies them. Provider/runtime-neutral ports and the `GitHubBroker` authority boundary remain the design constraints for the next slice.
 
 ## Verification record
 
-- Last verified: `2026-08-24`.
-- Verified against: live `overlord-prod-01`; accepted `Overlord/main` release `2afdd597c3264a2b5005342ef890ebbc51497251`; AWS Secrets Manager GitHub App path; live local Developer/OpenCode/OpenAI path; bounded Developer API; `GitHubBroker`; canonical task/run persistence; durable audit persistence.
-- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; exact-revision bounded Developer execution completed; final evidence and usage persisted; disposable workspace and container cleanup confirmed; live fail-closed GitHub broker smoke accepted.
+- Last verified: `2026-08-28`.
+- Verified against: live `overlord-prod-01`; accepted deployed release `00d6472a3c006d2502ea1bd50a695028add9e3c4`; DBOS-backed bounded Developer production acceptance run `33218577873`; AWS Secrets Manager GitHub App path; live local Developer/OpenCode/OpenAI path; bounded Developer API; `GitHubBroker`; canonical task/run persistence; durable audit persistence.
+- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; exact-revision bounded Developer execution completed; DBOS workflow status/output and step checkpoint persisted; retry reused one canonical AgentRun; final evidence and usage persisted; read-only diff was empty; disposable workspace and container cleanup confirmed; live fail-closed GitHub broker smoke accepted.
 - Security checks: bounded API accepted only server-defined runtime configuration plus an exact revision; only `OPENAI_API_KEY` entered the Developer container; no Docker socket, AWS credential, GitHub App private key, or installation token entered a Developer container; the GitHub broker smoke performed no mutation.
-- Operational requirements: production bounded local clone requires service-visible `GIT_CONFIG_GLOBAL=/etc/overlord/gitconfig` with `safe.directory` entries for `/opt/overlord-source` and `/opt/overlord-source/.git`; restart the `overlord` systemd service after changing its environment.
+- Operational requirements: production bounded local clone requires service-visible `GIT_CONFIG_GLOBAL=/etc/overlord/gitconfig` with `safe.directory` entries for `/opt/overlord-source` and `/opt/overlord-source/.git`; the persistent deployment `.venv` remains owned by `overlord`; production deploy/acceptance workflows target only the dedicated `overlord-prod-01` self-hosted runner.
 - Verified by: High Director.
