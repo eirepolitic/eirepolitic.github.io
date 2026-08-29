@@ -5,8 +5,8 @@ section: notes
 doc_type: note
 status: active
 created: 2026-08-28
-updated: 2026-08-28
-last_verified: 2026-08-28
+updated: 2026-08-29
+last_verified: 2026-08-29
 owner: High Director
 order: 149
 permalink: /projects/notes/overlord-developer-model-cost-routing-investigation/
@@ -21,6 +21,14 @@ tags:
 ---
 
 # Overlord — Developer Model Cost and Routing Investigation
+
+## Plain-English decision report
+
+For a less technical, option-by-option version of this research, see:
+
+- [Overlord — Developer Model Options Report](/projects/notes/overlord-developer-model-options-report/)
+
+That report explains the practical choices, tradeoffs, rough cost differences, and recommended next experiment without requiring implementation-level knowledge.
 
 ## Outcome
 
@@ -279,7 +287,7 @@ The detailed research, pricing sources, benchmark analysis, workload model, cost
 
 ## Verification Record
 
-- Last verified: `2026-08-28`.
+- Last verified: `2026-08-29`.
 - Verified against: current `Overlord/main`, canonical Phase 4 live-host note, recent Developer/DBOS PR history, current OpenCode documentation, and current provider pricing/model documentation.
 - Historical Phase 4 live acceptance records were not rewritten by this investigation.
 - Verified by: High Director.
