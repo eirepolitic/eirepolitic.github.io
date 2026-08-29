@@ -34,7 +34,7 @@ Droplet class:            Basic / Regular SSD
 size:                     2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:               $24/month
 initial source release:   562ee774a56b89eda8c1f913abf6adf0981f9b13
-current verified release: 1153368660e2f8e839c279bc9ae789e028985caf
+current verified release: f07ffa1ac1743a7f75b4415eab2a70852e528e2e
 ```
 
 DigitalOcean improved metrics/monitoring is enabled. Managed Database and startup-script add-ons were not enabled.
@@ -279,7 +279,67 @@ GITHUB_MUTATION=none
 
 The API snapshot's check identities were also compared with a direct production GitHub App read of check-runs for the exact persisted publication commit. Zero check-runs are explicitly not treated as terminal or successful.
 
-This observation summary is evidence only. It does **not** define which check names are required and it does **not** authorize merge. Required-check policy and merge authorization remain separate, fail-closed work.
+### Fail-closed merge evaluation — 2026-08-29
+
+Production release `f07ffa1ac1743a7f75b4415eab2a70852e528e2e` is accepted for refreshable, non-mutating bounded Developer merge evaluation.
+
+Implementation PR #65 merged as `d8fb7b9a7dfd70c97013cb2cc8b35e1468be4ac2`. Its exact-head CI #550, run `33277221034`, and post-merge `main` CI #551, run `33277289772`, were fully green.
+
+Production acceptance support PR #66 merged as the deployed release `f07ffa1ac1743a7f75b4415eab2a70852e528e2e`. Its exact-head CI #552, run `33277395683`, and post-merge `main` CI #553, run `33277454134`, were fully green. Deploy production #12, run `33277524943`, completed successfully on that exact release.
+
+The checked-in `Accept production Developer merge evaluation` workflow run `33277550160` completed successfully on the exact deployed SHA. It reused existing production evidence PR #61 and performed no GitHub mutation.
+
+The accepted operation is:
+
+```text
+POST /tasks/{task_id}/bounded-developer-merge-evaluations
+-> completed canonical publication + PR state
+-> latest canonical exact-head observation
+-> live PR read and exact head/base/state comparison
+-> fresh GitHub check-runs for persisted publication commit
+-> explicit server-owned required-check policy
+-> canonical merge-evaluation snapshot
+-> durable DEVELOPER_GITHUB_MERGE_EVALUATED audit event
+```
+
+The accepted production required-check policy is exactly:
+
+```text
+required checks: quality
+required cardinality: exactly one observed + exactly one live
+required status: completed
+required conclusion: success
+```
+
+The evaluator fails closed if any configured required check is missing, duplicated, pending, neutral, skipped, cancelled, failed, or otherwise not exactly `completed/success` in both canonical observation evidence and a fresh live GitHub read. It also denies evaluation when the live PR state, head branch, base branch, or head SHA no longer matches canonical publication/PR state.
+
+Production acceptance called the merge-evaluation endpoint twice and verified both evaluations were eligible. Each call performed fresh live reads and added a durable `DEVELOPER_GITHUB_MERGE_EVALUATED` audit event. The latest eligible result was persisted on the canonical AgentRun.
+
+Accepted evidence:
+
+```text
+TASK_ID=3e829b11-7bf6-490d-91f6-4f4c026bdc21
+AGENT_RUN_ID=93bd3aae-a51d-4f9f-8417-ab75a1dba160
+PULL_REQUEST_NUMBER=61
+PULL_REQUEST_STATE=open
+PULL_REQUEST_BASE=main
+EXACT_HEAD_SHA=92f9655d650ac64c99c6327eaf886ed3fc664052
+REQUIRED_CHECK=quality
+OBSERVED_COUNT=1
+LIVE_COUNT=1
+OBSERVED_STATUS=completed
+OBSERVED_CONCLUSION=success
+LIVE_STATUS=completed
+LIVE_CONCLUSION=success
+MERGE_ELIGIBLE=true
+DENIAL_REASONS=[]
+REFRESH_AUDIT_EVENTS_ADDED=2
+MAIN_HEAD_UNCHANGED=true
+PULL_REQUEST_UNCHANGED=true
+GITHUB_MUTATION=none
+```
+
+PR #61 remained open, non-draft, clean and unmerged after acceptance. The production `main` head was unchanged by both evaluation calls. Merge evaluation is therefore accepted as evidence/policy only; there is still no production merge-mutation operation.
 
 ## Automated production operations
 
@@ -299,6 +359,7 @@ bounded Developer run
 -> broker-controlled task branch + commit
 -> broker-controlled PR creation
 -> exact-head PR/check observation
+-> explicit required-check merge evaluation
 ```
 
 Mutation authority remains only:
@@ -307,35 +368,40 @@ Mutation authority remains only:
 GitHubPort -> GitHubBroker -> GitHub App adapter -> durable audit
 ```
 
-The check-observation operation itself is read-only and performs no GitHub mutation. PostgreSQL stores the latest canonical observation snapshot; durable audit preserves refresh history. DBOS remains appropriate for stable mutation coordination/results, but is deliberately not used to freeze changing external CI state.
+Check observation and merge evaluation are both read-only with respect to GitHub. PostgreSQL stores their latest canonical snapshots; durable audit preserves refresh/evaluation history. DBOS remains appropriate for stable mutation coordination/results, but is deliberately not used to freeze changing external CI or merge-evaluation state.
+
+No Developer container receives GitHub App credentials or GitHub mutation authority. No automatic or API-driven merge operation is currently accepted in production.
 
 ## Next stage
 
-The next implementation slice should define canonical required-check policy and a fail-closed **merge evaluation** that consumes exact-head live/canonical evidence. It should not immediately perform automatic merge.
+The next implementation slice may add a separate broker-controlled **merge mutation** only if it preserves the production-proven evaluation boundary. It should not let a previously eligible snapshot become an unconditional authorization token.
 
-A later, separate merge-mutation slice may be considered only after merge evaluation independently proves all of these conditions:
+A merge-mutation design should fail closed unless, immediately before mutation:
 
 1. PR is still open and targets the expected base branch;
 2. live PR head exactly equals the canonical publication commit;
-3. the latest observation is for that same exact head;
-4. required check identities are explicitly configured rather than inferred;
-5. every required check is present, terminal and acceptable;
-6. zero/missing/duplicate/ambiguous required checks fail closed;
-7. canonical publication/PR state still matches the live PR;
-8. merge evaluation and any later merge mutation are durably audited.
+3. canonical publication and PR state still match the live PR;
+4. a fresh merge evaluation for that exact head is eligible;
+5. required check identities remain explicitly configured;
+6. every required check is still present exactly once and `completed/success` in canonical observation and fresh live GitHub state;
+7. the mutation goes only through `GitHubPort -> GitHubBroker -> GitHub App adapter -> durable audit`;
+8. retry/recovery cannot create duplicate merge effects or treat an ambiguous GitHub response as success without verification;
+9. expected head SHA is supplied to the GitHub merge operation;
+10. the merge result and canonical completion/audit evidence are persisted and independently production-accepted.
 
 Remote Developer workers remain deferred until workload evidence justifies them.
 
 ## Verification record
 
 - Last verified: `2026-08-29`.
-- Current accepted production release: `1153368660e2f8e839c279bc9ae789e028985caf`.
-- Latest deploy: #11 / run `33273579895`, success.
-- Latest production acceptance: pull-request observation #1 / run `33273633409`, success.
-- Observation implementation: PR #63; exact-head CI #537 / `33273309548`; merge `a7be6ab05da4f3f424b0e1a0dc68b2fe4005e7cf`; post-merge CI #538 / `33273370609`.
-- Observation acceptance support: PR #64; exact-head CI #539 / `33273463606`; merge `1153368660e2f8e839c279bc9ae789e028985caf`; post-merge CI #540 / `33273529881`.
+- Current accepted production release: `f07ffa1ac1743a7f75b4415eab2a70852e528e2e`.
+- Latest deploy: #12 / run `33277524943`, success.
+- Latest production acceptance: merge evaluation #1 / run `33277550160`, success.
+- Merge-evaluation implementation: PR #65; exact-head CI #550 / `33277221034`; merge `d8fb7b9a7dfd70c97013cb2cc8b35e1468be4ac2`; post-merge CI #551 / `33277289772`.
+- Merge-evaluation acceptance support: PR #66; exact-head CI #552 / `33277395683`; merge `f07ffa1ac1743a7f75b4415eab2a70852e528e2e`; post-merge CI #553 / `33277454134`.
+- Accepted production required-check policy: exactly one `quality` check, `completed/success`, matched in both canonical observation and fresh live GitHub evidence.
 - Production evidence PR #61 remains open, non-draft and unmerged on base `main`, head `92f9655d650ac64c99c6327eaf886ed3fc664052`.
 - Production evidence task: `3e829b11-7bf6-490d-91f6-4f4c026bdc21`.
 - Production evidence AgentRun: `93bd3aae-a51d-4f9f-8417-ab75a1dba160`.
-- Security verification: no Docker socket, AWS credential, GitHub App private key, installation token, or GitHub mutation authority entered a Developer container; observation acceptance performed no GitHub mutation.
+- Security verification: no Docker socket, AWS credential, GitHub App private key, installation token, or GitHub mutation authority entered a Developer container; merge-evaluation acceptance performed no GitHub mutation and did not change `main`.
 - Verified by: High Director.
