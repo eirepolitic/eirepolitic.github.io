@@ -5,8 +5,8 @@ section: notes
 doc_type: note
 status: active
 created: 2026-08-19
-updated: 2026-08-28
-last_verified: 2026-08-28
+updated: 2026-08-29
+last_verified: 2026-08-29
 owner: High Director
 order: 152
 permalink: /projects/notes/overlord-phase-4-live-host/
@@ -34,7 +34,7 @@ Droplet class:           Basic / Regular SSD
 size:                    2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:              $24/month
 initial source release:  562ee774a56b89eda8c1f913abf6adf0981f9b13
-current verified release: c5915d4321efc45e5be86a84a745395c0a31d259
+current verified release: 506d4ad814411044bce771239a9daec9d8d7648a
 ```
 
 DigitalOcean improved metrics/monitoring is enabled. Managed Database and startup-script add-ons were not enabled.
@@ -327,6 +327,67 @@ Two production-discovered defects were corrected through normal PR, exact-head C
 
 This is the first live proof of an actual repository mutation through the accepted authority path. The acceptance created only a task-scoped branch and commit; it did not create a pull request and did not mutate `main`. Developer containers still receive no GitHub App private key, installation token, AWS credential, Docker socket, or GitHub mutation authority.
 
+## Live bounded Developer GitHub pull-request acceptance — 2026-08-29
+
+Production release `506d4ad814411044bce771239a9daec9d8d7648a` is accepted for broker-controlled bounded Developer pull-request creation.
+
+The release was deployed by `Deploy production` run `33265412832` and then exercised by the checked-in `Accept production Developer pull request` workflow on `overlord-prod-01`. GitHub Actions run `33265432312` completed successfully after verifying that `/opt/overlord-source` exactly matched the workflow SHA.
+
+The acceptance used a synthetic canonical completed bounded Developer `AgentRun`, published one harmless UTF-8 marker from the exact deployed revision, and then called the explicit PR endpoint twice:
+
+```text
+POST /tasks/{task_id}/bounded-developer-publications
+-> exact source revision publication
+-> deterministic task branch + publication commit
+
+POST /tasks/{task_id}/bounded-developer-pull-requests
+-> stable task + revision DBOS PR workflow identity
+-> completed publication metadata validation
+-> live task-branch head == persisted publication commit
+-> GitHubBroker.create_pull_request
+-> GitHub App PR creation / duplicate-recovery boundary
+-> canonical AgentRun github_pull_request metadata
+-> durable PR audit events
+-> DBOS output/checkpoint persistence
+```
+
+Accepted externally visible evidence:
+
+```text
+SOURCE_REVISION=506d4ad814411044bce771239a9daec9d8d7648a
+TASK_ID=3e829b11-7bf6-490d-91f6-4f4c026bdc21
+AGENT_RUN_ID=93bd3aae-a51d-4f9f-8417-ab75a1dba160
+TASK_BRANCH=overlord/task-3e829b11-7bf6-490d-91f6-4f4c026bdc21
+PUBLICATION_COMMIT=92f9655d650ac64c99c6327eaf886ed3fc664052
+MARKER_PATH=overlord-acceptance/pull-request-3e829b11-7bf6-490d-91f6-4f4c026bdc21.txt
+PULL_REQUEST_NUMBER=61
+PULL_REQUEST_STATE=open
+PULL_REQUEST_DRAFT=false
+PULL_REQUEST_BASE=main
+PUBLICATION_WORKFLOW_ID=developer-github-publication:3e829b11-7bf6-490d-91f6-4f4c026bdc21:20d188e66705c607
+PULL_REQUEST_WORKFLOW_ID=developer-github-pull-request:3e829b11-7bf6-490d-91f6-4f4c026bdc21:20d188e66705c607
+PULL_REQUEST_RETRY_REUSED_RESULT=true
+```
+
+The acceptance workflow independently verified that PR #61 remained open and non-draft, targeted `main`, used the exact deterministic task branch, and had head SHA `92f9655d650ac64c99c6327eaf886ed3fc664052`. The marker file on that branch independently confirmed task `3e829b11-7bf6-490d-91f6-4f4c026bdc21` and source revision `506d4ad814411044bce771239a9daec9d8d7648a`.
+
+The same PR request was submitted twice and returned the same durable result. The workflow also verified canonical `AgentRun.metadata.github_publication.state=completed`, canonical `AgentRun.metadata.github_pull_request.state=completed`, matching persisted publication commit and PR number, DBOS `SUCCESS` with persisted output/checkpoint for both workflow identities, and this ordered audit sequence:
+
+```text
+DEVELOPER_GITHUB_PUBLICATION_PREPARED
+github.branch.create.requested
+github.branch.create.completed
+github.commit_files.requested
+github.commit_files.completed
+DEVELOPER_GITHUB_PUBLICATION_COMPLETED
+DEVELOPER_GITHUB_PULL_REQUEST_PREPARED
+github.pull_request.create.requested
+github.pull_request.create.completed
+DEVELOPER_GITHUB_PULL_REQUEST_COMPLETED
+```
+
+PR #61 is intentionally preserved open and unmerged as production evidence. This acceptance proves PR creation only; no merge evaluation or merge mutation was invoked, and `main` was not modified by the acceptance task. Developer containers still receive no GitHub App private key, installation token, AWS credential, Docker socket, or GitHub mutation authority.
+
 ## Automated production operations
 
 The production host now has a dedicated repository-level GitHub Actions runner named `overlord-prod-01`. The deployment workflow is manual-dispatch only and targets the custom `overlord-prod-01` runner label; ordinary CI does not execute on the production host.
@@ -350,15 +411,16 @@ The major live Phase 4 plumbing milestones are now proven:
 3. bounded task-scoped Developer execution through the production API with canonical run/task persistence, final evidence, usage, cleanup, and audit events;
 4. DBOS-backed bounded execution with stable workflow identity, persisted checkpoint/result, canonical AgentRun reuse on retry, and deterministic local resource cleanup;
 5. bounded Developer GitHub publication with validated host-observed change evidence, deterministic task branch creation from exact source revision, broker-authorized commit, canonical publication metadata/audit, DBOS retry reuse, and live GitHub commit verification;
-6. repository-controlled production deployment and acceptance through the dedicated self-hosted runner.
+6. broker-controlled pull-request creation with exact publication-head validation, canonical PR metadata/audit, stable DBOS PR workflow identity, retry reuse, and live open-PR verification;
+7. repository-controlled production deployment and acceptance through the dedicated self-hosted runner.
 
-The next implementation work should extend this accepted publication path to broker-controlled pull-request creation and later exact-head merge policy, rather than add new infrastructure. Automatic merge should remain separate until PR creation and CI/check observation are independently proven. Remote Developer workers remain deferred until workload evidence justifies them. Provider/runtime-neutral ports and the `GitHubBroker` authority boundary remain the design constraints for the next slice.
+The next implementation work should observe the created PR's exact-head CI/check state through the provider-neutral GitHub boundary and persist that evidence before adding any merge operation. Automatic merge should remain a separate later slice with fail-closed exact-head, required-check, and canonical-state policy. Remote Developer workers remain deferred until workload evidence justifies them. Provider/runtime-neutral ports and the `GitHubBroker` authority boundary remain the design constraints for the next slice.
 
 ## Verification record
 
-- Last verified: `2026-08-28`.
-- Verified against: live `overlord-prod-01`; accepted deployed release `c5915d4321efc45e5be86a84a745395c0a31d259`; DBOS-backed bounded Developer acceptance run `33218577873`; Developer GitHub publication acceptance run `33226001121`; accepted task branch `overlord/task-79af58db-2ae4-43e1-b9e0-b0adc6b000ac`; accepted publication commit `aece6684ae189c16cb98d613be3dc9cba5819769`; AWS Secrets Manager GitHub App path; live local Developer/OpenCode/OpenAI path; bounded Developer API; `GitHubBroker`; canonical task/run persistence; durable audit persistence.
-- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; exact-revision bounded Developer execution completed; DBOS workflow status/output and step checkpoint persisted; bounded execution retry reused one canonical AgentRun; publication retry reused the same durable result; final evidence and usage persisted; disposable workspace and container cleanup confirmed; live publication branch head and marker content matched canonical evidence.
-- Security checks: bounded APIs accepted only server-defined runtime configuration plus an exact revision; only `OPENAI_API_KEY` entered Developer containers; no Docker socket, AWS credential, GitHub App private key, or installation token entered a Developer container; the accepted publication mutation occurred only through `GitHubPort -> GitHubBroker -> GitHub App adapter -> durable audit`; no acceptance PR or `main` mutation occurred.
+- Last verified: `2026-08-29`.
+- Verified against: live `overlord-prod-01`; accepted deployed release `506d4ad814411044bce771239a9daec9d8d7648a`; DBOS-backed bounded Developer acceptance run `33218577873`; Developer GitHub publication acceptance run `33226001121`; Developer pull-request acceptance run `33265432312`; accepted PR #61; accepted task branch `overlord/task-3e829b11-7bf6-490d-91f6-4f4c026bdc21`; accepted publication commit `92f9655d650ac64c99c6327eaf886ed3fc664052`; AWS Secrets Manager GitHub App path; live local Developer/OpenCode/OpenAI path; bounded Developer API; `GitHubBroker`; canonical task/run persistence; durable audit persistence.
+- Runtime checks: PostgreSQL healthy; Overlord `/health` OK; Overlord `/ready` ready; exact-revision bounded Developer execution completed; DBOS workflow status/output and step checkpoint persisted; bounded execution retry reused one canonical AgentRun; publication retry reused the same durable result; PR creation retry reused the same durable result; final evidence and usage persisted; disposable workspace and container cleanup confirmed; live publication branch head and marker content matched canonical evidence; live PR #61 remained open/non-draft on base `main` with exact publication head SHA.
+- Security checks: bounded APIs accepted only server-defined runtime configuration plus an exact revision; only `OPENAI_API_KEY` entered Developer containers; no Docker socket, AWS credential, GitHub App private key, or installation token entered a Developer container; accepted repository/PR mutations occurred only through `GitHubPort -> GitHubBroker -> GitHub App adapter -> durable audit`; acceptance created no merge operation and did not mutate `main`.
 - Operational requirements: production bounded local clone requires service-visible `GIT_CONFIG_GLOBAL=/etc/overlord/gitconfig` with `safe.directory` entries for `/opt/overlord-source` and `/opt/overlord-source/.git`; the persistent deployment `.venv` remains owned by `overlord`; production deploy/acceptance workflows target only the dedicated `overlord-prod-01` self-hosted runner.
 - Verified by: High Director.
