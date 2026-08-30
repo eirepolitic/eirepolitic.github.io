@@ -34,19 +34,20 @@ Droplet class:              Basic / Regular SSD
 size:                       2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:                 $24/month
 initial source release:     562ee774a56b89eda8c1f913abf6adf0981f9b13
-current deployed release:   547275ad50ce34aad6a4a9b1c23428a2113ef8be
-current repository main:    f4cc17aeeb22657a1b58aefb0ea99994b5c9b882
+current deployed release:   fd19f6ce74d8907280fcb019d6cefe16d82adb96
+current repository main:    48fe44579c834554d6de091b79c1d400ad02627c
 ```
 
-The accepted architecture remains:
+The accepted architecture is:
 
 ```text
 PostgreSQL
   -> canonical Conversation / WorkRequest / Plan / Task / AgentRun / audit state
+  -> canonical repository_deliveries state after verified merge
 
 DBOS
   -> durable coordination, workflow outputs and checkpoints
-  -> not canonical task/run state
+  -> not canonical task/run/delivery state
 
 Developer execution
   -> local disposable Docker
@@ -165,7 +166,7 @@ PULL_REQUEST_STATE=open
 PULL_REQUEST_BASE=main
 ```
 
-PR #61 is still open and unmerged. It was not used for the later merge-mutation acceptance.
+PR #61 is still open and unmerged. It was not used for either live merge acceptance.
 
 ### Exact-head pull-request check observation — 2026-08-29
 
@@ -202,7 +203,7 @@ Evaluation fails closed on missing, duplicate, pending, neutral, skipped, cancel
 
 ### Broker-controlled Developer merge mutation — 2026-08-29
 
-Production now accepts one explicit bounded Developer merge mutation path.
+Production accepts one explicit bounded Developer merge mutation path.
 
 Implementation PR #67:
 
@@ -292,7 +293,94 @@ The repeated merge API call reused the stable DBOS result and did not create a s
 
 After mutation, repository `main` advanced exactly to `f4cc17aeeb22657a1b58aefb0ea99994b5c9b882`, and canonical post-mutation CI #580, run `33282215741`, completed fully green on that exact SHA.
 
-The production service remains deployed from `547275ad50ce34aad6a4a9b1c23428a2113ef8be`; the later `f4cc17ae...` repository commit contains only the accepted merge marker change and has not been separately deployed.
+### First-class repository delivery reconciliation — 2026-08-29
+
+Post-merge delivery is now canonical relational PostgreSQL state rather than living only in AgentRun metadata.
+
+Implementation PR #70:
+
+```text
+final exact head: 589043c186959d5fbe83a86869e141e4bfb4deb9
+exact-head CI:     #585 / run 33289935716 / success
+merge:             e57a29a30dc5b80e2836072785689bc492dcc6e6
+post-merge CI:     #586 / run 33289988975 / success
+migration:         0003_repository_deliveries
+```
+
+Production acceptance support PR #71:
+
+```text
+final exact head: 3a9a628f23523d998ef7dc68f3894f772be5edc5
+exact-head CI:     #587 / run 33290111837 / success
+merge/release:     fd19f6ce74d8907280fcb019d6cefe16d82adb96
+post-merge CI:     #588 / run 33290165959 / success
+deploy:            #14 / run 33290221186 / success
+acceptance:        #1 / run 33290241151 / success
+```
+
+Migration `0003_repository_deliveries` adds one immutable canonical delivery row per Task with relational links to WorkRequest, Plan and AgentRun plus:
+
+```text
+source revision
+repository
+pull request number
+head branch / base branch
+publication head SHA
+merge SHA / merge method
+merged status / merged timestamp
+```
+
+The durable Developer merge step now returns only after post-merge reconciliation runs. If DBOS retries after GitHub merge completion, the existing merge result is reused and reconciliation is idempotent by Task. Existing delivery identity must match exactly or reconciliation fails closed. `DEVELOPER_GITHUB_DELIVERY_RECONCILED` is emitted only on first creation, so a DBOS step replay cannot create duplicate delivery audit evidence.
+
+Lifecycle reconciliation preserves the existing conservative completion rule:
+
+```text
+verified merge
+-> canonical repository_deliveries row
+-> Task = completed
+-> promote newly unblocked tasks
+-> Plan = completed only when all plan tasks are completed
+-> WorkRequest = completed only when all request tasks are completed
+```
+
+#### Live reconciliation acceptance evidence
+
+The acceptance deliberately seeded a fresh synthetic Task in `validation`, its Plan in `active`, and its WorkRequest in `running`, while keeping the bounded AgentRun completed. The normal accepted publication / PR / check / evaluation / merge path then ran unchanged.
+
+```text
+SOURCE_REVISION=fd19f6ce74d8907280fcb019d6cefe16d82adb96
+TASK_ID=38dd9023-0006-40a1-8b05-84bae8d39aed
+AGENT_RUN_ID=dde0a884-b5b1-4701-94cc-01977fb14b5e
+TASK_BRANCH=overlord/task-38dd9023-0006-40a1-8b05-84bae8d39aed
+PUBLICATION_COMMIT=c48e688936b2b2b505597a81bf28bb2d13e28aa0
+PULL_REQUEST_NUMBER=72
+PULL_REQUEST_BASE=main
+REQUIRED_CHECK=quality
+MERGE_METHOD=squash
+MERGE_SHA=48fe44579c834554d6de091b79c1d400ad02627c
+INITIAL_TASK_STATUS=validation
+FINAL_TASK_STATUS=completed
+INITIAL_PLAN_STATUS=active
+FINAL_PLAN_STATUS=completed
+INITIAL_WORK_REQUEST_STATUS=running
+FINAL_WORK_REQUEST_STATUS=completed
+REPOSITORY_DELIVERY_COUNT=1
+RECONCILIATION_AUDIT_COUNT=1
+```
+
+PR #72's exact publication head passed canonical CI #589, run `33290256425`, before mutation. The production acceptance completed successfully and verified:
+
+- exactly one relational `repository_deliveries` row for the Task;
+- delivery identity matched the accepted AgentRun, source revision, repository, PR #72, branch/base, publication head, merge SHA and squash method;
+- exactly one `DEVELOPER_GITHUB_DELIVERY_RECONCILED` audit event with canonical WorkRequest/Task correlation;
+- the Task transitioned `validation -> completed`;
+- the single-task Plan transitioned `active -> completed`;
+- the single-task WorkRequest transitioned `running -> completed`;
+- the repeated merge API call reused the stable DBOS result and did not create a second merge or reconciliation audit.
+
+After acceptance, repository `main` advanced exactly to `48fe44579c834554d6de091b79c1d400ad02627c`. Canonical post-mutation CI #590, run `33290312959`, completed fully green on that exact SHA.
+
+The production service remains deployed from `fd19f6ce74d8907280fcb019d6cefe16d82adb96`; `48fe4457...` is the accepted harmless marker merge and has not been separately deployed. Historical evidence PR #61 remains open and unmerged.
 
 ## Current authority boundary
 
@@ -306,7 +394,9 @@ bounded Developer run
 -> exact-head PR/check observation
 -> explicit required-check merge evaluation
 -> broker-controlled exact-head squash merge
--> canonical merge completion + durable DBOS result
+-> canonical merge completion + stable DBOS result
+-> canonical relational repository delivery
+-> Task / Plan / WorkRequest lifecycle reconciliation
 ```
 
 GitHub mutations remain confined to:
@@ -317,31 +407,32 @@ GitHubPort -> GitHubBroker -> GitHub App adapter -> durable audit
 
 No Developer container receives GitHub App credentials or GitHub mutation authority.
 
-Observation and merge evaluation remain refreshable read/evidence operations. Publication, PR creation and merge mutation use stable DBOS task+revision workflow identities for durable result reuse.
+Observation and merge evaluation remain refreshable read/evidence operations. Publication, PR creation and merge mutation use stable DBOS task+revision workflow identities for durable result reuse. PostgreSQL is canonical for lifecycle and delivery state.
 
 ## Next stage
 
-The core single-host GitHub lifecycle is now production-proven. The next slices should focus on orchestration and operational hardening rather than adding another mutation primitive.
+The core single-host GitHub lifecycle and post-merge delivery reconciliation are production-proven. The next slices should focus on orchestration and operational hardening rather than another mutation primitive.
 
 Priority candidates:
 
-1. connect the accepted run -> publish -> PR -> observe -> evaluate -> merge stages into one explicit Manager-controlled lifecycle with clear human/automation policy boundaries;
-2. add a first-class post-merge reconciliation state so canonical WorkRequest/Plan/Task state records the accepted merge SHA and downstream completion without relying only on AgentRun metadata;
+1. connect run -> publish -> PR -> observe -> evaluate -> merge -> reconcile into one explicit Manager-controlled lifecycle with clear human/automation policy boundaries;
+2. change GitHub-backed bounded execution semantics so successful code execution moves the Task to `validation` rather than prematurely to `completed`, then let verified delivery reconciliation own final completion;
 3. define cleanup/retention policy for merged task branches and acceptance markers;
-4. add production evidence for controlled failure/recovery around an interrupted merge workflow without weakening exact-head checks;
+4. add production evidence for controlled failure/recovery around an interrupted merge/reconciliation workflow without weakening exact-head checks;
 5. continue model-neutral Developer replay/cost-routing work separately from GitHub mutation authority;
 6. keep remote Developer workers deferred until workload evidence justifies them.
 
 ## Verification record
 
 - Last verified: `2026-08-29`.
-- Current deployed production release: `547275ad50ce34aad6a4a9b1c23428a2113ef8be`.
-- Current accepted repository `main`: `f4cc17aeeb22657a1b58aefb0ea99994b5c9b882`.
-- Latest deploy: #13 / run `33282143267`, success.
-- Latest production acceptance: Developer merge #1 / run `33282161767`, success.
-- Accepted merge implementation: PR #67; exact-head CI #564 / `33280263450`; merge `4db60d9b041eca4a83e0d86bb1d0c7759f7d8b27`; post-merge CI #565 / `33280323531`.
-- Accepted merge support/release: PR #68; exact-head CI #576 / `33280674185`; release `547275ad50ce34aad6a4a9b1c23428a2113ef8be`; post-merge CI #578 / `33282090550`.
-- Live acceptance PR #69: exact head `3e01a2b1ac06e81cf9bb49a1c3e85e4301d8efed`; CI #579 / `33282170650`; merged by Overlord to `f4cc17aeeb22657a1b58aefb0ea99994b5c9b882`; post-mutation CI #580 / `33282215741` green.
+- Current deployed production release: `fd19f6ce74d8907280fcb019d6cefe16d82adb96`.
+- Current accepted repository `main`: `48fe44579c834554d6de091b79c1d400ad02627c`.
+- Latest deploy: #14 / run `33290221186`, success.
+- Latest production acceptance: repository delivery reconciliation #1 / run `33290241151`, success.
+- Accepted reconciliation implementation: PR #70; exact-head CI #585 / `33289935716`; merge `e57a29a30dc5b80e2836072785689bc492dcc6e6`; post-merge CI #586 / `33289988975`.
+- Accepted reconciliation support/release: PR #71; exact-head CI #587 / `33290111837`; release `fd19f6ce74d8907280fcb019d6cefe16d82adb96`; post-merge CI #588 / `33290165959`.
+- Live reconciliation PR #72: exact head `c48e688936b2b2b505597a81bf28bb2d13e28aa0`; CI #589 / `33290256425`; merged by Overlord to `48fe44579c834554d6de091b79c1d400ad02627c`; post-mutation CI #590 / `33290312959` green.
+- Canonical delivery evidence: exactly one `repository_deliveries` row and exactly one `DEVELOPER_GITHUB_DELIVERY_RECONCILED` audit for the live Task.
 - Historical evidence PR #61 remains open and unmerged.
 - Accepted required-check policy: exactly one `quality` check, `completed/success`, matched in canonical observation and fresh live GitHub evidence.
 - Security verification: no Docker socket, AWS credential, GitHub App private key, installation token or GitHub mutation authority entered a Developer container.
