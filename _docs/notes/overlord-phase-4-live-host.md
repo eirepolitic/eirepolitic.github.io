@@ -25,28 +25,27 @@ tags:
 The first always-on Overlord MVP host is provisioned and running on DigitalOcean.
 
 ```text
-project:                  Overlord
-environment:              production
-host name:                overlord-prod-01
-region:                   NYC3
-OS:                       Ubuntu 24.04 LTS x64
-Droplet class:            Basic / Regular SSD
-size:                     2 vCPU / 4 GiB RAM / 80 GiB SSD
-base price:               $24/month
-initial source release:   562ee774a56b89eda8c1f913abf6adf0981f9b13
-current verified release: f07ffa1ac1743a7f75b4415eab2a70852e528e2e
+project:                    Overlord
+environment:                production
+host name:                  overlord-prod-01
+region:                     NYC3
+OS:                         Ubuntu 24.04 LTS x64
+Droplet class:              Basic / Regular SSD
+size:                       2 vCPU / 4 GiB RAM / 80 GiB SSD
+base price:                 $24/month
+initial source release:     562ee774a56b89eda8c1f913abf6adf0981f9b13
+current deployed release:   547275ad50ce34aad6a4a9b1c23428a2113ef8be
+current repository main:    f4cc17aeeb22657a1b58aefb0ea99994b5c9b882
 ```
 
-DigitalOcean improved metrics/monitoring is enabled. Managed Database and startup-script add-ons were not enabled.
-
-The accepted architecture remains unchanged:
+The accepted architecture remains:
 
 ```text
 PostgreSQL
   -> canonical Conversation / WorkRequest / Plan / Task / AgentRun / audit state
 
 DBOS
-  -> durable coordination, workflow output and checkpoints
+  -> durable coordination, workflow outputs and checkpoints
   -> not canonical task/run state
 
 Developer execution
@@ -65,9 +64,9 @@ Remote Developer workers remain deferred.
 
 ## Host and security boundary
 
-Administrative SSH uses a passphrase-protected Ed25519 key. The host has a separate repository deploy key installed on `Overlord` with write access disabled. A repository-level GitHub Actions self-hosted runner named `overlord-prod-01` is installed as a systemd service and is used only by manually dispatched production operations workflows. Normal pull-request and `main` CI continue to run on GitHub-hosted runners.
+Administrative SSH uses a passphrase-protected Ed25519 key. The host has a separate read-only repository deploy key. A repository-level GitHub Actions self-hosted runner named `overlord-prod-01` is installed as a systemd service and is used only by manually dispatched production operations workflows. Normal pull-request and `main` CI run on GitHub-hosted runners.
 
-PostgreSQL 17 runs in Docker and binds only to host loopback. The Overlord control plane runs as an enabled systemd service and binds only to `127.0.0.1:8000`. Production health and readiness checks are part of the accepted deployment workflow.
+PostgreSQL 17 runs in Docker and binds only to host loopback. The Overlord control plane runs as an enabled systemd service and binds only to `127.0.0.1:8000`. Production deployment verifies the exact requested SHA plus service health/readiness.
 
 The production control plane obtains GitHub App authority through:
 
@@ -78,15 +77,15 @@ DigitalOcean Overlord
 -> overlord/production/github-app
 ```
 
-Developer containers receive only the model credential needed for the bounded run. They do not receive the Docker socket, GitHub App private key, installation token, AWS credentials, PostgreSQL credentials, SSH private keys, broad host filesystem access, or broad Linux privileges.
+Developer containers receive only the model credential needed for their bounded run. They do not receive the Docker socket, GitHub App private key, installation token, AWS credentials, PostgreSQL credentials, SSH private keys, broad host filesystem access, or broad Linux privileges.
 
-The production source checkout remains root-managed and read-only to the `overlord` service account. Bounded local clone requires service-visible `GIT_CONFIG_GLOBAL=/etc/overlord/gitconfig` with trusted entries for `/opt/overlord-source` and `/opt/overlord-source/.git`.
+Production source is root-managed under `/opt/overlord-source`, deployed code is `/opt/overlord/current`, runtime environment is `/etc/overlord/overlord.env`, and Developer workspaces are rooted at `/var/lib/overlord/workspaces`.
 
 ## Accepted live milestones
 
 ### Local disposable Developer execution — 2026-08-20
 
-Production proved the local execution chain:
+Production proved:
 
 ```text
 Overlord composition
@@ -99,13 +98,11 @@ Overlord composition
 -> automatic cleanup
 ```
 
-The smoke test confirmed workspace access, bounded model execution, usage persistence, and automatic container cleanup while injecting only `OPENAI_API_KEY` into the Developer container.
+Only the model credential entered the Developer container.
 
-Two runtime defects were corrected through normal PR and CI gates before acceptance: OpenCode readiness now uses `/global/health` instead of a raw TCP-connect probe, and an absent aggregate session-status entry is normalized to `idle` according to the accepted runtime semantics.
+### GitHub App broker/audit path — 2026-08-20
 
-### GitHub App broker/audit read path — 2026-08-20
-
-Production proved the credential and authority path:
+Production proved the credential and authority chain:
 
 ```text
 production control plane
@@ -114,74 +111,34 @@ production control plane
 -> short-lived installation token
 -> GitHub API
 -> GitHubBroker
--> exact-head policy evaluation
 -> durable audit
 ```
 
-The smoke test deliberately used a fail-closed merge policy sentinel and performed no repository mutation. Developer containers received no GitHub/AWS credentials.
+The initial smoke test deliberately used a fail-closed policy and performed no mutation.
 
 ### Bounded Developer API — 2026-08-24
 
-Production accepted the bounded API path:
-
-```text
-POST /tasks/{task_id}/bounded-developer-runs
--> server-owned model credential loading
--> BoundedDeveloperExecutionService
--> canonical Task + AgentRun persistence
--> disposable task workspace
--> disposable OpenCode Developer container
--> OpenAI API
--> evidence / usage persistence
--> cleanup
--> durable audit
-```
-
-The API caller supplies only the exact source revision. Post-run acceptance verified completed task/run state, final evidence, usage, no residual task workspace, no residual task-scoped Developer container, and the ordered Developer dispatch/start/completion audit events.
+`POST /tasks/{task_id}/bounded-developer-runs` was accepted with server-owned model credential loading, canonical Task/AgentRun persistence, disposable workspace/container execution, evidence/usage persistence, cleanup and durable audit.
 
 ### DBOS-backed bounded Developer execution — 2026-08-28
 
-Production release `00d6472a3c006d2502ea1bd50a695028add9e3c4` accepted the DBOS-backed bounded execution path. Acceptance workflow run `33218577873` verified:
-
-- stable task + revision DBOS workflow identity;
-- one canonical AgentRun reused by the same task/revision retry;
-- DBOS workflow `SUCCESS` with persisted output and at least one checkpoint;
-- canonical Task/AgentRun state remains in PostgreSQL;
-- final evidence and usage persisted;
-- workspace/container cleanup completed;
-- no GitHub mutation occurred.
+Production release `00d6472a3c006d2502ea1bd50a695028add9e3c4` and acceptance run `33218577873` proved stable task+revision workflow identity, one canonical AgentRun, DBOS `SUCCESS` with output/checkpoint, PostgreSQL canonical state, cleanup and no GitHub mutation.
 
 ### Bounded Developer GitHub publication — 2026-08-28
 
-Production release `c5915d4321efc45e5be86a84a745395c0a31d259` accepted durable bounded Developer GitHub publication. Acceptance workflow run `33226001121` verified:
+Production release `c5915d4321efc45e5be86a84a745395c0a31d259` and acceptance run `33226001121` proved durable publication through `GitHubBroker`.
+
+Accepted evidence included:
 
 ```text
-POST /tasks/{task_id}/bounded-developer-publications
--> stable task + revision DBOS publication workflow
--> canonical completed bounded AgentRun
--> host-observed workspace-change validation
--> GitHubBroker policy
--> GitHub App adapter
--> deterministic task branch from exact source SHA
--> broker-controlled commit_files
--> canonical publication metadata
--> durable audit
--> DBOS output/checkpoint
-```
-
-Accepted evidence:
-
-```text
-SOURCE_REVISION=c5915d4321efc45e5be86a84a745395c0a31d259
 TASK_ID=79af58db-2ae4-43e1-b9e0-b0adc6b000ac
 TASK_BRANCH=overlord/task-79af58db-2ae4-43e1-b9e0-b0adc6b000ac
 PUBLICATION_COMMIT=aece6684ae189c16cb98d613be3dc9cba5819769
-MARKER_PATH=overlord-acceptance/publication-79af58db-2ae4-43e1-b9e0-b0adc6b000ac.txt
 DBOS_WORKFLOW_ID=developer-github-publication:79af58db-2ae4-43e1-b9e0-b0adc6b000ac:a726c7b72c4a8524
 RETRY_REUSED_RESULT=true
 ```
 
-The ordered publication audit sequence was:
+Ordered mutation audit:
 
 ```text
 DEVELOPER_GITHUB_PUBLICATION_PREPARED
@@ -192,166 +149,154 @@ github.commit_files.completed
 DEVELOPER_GITHUB_PUBLICATION_COMPLETED
 ```
 
-Production also proved that canonical short repository refs such as `Overlord` can remain provider-neutral: the credentialed GitHub App adapter resolves them against the App installation's accessible repository list and fails closed if no unique match exists.
-
 ### Broker-controlled Developer pull-request creation — 2026-08-29
 
-Production release `506d4ad814411044bce771239a9daec9d8d7648a` accepted explicit bounded pull-request creation. Deployment run `33265412832` and acceptance run `33265432312` proved:
+Production release `506d4ad814411044bce771239a9daec9d8d7648a`, deploy run `33265412832`, and acceptance run `33265432312` proved explicit PR creation through `GitHubBroker` with stable DBOS retry behavior.
+
+Long-lived evidence remains:
 
 ```text
-POST /tasks/{task_id}/bounded-developer-pull-requests
--> completed publication metadata validation
--> live task branch head == persisted publication commit
--> GitHubBroker.create_pull_request
--> GitHub App PR creation / duplicate recovery
--> canonical AgentRun github_pull_request metadata
--> durable PR audit
--> stable DBOS PR workflow result/checkpoint
-```
-
-Accepted evidence:
-
-```text
-SOURCE_REVISION=506d4ad814411044bce771239a9daec9d8d7648a
 TASK_ID=3e829b11-7bf6-490d-91f6-4f4c026bdc21
 AGENT_RUN_ID=93bd3aae-a51d-4f9f-8417-ab75a1dba160
+PULL_REQUEST_NUMBER=61
 TASK_BRANCH=overlord/task-3e829b11-7bf6-490d-91f6-4f4c026bdc21
 PUBLICATION_COMMIT=92f9655d650ac64c99c6327eaf886ed3fc664052
-PULL_REQUEST_NUMBER=61
 PULL_REQUEST_STATE=open
-PULL_REQUEST_DRAFT=false
 PULL_REQUEST_BASE=main
-PUBLICATION_WORKFLOW_ID=developer-github-publication:3e829b11-7bf6-490d-91f6-4f4c026bdc21:20d188e66705c607
-PULL_REQUEST_WORKFLOW_ID=developer-github-pull-request:3e829b11-7bf6-490d-91f6-4f4c026bdc21:20d188e66705c607
-PULL_REQUEST_RETRY_REUSED_RESULT=true
 ```
 
-The PR audit sequence appended:
-
-```text
-DEVELOPER_GITHUB_PULL_REQUEST_PREPARED
-github.pull_request.create.requested
-github.pull_request.create.completed
-DEVELOPER_GITHUB_PULL_REQUEST_COMPLETED
-```
-
-PR #61 is intentionally preserved open and unmerged as production evidence. No merge operation was invoked.
+PR #61 is still open and unmerged. It was not used for the later merge-mutation acceptance.
 
 ### Exact-head pull-request check observation — 2026-08-29
 
-Production release `1153368660e2f8e839c279bc9ae789e028985caf` is accepted for refreshable exact-head pull-request check observation.
+Production release `1153368660e2f8e839c279bc9ae789e028985caf` accepted refreshable exact-head check observation. Feature PR #63 and ops PR #64 passed exact-head and post-merge CI; deploy run `33273579895` and acceptance run `33273633409` were successful.
 
-Implementation PR #63 merged as `a7be6ab05da4f3f424b0e1a0dc68b2fe4005e7cf`. Its exact-head CI #537, run `33273309548`, and post-merge `main` CI #538, run `33273370609`, were fully green.
-
-Production acceptance support PR #64 merged as the deployed release `1153368660e2f8e839c279bc9ae789e028985caf`. Its exact-head CI #539, run `33273463606`, and post-merge `main` CI #540, run `33273529881`, were fully green. Deploy production #11, run `33273579895`, completed successfully on that exact release.
-
-The checked-in `Accept production Developer pull request observation` workflow run `33273633409` then completed successfully on the exact deployed SHA. It reused existing production evidence PR #61 and performed no GitHub mutation.
-
-The accepted operation is:
+The accepted read path is:
 
 ```text
 POST /tasks/{task_id}/bounded-developer-pull-request-observations
--> completed publication + PR canonical metadata
--> live PR must still be open
--> live PR head/base must match canonical publication/PR state
--> GitHubPort.list_checks(exact persisted publication commit SHA)
--> latest observation snapshot persisted on canonical AgentRun
--> durable observation audit event
+-> completed canonical publication + PR metadata
+-> live PR exact head/base/state verification
+-> GitHub check-runs for exact persisted publication SHA
+-> latest canonical observation snapshot
+-> durable observation audit
 ```
 
-The production acceptance called the observation endpoint twice. Both calls performed fresh GitHub reads and each added a durable `DEVELOPER_GITHUB_PULL_REQUEST_CHECKS_OBSERVED` audit event. This proves observation is intentionally refreshable rather than frozen behind one stable DBOS result.
-
-The acceptance independently verified all of the following:
-
-```text
-TASK_ID=3e829b11-7bf6-490d-91f6-4f4c026bdc21
-AGENT_RUN_ID=93bd3aae-a51d-4f9f-8417-ab75a1dba160
-PULL_REQUEST_NUMBER=61
-PULL_REQUEST_STATE=open
-PULL_REQUEST_BASE=main
-EXACT_HEAD_SHA=92f9655d650ac64c99c6327eaf886ed3fc664052
-CHECK_COUNT>0
-ALL_CHECKS_TERMINAL=true
-ALL_CHECKS_SUCCESSFUL=true
-REFRESH_AUDIT_EVENTS_ADDED=2
-GITHUB_MUTATION=none
-```
-
-The API snapshot's check identities were also compared with a direct production GitHub App read of check-runs for the exact persisted publication commit. Zero check-runs are explicitly not treated as terminal or successful.
+Observation is intentionally refreshable rather than frozen behind one DBOS result.
 
 ### Fail-closed merge evaluation — 2026-08-29
 
-Production release `f07ffa1ac1743a7f75b4415eab2a70852e528e2e` is accepted for refreshable, non-mutating bounded Developer merge evaluation.
+Production release `f07ffa1ac1743a7f75b4415eab2a70852e528e2e` accepted refreshable, non-mutating merge evaluation. Feature PR #65 and ops PR #66 passed exact-head and post-merge CI; deploy run `33277524943` and acceptance run `33277550160` were successful.
 
-Implementation PR #65 merged as `d8fb7b9a7dfd70c97013cb2cc8b35e1468be4ac2`. Its exact-head CI #550, run `33277221034`, and post-merge `main` CI #551, run `33277289772`, were fully green.
-
-Production acceptance support PR #66 merged as the deployed release `f07ffa1ac1743a7f75b4415eab2a70852e528e2e`. Its exact-head CI #552, run `33277395683`, and post-merge `main` CI #553, run `33277454134`, were fully green. Deploy production #12, run `33277524943`, completed successfully on that exact release.
-
-The checked-in `Accept production Developer merge evaluation` workflow run `33277550160` completed successfully on the exact deployed SHA. It reused existing production evidence PR #61 and performed no GitHub mutation.
-
-The accepted operation is:
+Accepted server-owned required-check policy:
 
 ```text
-POST /tasks/{task_id}/bounded-developer-merge-evaluations
--> completed canonical publication + PR state
--> latest canonical exact-head observation
--> live PR read and exact head/base/state comparison
--> fresh GitHub check-runs for persisted publication commit
--> explicit server-owned required-check policy
--> canonical merge-evaluation snapshot
--> durable DEVELOPER_GITHUB_MERGE_EVALUATED audit event
-```
-
-The accepted production required-check policy is exactly:
-
-```text
-required checks: quality
-required cardinality: exactly one observed + exactly one live
+required check: quality
+observed cardinality: exactly one
+live cardinality: exactly one
 required status: completed
 required conclusion: success
 ```
 
-The evaluator fails closed if any configured required check is missing, duplicated, pending, neutral, skipped, cancelled, failed, or otherwise not exactly `completed/success` in both canonical observation evidence and a fresh live GitHub read. It also denies evaluation when the live PR state, head branch, base branch, or head SHA no longer matches canonical publication/PR state.
+Evaluation fails closed on missing, duplicate, pending, neutral, skipped, cancelled, failed or mismatched evidence, and on live PR state/head/base drift.
 
-Production acceptance called the merge-evaluation endpoint twice and verified both evaluations were eligible. Each call performed fresh live reads and added a durable `DEVELOPER_GITHUB_MERGE_EVALUATED` audit event. The latest eligible result was persisted on the canonical AgentRun.
+### Broker-controlled Developer merge mutation — 2026-08-29
 
-Accepted evidence:
+Production now accepts one explicit bounded Developer merge mutation path.
+
+Implementation PR #67:
 
 ```text
-TASK_ID=3e829b11-7bf6-490d-91f6-4f4c026bdc21
-AGENT_RUN_ID=93bd3aae-a51d-4f9f-8417-ab75a1dba160
-PULL_REQUEST_NUMBER=61
-PULL_REQUEST_STATE=open
-PULL_REQUEST_BASE=main
-EXACT_HEAD_SHA=92f9655d650ac64c99c6327eaf886ed3fc664052
-REQUIRED_CHECK=quality
-OBSERVED_COUNT=1
-LIVE_COUNT=1
-OBSERVED_STATUS=completed
-OBSERVED_CONCLUSION=success
-LIVE_STATUS=completed
-LIVE_CONCLUSION=success
-MERGE_ELIGIBLE=true
-DENIAL_REASONS=[]
-REFRESH_AUDIT_EVENTS_ADDED=2
-MAIN_HEAD_UNCHANGED=true
-PULL_REQUEST_UNCHANGED=true
-GITHUB_MUTATION=none
+final exact head: 95e2c923a2a7c1d4358fecba57ede51238a322fe
+exact-head CI:     #564 / run 33280263450 / success
+merge:             4db60d9b041eca4a83e0d86bb1d0c7759f7d8b27
+post-merge CI:     #565 / run 33280323531 / success
 ```
 
-PR #61 remained open, non-draft, clean and unmerged after acceptance. The production `main` head was unchanged by both evaluation calls. Merge evaluation is therefore accepted as evidence/policy only; there is still no production merge-mutation operation.
+Production acceptance support PR #68:
 
-## Automated production operations
+```text
+final exact head: 42489aacde33dd4717dfba944126752f9e8d6232
+exact-head CI:     #576 / run 33280674185 / success
+merge/release:     547275ad50ce34aad6a4a9b1c23428a2113ef8be
+post-merge CI:     #578 / run 33282090550 / success
+deploy:            #13 / run 33282143267 / success
+acceptance:        #1 / run 33282161767 / success
+```
 
-The production host uses the dedicated `overlord-prod-01` repository runner for manually dispatched deployment and acceptance workflows. Ordinary CI does not execute on the production host.
+The accepted mutation endpoint is:
 
-Deployment requires the exact fetched `origin/main` SHA, promotes `/opt/overlord-source` to `/opt/overlord/current`, syncs the locked environment, restarts the service, and verifies health/readiness. Failure diagnostics are sanitized and do not include application secrets, environment values, GitHub tokens, or model credentials.
+```text
+POST /tasks/{task_id}/bounded-developer-merges
+body: {"revision": "<exact source revision>"}
+```
 
-Production deployment defects discovered earlier were corrected through normal PR/CI gates: persistent `.venv` ownership, runner traversal of protected production paths, and bounded startup polling for `/health` and `/ready`.
+The caller cannot choose repository, PR number, branch, base, required checks, expected head SHA, merge method or GitHub credentials.
+
+The merge service performs:
+
+```text
+canonical Task / AgentRun / publication / PR validation
+-> fresh merge evaluation
+-> canonical github_merge state=prepared
+-> GitHubBroker.merge_if_allowed
+-> broker re-reads live PR + exact-head checks
+-> expected head SHA passed to GitHub merge API
+-> squash merge
+-> live merged-state verification
+-> canonical github_merge state=completed
+-> durable audit
+-> stable DBOS merge result
+```
+
+The broker itself independently fails closed on repository/base/head drift, draft/non-mergeable PRs, empty required-check policy, duplicate required-check identities, missing checks, incomplete checks and any required conclusion other than `success`.
+
+Ambiguous mutation recovery is accepted only when a follow-up GitHub read proves that the exact prepared PR/head is already merged and exposes a merge commit SHA. A merely closed PR is not treated as merged.
+
+#### Live merge acceptance evidence
+
+The production probe created a fresh synthetic bounded run and a harmless marker publication; historical PR #61 was left untouched.
+
+```text
+SOURCE_REVISION=547275ad50ce34aad6a4a9b1c23428a2113ef8be
+TASK_ID=bc9b92d5-5aba-4b41-a3cf-93d4aa38b76a
+AGENT_RUN_ID=23ebf425-ca59-46e9-a0de-51d6f5a3fa94
+TASK_BRANCH=overlord/task-bc9b92d5-5aba-4b41-a3cf-93d4aa38b76a
+PUBLICATION_COMMIT=3e01a2b1ac06e81cf9bb49a1c3e85e4301d8efed
+PULL_REQUEST_NUMBER=69
+PULL_REQUEST_BASE=main
+REQUIRED_CHECK=quality
+MERGE_METHOD=squash
+MERGE_SHA=f4cc17aeeb22657a1b58aefb0ea99994b5c9b882
+MERGE_WORKFLOW_ID=developer-github-merge:bc9b92d5-5aba-4b41-a3cf-93d4aa38b76a:6e2e79f06fd2bb60
+MERGE_RETRY_REUSED_RESULT=true
+```
+
+PR #69's exact publication head passed canonical CI #579, run `33282170650`, before mutation. The production acceptance then completed successfully and PR #69 was verified closed and merged.
+
+The accepted canonical merge audit suffix is:
+
+```text
+DEVELOPER_GITHUB_MERGE_EVALUATED
+DEVELOPER_GITHUB_MERGE_EVALUATED
+DEVELOPER_GITHUB_MERGE_PREPARED
+github.merge.evaluated
+github.merge.requested
+github.merge.completed
+DEVELOPER_GITHUB_MERGE_COMPLETED
+```
+
+The first evaluation was the explicit acceptance pre-check; the second was the fresh evaluation performed immediately inside the merge service before preparing mutation.
+
+The repeated merge API call reused the stable DBOS result and did not create a second merge effect. The DBOS merge workflow persisted `SUCCESS`, output and checkpoint evidence.
+
+After mutation, repository `main` advanced exactly to `f4cc17aeeb22657a1b58aefb0ea99994b5c9b882`, and canonical post-mutation CI #580, run `33282215741`, completed fully green on that exact SHA.
+
+The production service remains deployed from `547275ad50ce34aad6a4a9b1c23428a2113ef8be`; the later `f4cc17ae...` repository commit contains only the accepted merge marker change and has not been separately deployed.
 
 ## Current authority boundary
 
-The production-proven path is now:
+The production-proven end-to-end GitHub lifecycle is now:
 
 ```text
 bounded Developer run
@@ -360,48 +305,44 @@ bounded Developer run
 -> broker-controlled PR creation
 -> exact-head PR/check observation
 -> explicit required-check merge evaluation
+-> broker-controlled exact-head squash merge
+-> canonical merge completion + durable DBOS result
 ```
 
-Mutation authority remains only:
+GitHub mutations remain confined to:
 
 ```text
 GitHubPort -> GitHubBroker -> GitHub App adapter -> durable audit
 ```
 
-Check observation and merge evaluation are both read-only with respect to GitHub. PostgreSQL stores their latest canonical snapshots; durable audit preserves refresh/evaluation history. DBOS remains appropriate for stable mutation coordination/results, but is deliberately not used to freeze changing external CI or merge-evaluation state.
+No Developer container receives GitHub App credentials or GitHub mutation authority.
 
-No Developer container receives GitHub App credentials or GitHub mutation authority. No automatic or API-driven merge operation is currently accepted in production.
+Observation and merge evaluation remain refreshable read/evidence operations. Publication, PR creation and merge mutation use stable DBOS task+revision workflow identities for durable result reuse.
 
 ## Next stage
 
-The next implementation slice may add a separate broker-controlled **merge mutation** only if it preserves the production-proven evaluation boundary. It should not let a previously eligible snapshot become an unconditional authorization token.
+The core single-host GitHub lifecycle is now production-proven. The next slices should focus on orchestration and operational hardening rather than adding another mutation primitive.
 
-A merge-mutation design should fail closed unless, immediately before mutation:
+Priority candidates:
 
-1. PR is still open and targets the expected base branch;
-2. live PR head exactly equals the canonical publication commit;
-3. canonical publication and PR state still match the live PR;
-4. a fresh merge evaluation for that exact head is eligible;
-5. required check identities remain explicitly configured;
-6. every required check is still present exactly once and `completed/success` in canonical observation and fresh live GitHub state;
-7. the mutation goes only through `GitHubPort -> GitHubBroker -> GitHub App adapter -> durable audit`;
-8. retry/recovery cannot create duplicate merge effects or treat an ambiguous GitHub response as success without verification;
-9. expected head SHA is supplied to the GitHub merge operation;
-10. the merge result and canonical completion/audit evidence are persisted and independently production-accepted.
-
-Remote Developer workers remain deferred until workload evidence justifies them.
+1. connect the accepted run -> publish -> PR -> observe -> evaluate -> merge stages into one explicit Manager-controlled lifecycle with clear human/automation policy boundaries;
+2. add a first-class post-merge reconciliation state so canonical WorkRequest/Plan/Task state records the accepted merge SHA and downstream completion without relying only on AgentRun metadata;
+3. define cleanup/retention policy for merged task branches and acceptance markers;
+4. add production evidence for controlled failure/recovery around an interrupted merge workflow without weakening exact-head checks;
+5. continue model-neutral Developer replay/cost-routing work separately from GitHub mutation authority;
+6. keep remote Developer workers deferred until workload evidence justifies them.
 
 ## Verification record
 
 - Last verified: `2026-08-29`.
-- Current accepted production release: `f07ffa1ac1743a7f75b4415eab2a70852e528e2e`.
-- Latest deploy: #12 / run `33277524943`, success.
-- Latest production acceptance: merge evaluation #1 / run `33277550160`, success.
-- Merge-evaluation implementation: PR #65; exact-head CI #550 / `33277221034`; merge `d8fb7b9a7dfd70c97013cb2cc8b35e1468be4ac2`; post-merge CI #551 / `33277289772`.
-- Merge-evaluation acceptance support: PR #66; exact-head CI #552 / `33277395683`; merge `f07ffa1ac1743a7f75b4415eab2a70852e528e2e`; post-merge CI #553 / `33277454134`.
-- Accepted production required-check policy: exactly one `quality` check, `completed/success`, matched in both canonical observation and fresh live GitHub evidence.
-- Production evidence PR #61 remains open, non-draft and unmerged on base `main`, head `92f9655d650ac64c99c6327eaf886ed3fc664052`.
-- Production evidence task: `3e829b11-7bf6-490d-91f6-4f4c026bdc21`.
-- Production evidence AgentRun: `93bd3aae-a51d-4f9f-8417-ab75a1dba160`.
-- Security verification: no Docker socket, AWS credential, GitHub App private key, installation token, or GitHub mutation authority entered a Developer container; merge-evaluation acceptance performed no GitHub mutation and did not change `main`.
+- Current deployed production release: `547275ad50ce34aad6a4a9b1c23428a2113ef8be`.
+- Current accepted repository `main`: `f4cc17aeeb22657a1b58aefb0ea99994b5c9b882`.
+- Latest deploy: #13 / run `33282143267`, success.
+- Latest production acceptance: Developer merge #1 / run `33282161767`, success.
+- Accepted merge implementation: PR #67; exact-head CI #564 / `33280263450`; merge `4db60d9b041eca4a83e0d86bb1d0c7759f7d8b27`; post-merge CI #565 / `33280323531`.
+- Accepted merge support/release: PR #68; exact-head CI #576 / `33280674185`; release `547275ad50ce34aad6a4a9b1c23428a2113ef8be`; post-merge CI #578 / `33282090550`.
+- Live acceptance PR #69: exact head `3e01a2b1ac06e81cf9bb49a1c3e85e4301d8efed`; CI #579 / `33282170650`; merged by Overlord to `f4cc17aeeb22657a1b58aefb0ea99994b5c9b882`; post-mutation CI #580 / `33282215741` green.
+- Historical evidence PR #61 remains open and unmerged.
+- Accepted required-check policy: exactly one `quality` check, `completed/success`, matched in canonical observation and fresh live GitHub evidence.
+- Security verification: no Docker socket, AWS credential, GitHub App private key, installation token or GitHub mutation authority entered a Developer container.
 - Verified by: High Director.
