@@ -22,7 +22,7 @@ tags:
 
 ## Current state
 
-The always-on Overlord MVP is running on one DigitalOcean host and the hardening/infrastructure foundation is integrated and production-accepted.
+The always-on Overlord MVP is running on one DigitalOcean host. The hardening/infrastructure foundation is integrated and production-accepted, and post-acceptance repository housekeeping plus offline replay verification are complete.
 
 ```text
 project:                    Overlord
@@ -35,8 +35,10 @@ size:                       2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:                 $24/month
 initial source release:     562ee774a56b89eda8c1f913abf6adf0981f9b13
 current deployed release:   953580c06d064f44c98dd73c3c59affc35579218
-current repository main:    953580c06d064f44c98dd73c3c59affc35579218
+current repository main:    59ed0afd17e7c44addaa8143230f3c274ea09200
 ```
+
+`main` is intentionally ahead of the deployed release only by repository operations/documentation and a GitHub-hosted offline replay-verification workflow. No production runtime/application behavior changed after `953580c06d064f44c98dd73c3c59affc35579218`, so no additional production restart/deployment was required merely for SHA symmetry.
 
 Canonical architecture remains intentionally single-host:
 
@@ -321,9 +323,60 @@ GitHub mutation performed = false
 
 No production branch deletion was performed. Historical evidence PRs #61/#77 remain open and untouched.
 
+## Post-acceptance housekeeping and replay verification
+
+### Conservative Actions-registry housekeeping
+
+The checked-in workflow tree had already been reduced to current operational workflows, but GitHub Actions retained historical registrations for deleted bootstrap/diagnostic YAML files.
+
+A first conservative registry-cleanup batch disabled 15 clearly orphaned records while preserving their historical run evidence. No current workflow file was deleted, no production workflow was disabled, and PR #61/#77 evidence remained untouched.
+
+The disabled historical registrations are recorded in `docs/operations-inventory.md`. They include old bootstrap/P0.2/P0.3 formatting, mypy, pytest, and diagnostic records. All are now `disabled_manually`, which is reversible and preserves run history.
+
+The housekeeping documentation was integrated as:
+
+```text
+PR:                 #90
+exact PR head:      5fbf4feb2ce3d36e17f26e000f15e896d0e5962e
+exact-head CI:      #683 / run 33360707598 / success
+merge:              acca895e7bdb36d6c2418a97c87e8a591828d06b
+post-main CI:       #684 / run 33360800608 / success
+```
+
+Additional historical registry records that were not exposed with enough evidence for safe review remain untouched. No IDs were guessed and no broad registry deletion was performed.
+
+### Six-case offline replay verification
+
+Review of the benchmark workflows found that the existing `developer-benchmark-real.yml` is a legacy, intentionally disabled OpenAI/Luna workflow for three tiny fixture cases. It is not the six-case provider-neutral replay runner and remains disabled.
+
+PR #91 added a separate GitHub-hosted offline verification workflow for the integrated six-case historical replay corpus. It fetches full repository history, validates each frozen base revision, prepares a disposable detached Git workspace for each case, asserts `live_model_calls = 0`, and uploads only non-secret JSONL evidence.
+
+```text
+PR:                 #91
+exact PR head:      6a24ed84d989dd022ec2ae6c4ec7909718cfbcbb
+exact-head CI:      #685 / run 33361041848 / success
+merge:              59ed0afd17e7c44addaa8143230f3c274ea09200
+post-main CI:       #686 / run 33361127417 / success
+offline verification:#1 / run 33361246871 / success
+```
+
+Offline verification #1 prepared all six frozen cases successfully:
+
+```text
+2 Easy
+2 Medium
+2 Hard
+live model calls = 0
+provider secrets used = none
+paid benchmark dispatched = no
+production routing changed = no
+```
+
+This proves the frozen revisions and disposable preparation path work on GitHub-hosted infrastructure. It does not establish comparative model quality or cost; those require a separate paid benchmark decision.
+
 ## Current policy boundary
 
-The production-proven Manager policy is now:
+The production-proven Manager policy remains:
 
 ```text
 automatic / durable:
@@ -360,15 +413,16 @@ PostgreSQL remains canonical application state. DBOS remains durable coordinatio
 
 ## Next stage
 
-The remaining hardening/infrastructure foundation is substantially complete. The next step is a deliberate roadmap decision rather than automatic expansion into a new architecture/product phase.
+The hardening/infrastructure foundation and the first safe housekeeping/replay-verification steps are complete. The next meaningful decision is whether to authorize a deliberately bounded paid model benchmark; it is not an automatic engineering action.
 
 Recommended order:
 
 1. keep the current single-host production MVP stable and observe real workload/recovery evidence;
-2. optionally prune clearly superseded historical/bootstrap workflows in a dedicated CI-gated housekeeping PR, while preserving PR #61/#77 and their evidence branches;
-3. decide separately whether to run the paid multi-model replay benchmark; do not change production routing until benchmark evidence justifies it;
-4. evaluate remote Developer workers only if measured workload, isolation, or concurrency requirements justify them;
-5. treat mobile/PWA UI, notifications, speech, and broader product surfaces as separate product decisions.
+2. complete any remaining Actions-registry audit only when exact historical workflow IDs/evidence are available; disable only proven orphaned records and preserve history;
+3. if cost is approved, build/run a provider-neutral paid Stage 0 benchmark against the six-case replay design rather than enabling the legacy OpenAI/Luna tiny benchmark;
+4. use measured Stage 0/Stage 1 evidence before considering production model routing changes;
+5. evaluate remote Developer workers only if measured workload, isolation, or concurrency requirements justify them; and
+6. treat mobile/PWA UI, notifications, speech, and broader product surfaces as separate product decisions.
 
 Do not automatically redesign the system into EC2/IAM/distributed infrastructure, enable production model auto-routing, run destructive retention cleanup, or start remote Developer execution merely because the underlying foundations now exist.
 
@@ -376,7 +430,8 @@ Do not automatically redesign the system into EC2/IAM/distributed infrastructure
 
 - Last verified: `2026-08-30`.
 - Current deployed production release: `953580c06d064f44c98dd73c3c59affc35579218`.
-- Current accepted repository `main`: `953580c06d064f44c98dd73c3c59affc35579218`.
+- Current repository `main`: `59ed0afd17e7c44addaa8143230f3c274ea09200`.
+- Repository `main` is ahead of production only by non-runtime operations/documentation and offline-verification workflow changes; no additional deployment was required.
 - Recovery hardening: PR #83; head `80ce8135a7d10bf25d05cf4a35dfbe196663b648`; CI #641 / `33351770700`; merge `2de0d46ae6876f1fc6073b1251ac8cc20a56ff98`; post-main CI #671 / `33353992544`.
 - Repository retention: PR #84; head `6c53e8a540bead52963f355ea2946a89b2864aa3`; CI #670 / `33352746709`; merge `b1b7909ee94630c1ca1970e57d2f865f170d4548`; post-main CI #672 / `33354266550`.
 - Replay harness: PR #85; head `2e8f3563dab388e23795538806443f60817b6ad6`; CI #666 / `33352596705`; merge `a8ba17cb4692ee1ec0dd8d7ba5ef8653982bb6ea`; post-main CI #673 / `33354726677`.
@@ -385,10 +440,13 @@ Do not automatically redesign the system into EC2/IAM/distributed infrastructure
 - Recovery-compatible Manager approval acceptance: #5 / `33355914565`; PR #87 head `eed2883d80ebfcbce61d3955a04bb001484933d4`; PR CI #677 / `33355938369`; resulting `main` `0cae6146697e3f8fe2b40d958b6a7b2f412817b2`; post-main CI #678 / `33356022649`; deploy #20 / `33356093702`.
 - Read-only operations/retention acceptance support: PR #88 head `a1f95772a7fdbb1a84e7ca43e12ba326494dcd88`; CI #679 / `33356199964`; merge `283d250298a719e1ecd750774cf2c721c635d4ef`; post-main CI #680 / `33356275931`; deploy #21 / `33356343624`.
 - Safe failed marker-read acceptance: run `33356371113`; failed before probe execution; no production mutation.
-- Marker-read fix/final release: PR #89 head `1c3c11ab494ee64e7ced9de898f4210ecbb8b884`; CI #681 / `33356457873`; merge `953580c06d064f44c98dd73c3c59affc35579218`; post-main CI #682 / `33356548175`; deploy #22 / `33356627581`; successful read-only acceptance #2 / `33356648604`.
+- Marker-read fix/final production release: PR #89 head `1c3c11ab494ee64e7ced9de898f4210ecbb8b884`; CI #681 / `33356457873`; merge `953580c06d064f44c98dd73c3c59affc35579218`; post-main CI #682 / `33356548175`; deploy #22 / `33356627581`; successful read-only acceptance #2 / `33356648604`.
+- Workflow-registry housekeeping: PR #90 head `5fbf4feb2ce3d36e17f26e000f15e896d0e5962e`; CI #683 / `33360707598`; merge `acca895e7bdb36d6c2418a97c87e8a591828d06b`; post-main CI #684 / `33360800608`; 15 orphaned historical registrations disabled without deleting run history.
+- Offline replay verification support: PR #91 head `6a24ed84d989dd022ec2ae6c4ec7909718cfbcbb`; CI #685 / `33361041848`; merge `59ed0afd17e7c44addaa8143230f3c274ea09200`; post-main CI #686 / `33361127417`; offline verification #1 / `33361246871` success with six cases prepared and zero live model calls.
 - Historical evidence PR #61 remains open and unmerged.
 - Failed-safe evidence PR #77 remains open and unmerged.
 - Required-check policy remains exactly one `quality` check in `completed/success` state, matched to the exact head.
-- Production Developer routing was not changed and no paid replay benchmark was run as part of hardening integration.
+- Production Developer routing was not changed and no paid replay benchmark was run.
+- The legacy real Developer benchmark remains intentionally disabled and must not be mistaken for the provider-neutral six-case replay experiment.
 - Security boundary remains unchanged: no Docker socket, AWS credential, GitHub App private key, installation token, PostgreSQL credential, or GitHub mutation authority entered a Developer container.
 - Verified by: High Director.
