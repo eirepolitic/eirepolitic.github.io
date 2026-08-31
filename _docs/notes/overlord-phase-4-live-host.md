@@ -34,8 +34,8 @@ Droplet class:              Basic / Regular SSD
 size:                       2 vCPU / 4 GiB RAM / 80 GiB SSD
 base price:                 $24/month
 initial source release:     562ee774a56b89eda8c1f913abf6adf0981f9b13
-current deployed release:   c7219bd983432e787ee543ba6691e8db528e53a9
-current repository main:    cd06bf5c1df7353f984a343b9969f1da702bc5a3
+current deployed release:   e941d40916cd36dff927d7ffcc2b80b3a714fd26
+current repository main:    e941d40916cd36dff927d7ffcc2b80b3a714fd26
 ```
 
 The production architecture is:
@@ -101,6 +101,7 @@ bounded Developer execution
 -> Task = completed
 -> dependent-task promotion
 -> Plan / WorkRequest completion when all tasks are complete
+-> PostgreSQL-first Manager delivery status view
 ```
 
 GitHub mutation authority remains confined to:
@@ -326,31 +327,73 @@ MERGE_SHA=cd06bf5c1df7353f984a343b9969f1da702bc5a3
 POST_MUTATION_CI=#625 / run 33348842082 / success
 ```
 
-The task+revision digest is `aa2b3ef888c38f26`, giving the durable workflow identities:
+The successful production probe proved stable stage reuse, pre-approval merge denial with no stable merge workflow row, exact idempotent owner approval, durable exact-head squash merge, one canonical repository delivery, lifecycle reconciliation, and green post-mutation CI.
+
+## Manager delivery status read model — 2026-08-30
+
+Feature PR #80 added one PostgreSQL-first lifecycle view so clients no longer need to infer delivery state from several action endpoints.
 
 ```text
-bounded-developer:4473d316-720a-44cf-9fd7-4904629983bd:aa2b3ef888c38f26
-developer-github-publication:4473d316-720a-44cf-9fd7-4904629983bd:aa2b3ef888c38f26
-developer-github-pull-request:4473d316-720a-44cf-9fd7-4904629983bd:aa2b3ef888c38f26
-developer-github-merge:4473d316-720a-44cf-9fd7-4904629983bd:aa2b3ef888c38f26
+final exact head: d7aae36f21d70228cac3344226d1e73909f48c47
+exact-head CI:     #636 / run 33349770267 / success
+merge:             c50eef6bc188af3bd9272ea4fd535e6d89ac42a4
+post-merge CI:     #637 / run 33349864404 / success
 ```
 
-The successful production probe required and therefore proved:
+The accepted read endpoint is:
 
-- repeated Manager preparation reused the same bounded AgentRun, PR number and publication head while refreshing checks/evaluation;
-- pre-approval merge returned HTTP 409 with PR and `main` unchanged;
-- the pre-approval denial did not create the stable DBOS merge workflow;
-- approval was exact to the Task, AgentRun and source revision;
-- repeated approval reused exactly one canonical approval event;
-- repeated merge reused one stable DBOS merge result;
-- bounded, publication, PR and merge workflows each persisted `SUCCESS`, output and checkpoint evidence;
-- merge remained squash-only and exact-head;
-- exactly one canonical repository delivery was persisted;
-- Task, Plan and WorkRequest reconciled to `completed`;
-- GitHub `main` advanced exactly to `cd06bf5c1df7353f984a343b9969f1da702bc5a3`;
-- normal post-mutation CI #625 / `33348842082` completed fully green on that exact SHA.
+```text
+GET /tasks/{task_id}/bounded-developer-delivery-status?revision=<source revision>
+```
 
-The production host remains deployed from `c7219bd983432e787ee543ba6691e8db528e53a9`. The later `cd06bf5c...` commit is the accepted harmless marker merge and has not been separately deployed.
+It reads only persisted PostgreSQL state through the request-scoped SQLAlchemy session. It does not initialize the GitHub control-plane adapter, call GitHub, or start a DBOS workflow.
+
+The response combines:
+
+```text
+Task / Plan / WorkRequest lifecycle state
+exact bounded AgentRun identity/status
+persisted github_publication metadata
+persisted github_pull_request metadata
+persisted github_pull_request_observation snapshot
+persisted github_merge_evaluation snapshot
+exact OWNER_DEVELOPER_MERGE_APPROVED audit evidence
+persisted github_merge metadata
+canonical relational repository_deliveries evidence
+```
+
+The server derives one `stage` plus one `next_action`. Accepted stages include `not_started`, `execution`, `validation`, `pull_request_pending`, `awaiting_checks`, `awaiting_owner_approval`, `approved`, `merge_prepared`, `merged_pending_delivery`, and `delivered`. Duplicate approvals, duplicate bounded runs, malformed persisted metadata, or mismatched delivery identity fail closed.
+
+Production support PR #81 added a mutation-free live acceptance:
+
+```text
+final exact head: b4c7a9e26aa9414791c7b5fcb022834a56f45a98
+exact-head CI:     #638 / run 33350011452 / success
+merge/release:     e941d40916cd36dff927d7ffcc2b80b3a714fd26
+post-merge CI:     #639 / run 33350094433 / success
+deploy:            #18 / run 33350169371 / success
+acceptance:        #1 / run 33350198239 / success
+```
+
+The production probe queried the already accepted PR #79 lifecycle using its original source revision and required:
+
+```text
+TASK_ID=4473d316-720a-44cf-9fd7-4904629983bd
+AGENT_RUN_ID=ed9ba700-c573-48d2-8f6d-c0a5b47dc5d9
+SOURCE_REVISION=c7219bd983432e787ee543ba6691e8db528e53a9
+PULL_REQUEST_NUMBER=79
+PUBLICATION_HEAD=23f911dddfceab4242a06ea931a83fb609c56104
+MERGE_SHA=cd06bf5c1df7353f984a343b9969f1da702bc5a3
+STAGE=delivered
+NEXT_ACTION=null
+OWNER_APPROVED=true
+TASK_STATUS=completed
+PLAN_STATUS=completed
+WORK_REQUEST_STATUS=completed
+REPOSITORY_DELIVERY_STATUS=merged
+```
+
+The acceptance made no GitHub calls, model calls, DBOS starts, or mutations. Repository `main` remained exactly `e941d40916cd36dff927d7ffcc2b80b3a714fd26`, so the deployed release and repository `main` are synchronized again.
 
 ## Current policy boundary
 
@@ -374,30 +417,37 @@ mutation after approval:
   GitHubBroker exact-head gate
   squash merge
   repository-delivery reconciliation
+
+read-only status:
+  PostgreSQL-first lifecycle snapshot
+  no GitHub call
+  no DBOS start
+  no mutation
 ```
 
-A missing approval cannot create or poison the stable merge workflow. Approval itself does not weaken any exact-head or required-check gate.
+A missing approval cannot create or poison the stable merge workflow. Approval itself does not weaken any exact-head or required-check gate. The status endpoint reports persisted evidence; explicit observation/evaluation actions remain responsible for refreshing external GitHub evidence.
 
 ## Next stage
 
-The core single-host Developer delivery lifecycle is production-proven through explicit owner approval and post-merge reconciliation. Priority next slices:
+The core single-host Developer delivery lifecycle is production-proven through explicit owner approval, post-merge reconciliation, and a first-class read model. Priority next slices:
 
-1. add a first-class Manager delivery status/read model so clients do not need to infer state from several stage endpoints;
-2. define cleanup/retention policy for merged task branches, failed acceptance branches and harmless acceptance markers;
-3. add controlled failure/recovery acceptance around interruption after approval but before/after merge preparation;
-4. continue model-neutral Developer replay/cost-routing work separately from GitHub mutation authority;
-5. keep remote Developer workers deferred until workload evidence justifies them.
+1. define cleanup/retention policy for merged task branches, failed acceptance branches and harmless acceptance markers;
+2. add controlled failure/recovery acceptance around interruption after approval but before/after merge preparation;
+3. continue model-neutral Developer replay/cost-routing work separately from GitHub mutation authority;
+4. keep remote Developer workers deferred until workload evidence justifies them.
 
 ## Verification record
 
 - Last verified: `2026-08-30`.
-- Current deployed production release: `c7219bd983432e787ee543ba6691e8db528e53a9`.
-- Current accepted repository `main`: `cd06bf5c1df7353f984a343b9969f1da702bc5a3`.
+- Current deployed production release: `e941d40916cd36dff927d7ffcc2b80b3a714fd26`.
+- Current accepted repository `main`: `e941d40916cd36dff927d7ffcc2b80b3a714fd26`.
 - Manager orchestration feature: PR #75; CI #607 / `33331859373`; merge `f71d2447d70e5e02a21721eccd41f4cea81a917e`; post-main CI #608 / `33331922088`.
 - Manager production support: PR #76; CI #615 / `33347854431`; release `0719d46d0da5ada3114da1bfcec0b741f68e71c6`; post-main CI #616 / `33347931319`; deploy #16 / `33348005697`.
 - Failed-safe Manager acceptance: #1 / `33348043526`; PR #77 open/unmerged; exact-head CI #617 / `33348061572` green; one approval; no merge preparation; `main` unchanged.
 - Stable-workflow fix: PR #78; final head `2d4b0ae3b27cdbfd4299bbe00a6b2e79140030f9`; CI #622 / `33348551513`; release `c7219bd983432e787ee543ba6691e8db528e53a9`; post-main CI #623 / `33348664176`; deploy #17 / `33348732528`.
-- Successful Manager acceptance: #4 / `33348756583`; Task `4473d316-720a-44cf-9fd7-4904629983bd`; AgentRun `ed9ba700-c573-48d2-8f6d-c0a5b47dc5d9`; PR #79; publication head `23f911dddfceab4242a06ea931a83fb609c56104`; PR CI #624 / `33348770013`; merge `cd06bf5c1df7353f984a343b9969f1da702bc5a3`; post-mutation CI #625 / `33348842082` green.
+- Successful Manager approval acceptance: #4 / `33348756583`; Task `4473d316-720a-44cf-9fd7-4904629983bd`; AgentRun `ed9ba700-c573-48d2-8f6d-c0a5b47dc5d9`; PR #79; publication head `23f911dddfceab4242a06ea931a83fb609c56104`; PR CI #624 / `33348770013`; merge `cd06bf5c1df7353f984a343b9969f1da702bc5a3`; post-mutation CI #625 / `33348842082` green.
+- Manager delivery status feature: PR #80; exact head `d7aae36f21d70228cac3344226d1e73909f48c47`; CI #636 / `33349770267`; merge `c50eef6bc188af3bd9272ea4fd535e6d89ac42a4`; post-main CI #637 / `33349864404`.
+- Manager delivery status support/release: PR #81; exact head `b4c7a9e26aa9414791c7b5fcb022834a56f45a98`; CI #638 / `33350011452`; release `e941d40916cd36dff927d7ffcc2b80b3a714fd26`; post-main CI #639 / `33350094433`; deploy #18 / `33350169371`; acceptance #1 / `33350198239`.
 - Historical evidence PR #61 remains open and unmerged.
 - Failed-safe evidence PR #77 remains open and unmerged.
 - Accepted required-check policy remains exactly one `quality` check, `completed/success`, matched in canonical observation and fresh live GitHub evidence.
