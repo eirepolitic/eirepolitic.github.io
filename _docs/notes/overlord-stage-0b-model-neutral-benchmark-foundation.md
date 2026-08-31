@@ -1,6 +1,6 @@
 ---
 title: Overlord Stage 0B — Model-Neutral Benchmark Foundation
-summary: Acceptance record for provider-neutral gateway profiles, sealed replay workspaces, hidden validators, normalized call evidence, and zero-cost cross-provider profile preflight.
+summary: Acceptance record for provider-neutral gateway profiles, sealed replay workspaces, hidden validators, normalized call evidence, zero-cost cross-provider preflights, and live-smoke readiness.
 section: notes
 doc_type: note
 status: active
@@ -22,14 +22,15 @@ tags:
 
 ## Status
 
-Stage 0B is complete as a no-spend benchmark-foundation milestone.
+Stage 0B is complete as a no-spend benchmark-foundation milestone and the live-provider smoke path is implemented but explicitly unarmed.
 
 ```text
-Overlord repository main: e2355cba04b60924fa195809ea92c7cfa392e520
+Overlord repository main: 98f0c5ac064b01408240736a88c157c1e0db4d73
 Production deployed release: 953580c06d064f44c98dd73c3c59affc35579218
 Production Developer routing changed: no
-Live provider calls in Stage 0B acceptance: 0
-Provider secrets used in Stage 0B acceptance: none
+Live provider calls in Stage 0B foundation acceptance: 0
+Provider secrets used in Stage 0B foundation acceptance: none
+Stage 0B live-smoke workflow armed: no
 ```
 
 Production remains intentionally on the previously accepted release because Stage 0B changes are benchmark/evaluator infrastructure and are not wired into the production Developer execution path.
@@ -197,21 +198,105 @@ provider secrets used = false
 routing_evidence_eligible = false
 ```
 
+### Pinned OpenCode native provider request-shape acceptance
+
+PR #107 added a zero-cost matrix against the exact pinned Developer runtime, OpenCode `1.18.16`, with dummy credentials and an internal-only request-shape capture service.
+
+```text
+PR #107 exact-head CI: #783 / 33432911869 / success
+merge: 378515e256352e963e954b3e991e22f6f5ae99aa
+post-main CI: #784 / 33433120175 / success
+OpenCode provider-shape preflight #1: 33433255163 / success
+```
+
+Observed native request shapes were:
+
+```text
+OpenAI:    POST /v1/responses
+           stream=true
+           max_output_tokens=32000 before gateway clamping
+
+Anthropic: POST /v1/messages
+           stream=true
+           max_tokens=32000 before gateway clamping
+
+Google:    POST /v1beta/models/{model}:streamGenerateContent?alt=sse
+           generationConfig.maxOutputTokens=32000 before gateway clamping
+```
+
+All three Developer jobs proved direct Internet egress was blocked. The request-shape capture used dummy credentials and contacted no real provider.
+
+### Native streaming gateway compatibility
+
+The pinned-runtime shape evidence exposed two real compatibility gaps: Google native streaming requires `streamGenerateContent?alt=sse`, and provider usage/accounting arrives in streaming SSE payloads.
+
+PR #108 added the exact allowlisted Google streaming endpoint, preserves only the required `alt=sse` query, and normalizes request IDs and usage from OpenAI Responses SSE, Anthropic Messages SSE, and Gemini SSE.
+
+```text
+PR #108 exact-head CI: #788 / 33433925058 / success
+merge: 3c17ec3ca0ecdccb9142dedef44a2a0a7f49518c
+post-main CI: #789 / 33441155089 / success
+provider-profile preflight #2: 33441279640 / success
+artifact: developer-benchmark-provider-profile-preflight-33441279640
+```
+
+The gateway remains buffered for Stage 0B rather than introducing a new streaming-proxy architecture. This is sufficient for bounded transport/accounting validation and avoids an unnecessary production architecture change.
+
+### Fail-closed live-provider smoke readiness
+
+PR #109 added the manual live Stage 0B transport smoke for one provider at a time.
+
+```text
+PR #109 exact-head CI: #790 / 33441580454 / success
+merge: 98f0c5ac064b01408240736a88c157c1e0db4d73
+post-main CI: #791 / 33441706703 / success
+workflow ID: 346986133
+workflow: Developer benchmark Stage 0B live provider smoke
+```
+
+The live smoke is deliberately transport-only and not capability-ranking evidence. It uses pinned OpenCode `1.18.16`, the benchmark gateway, an internal-only Developer network, exactly one allowed forwarded request, and a 256-output-token hard ceiling. It fails if normalized usage/request-ID evidence is missing or if the disposable workspace changes.
+
+The first live-integration roster is frozen in that workflow as:
+
+```text
+OpenAI:    gpt-5.6-luna
+Anthropic: claude-sonnet-5
+Google:    gemini-3.7-flash
+```
+
+Required benchmark-scoped secrets are:
+
+```text
+OVERLORD_BENCHMARK_OPENAI_API_KEY
+OVERLORD_BENCHMARK_ANTHROPIC_API_KEY
+OVERLORD_BENCHMARK_GOOGLE_API_KEY
+```
+
+The repository authorization controls are explicitly set to:
+
+```text
+OVERLORD_STAGE0B_LIVE_PROVIDER=UNARMED
+OVERLORD_STAGE0B_LIVE_CONFIRMATION=UNARMED
+OVERLORD_STAGE0B_LIVE_AUTHORIZATION_ID=UNARMED
+```
+
+Therefore an accidental workflow dispatch cannot reach provider-secret selection or incur model spend.
+
 ## Boundary after Stage 0B
 
-Stage 0B establishes a model-neutral evaluator and gateway foundation, but it does not yet prove live Anthropic or Google transport through the pinned OpenCode Developer runtime.
+The no-spend infrastructure boundary is now complete, including the pinned OpenCode native request-shape verification that was previously outstanding.
 
 The next step is a bounded real-provider integration smoke, not a production routing change and not yet the six-case comparative benchmark.
 
-Recommended initial live-integration roster:
+Recommended first order:
 
 ```text
-OpenAI:    gpt-5.6-luna       current production baseline / low-cost transport reference
-Anthropic: claude-sonnet-5    current balanced coding/agentic candidate
-Google:    gemini-3.7-flash   current GA coding/agentic candidate
+1. OpenAI gpt-5.6-luna — existing benchmark baseline
+2. Anthropic claude-sonnet-5 — native live transport/accounting
+3. Google gemini-3.7-flash — native live transport/accounting
 ```
 
-Before that smoke, the pinned OpenCode `1.18.16` runtime should be verified against each native provider package and gateway request shape. The benchmark should continue to use disposable internal-only Developer networking and benchmark-scoped provider credentials.
+Each run is one provider at a time, one forwarded request maximum, 256 output tokens maximum, prompt-free evidence only, no repository mutation, and no production authority.
 
 No Stage 0B result justifies a production model-routing change.
 
@@ -219,8 +304,12 @@ No Stage 0B result justifies a production model-routing change.
 
 The next user-controlled boundary is credentials and spend:
 
-1. verify pinned OpenCode native request shapes for Anthropic and Google without live provider calls;
-2. configure benchmark-scoped Anthropic and Google API credentials only after that preflight is green;
-3. authorize one tightly bounded live integration request per provider;
-4. freeze the first comparative candidate registry and pricing snapshot only after live accounting is verified; and
-5. begin equal six-case Stage 1 benchmarking only after the live provider integrations are proven.
+1. ensure the three benchmark-scoped API secrets exist;
+2. arm exactly one provider with a one-run authorization ID;
+3. dispatch one live transport smoke;
+4. immediately return all three authorization variables to `UNARMED` after the run;
+5. verify provider-side billing/accounting where available;
+6. repeat for the other two providers; and
+7. freeze the first comparative candidate/pricing registry only after all three live transports are proven.
+
+Only after those live integrations pass should equal six-case Stage 1 benchmarking begin.
