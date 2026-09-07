@@ -22,6 +22,7 @@ owner: Eire Politic
 repository: eirepolitic-data-pipeline
 system: Unified Oireachtas Data Platform
 order: 20
+wide: true
 permalink: /projects/data/irish-politics-data-model/
 tags:
   - oireachtas
@@ -85,8 +86,6 @@ def clean_fragment(source_html: str) -> str:
         for eyebrow in section.select(".eyebrow"):
             eyebrow.decompose()
 
-        # Preserve useful structure from the source, but map it to catalogue-specific classes
-        # so the page inherits the docs design without relying on standalone review-page CSS.
         for grid in section.select(".grid"):
             grid["class"] = ["catalogue-group-grid"]
         for card in section.select(".group-card"):
@@ -101,14 +100,12 @@ def clean_fragment(source_html: str) -> str:
         for cell in section.select(".cell"):
             cell["class"] = ["data-cell"]
 
-        # Repeated per-dataset subheadings are useful in the body but overwhelm the page TOC.
         for heading in section.find_all(["h3", "h4"]):
             if heading.get_text(" ", strip=True) in {"Example data", "Schema"}:
                 heading["class"] = list(dict.fromkeys((heading.get("class") or []) + ["toc-ignore"]))
 
         container.append(section.extract())
 
-    # Remove only standalone styling classes that have no native-doc equivalent.
     discard = {"overview", "dataset", "appendix", "sample-note", "muted", "schema-details", "index", "schema"}
     for tag in container.find_all(True):
         classes = [c for c in (tag.get("class") or []) if c not in discard]
