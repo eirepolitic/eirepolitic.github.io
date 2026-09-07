@@ -3,7 +3,7 @@
   const toc = document.querySelector('#page-toc');
   if (!body || !toc) return;
 
-  const headings = [...body.querySelectorAll('h2, h3')];
+  const headings = [...body.querySelectorAll('h2, h3')].filter((heading) => !heading.classList.contains('toc-ignore'));
   if (!headings.length) {
     const container = toc.closest('.docs-toc');
     if (container) container.hidden = true;
