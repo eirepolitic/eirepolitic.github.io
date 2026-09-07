@@ -1,0 +1,52 @@
+name: Refresh data model catalogue
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install generator dependency
+        run: python -m pip install beautifulsoup4
+
+      - name: Generate native Jekyll documentation page
+        run: python scripts/refresh_data_model_catalogue.py
+
+      - name: Validate generated page
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s _docs/data/irish-politics-data-model.md
+          grep -q '^section: data$' _docs/data/irish-politics-data-model.md
+          grep -q '45 usable datasets documented' _docs/data/irish-politics-data-model.md
+          grep -q 'silver_members' _docs/data/irish-politics-data-model.md
+          grep -q 'written_question_answer_sections' _docs/data/irish-politics-data-model.md
+          grep -q 'polling_indicator' _docs/data/irish-politics-data-model.md
+          grep -q 'No elections dataset was discovered' _docs/data/irish-politics-data-model.md
+
+      - name: Commit generated page
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- _docs/data/irish-politics-data-model.md; then
+            echo 'Generated page is unchanged.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add _docs/data/irish-politics-data-model.md
+          git commit -m 'docs: refresh Irish politics data model page'
+          git push origin HEAD:${GITHUB_REF_NAME}
