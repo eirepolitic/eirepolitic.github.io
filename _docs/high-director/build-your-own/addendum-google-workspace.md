@@ -1,5 +1,5 @@
 ---
-title: Build Your Own High Director — Addendum A: Google Workspace
+title: "Build Your Own High Director — Addendum A: Google Workspace"
 summary: Optionally add Gmail and Google Calendar access to the completed High Director-style GPT using a separate Google OAuth Action.
 section: high-director
 doc_type: runbook
