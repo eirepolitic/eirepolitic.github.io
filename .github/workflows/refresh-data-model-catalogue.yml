@@ -41,7 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- _docs/data/irish-politics-data-model.md; then
+          if [ -z "$(git status --porcelain -- _docs/data/irish-politics-data-model.md)" ]; then
             echo 'Generated page is unchanged.'
             exit 0
           fi
