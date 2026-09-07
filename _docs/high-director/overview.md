@@ -5,7 +5,7 @@ section: high-director
 doc_type: agent
 status: active
 created: 2026-08-05
-updated: 2026-08-07
+updated: 2026-09-07
 last_verified: 2026-08-07
 order: 10
 permalink: /projects/high-director/
@@ -18,6 +18,12 @@ permalink: /projects/high-director/
 High Director is a GPT configured as a concise coding assistant for designing and building data pipelines and related infrastructure. Its authoritative user-authored instructions emphasize Python, GitHub, YAML, Appsmith, Power BI, Power Automate, and AWS, and direct it to help design, troubleshoot, document, and implement pipeline workflows and supporting infrastructure.
 
 The documentation initiative established authoritative records for the GPT configuration, both configured Actions, the GitHub wrapper Lambda implementation, live AWS configuration, runtime architecture, data flows, security/configuration boundaries, code/dependencies, operations, troubleshooting, and handoff procedures. That build initiative is complete; current maintenance belongs on the canonical subject pages and runbooks listed below.
+
+## Build your own
+
+For a browser-only, zero-assumed-knowledge implementation guide, see [Build Your Own High Director]({{ '/docs/high-director/build-your-own/' | relative_url }}). It walks a personal user from account setup and a first GitHub repository through the existing Lambda-backed GitHub architecture, custom GPT Action configuration, end-to-end testing, troubleshooting, credential rotation, and optional extensions.
+
+The build guide intentionally preserves the verified core runtime behavior rather than silently adding new backend safeguards or permissions. Google Workspace is optional, and new AWS-service capabilities are separated from the verified GitHub wrapper unless they already exist in the current backend.
 
 ## Authoritative GPT configuration
 
