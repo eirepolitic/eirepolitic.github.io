@@ -1,5 +1,5 @@
 ---
-title: Build Your Own High Director — Addendum B: Additional AWS Capabilities
+title: "Build Your Own High Director — Addendum B: Additional AWS Capabilities"
 summary: Extend the completed High Director-style system cautiously, starting with existing unexposed wrapper routes and separating new AWS-service integrations from the verified core build.
 section: high-director
 doc_type: runbook
