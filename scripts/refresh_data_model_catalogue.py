@@ -80,26 +80,38 @@ def clean_fragment(source_html: str) -> str:
         if "hero" in (section.get("class") or []):
             continue
 
-        # Keep native article headings/content, but remove standalone-page navigation chrome.
         for back in section.select(".back"):
             back.decompose()
         for eyebrow in section.select(".eyebrow"):
             eyebrow.decompose()
 
-        for table_wrap in section.select(".table-wrap, .schema-wrap"):
-            existing = table_wrap.get("class") or []
-            table_wrap["class"] = [c for c in existing if c not in {"table-wrap", "schema-wrap"}] + ["data-table-wrap"]
+        # Preserve useful structure from the source, but map it to catalogue-specific classes
+        # so the page inherits the docs design without relying on standalone review-page CSS.
+        for grid in section.select(".grid"):
+            grid["class"] = ["catalogue-group-grid"]
+        for card in section.select(".group-card"):
+            card["class"] = ["catalogue-group-card"]
+        for facts in section.select(".facts"):
+            facts["class"] = ["catalogue-facts"]
+        for head in section.select(".section-head"):
+            head["class"] = ["catalogue-section-head"]
 
+        for table_wrap in section.select(".table-wrap, .schema-wrap"):
+            table_wrap["class"] = ["data-table-wrap"]
         for cell in section.select(".cell"):
             cell["class"] = ["data-cell"]
 
-        # The docs layout already provides the page title. Dataset/overview headings remain native.
+        # Repeated per-dataset subheadings are useful in the body but overwhelm the page TOC.
+        for heading in section.find_all(["h3", "h4"]):
+            if heading.get_text(" ", strip=True) in {"Example data", "Schema"}:
+                heading["class"] = list(dict.fromkeys((heading.get("class") or []) + ["toc-ignore"]))
+
         container.append(section.extract())
 
-    # Remove standalone-page class names that would otherwise imply special card/post styling.
+    # Remove only standalone styling classes that have no native-doc equivalent.
+    discard = {"overview", "dataset", "appendix", "sample-note", "muted", "schema-details", "index", "schema"}
     for tag in container.find_all(True):
-        classes = tag.get("class") or []
-        classes = [c for c in classes if c not in {"overview", "dataset", "appendix", "section-head", "facts", "sample-note", "muted", "schema-details", "group-card", "grid", "index", "schema"}]
+        classes = [c for c in (tag.get("class") or []) if c not in discard]
         if classes:
             tag["class"] = classes
         elif tag.has_attr("class"):
