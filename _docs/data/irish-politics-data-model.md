@@ -11,6 +11,7 @@ owner: Eire Politic
 repository: eirepolitic-data-pipeline
 system: Unified Oireachtas Data Platform
 order: 20
+wide: true
 permalink: /projects/data/irish-politics-data-model/
 tags:
   - oireachtas
