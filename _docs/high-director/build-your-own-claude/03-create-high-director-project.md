@@ -21,24 +21,49 @@ Claude Projects let you keep project instructions and project knowledge availabl
 
 Official reference: [Create and manage projects](https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects).
 
-## Step 1 — Create the project
+## Important — Projects are not inside Claude Code
 
-1. Open Claude in your browser.
-2. Select **Projects** in the sidebar.
-3. Select **Create project** or the current equivalent.
-4. Name it:
+Claude has two different browser surfaces in this guide:
+
+```text
+Normal Claude web app
+→ Projects, project instructions, planning, connectors, AWS work
+
+Claude Code on the web
+→ GitHub repositories, code changes, tests, branches, pull requests
+```
+
+If you are currently looking at **Claude Code** and do not see **Projects**, that is expected.
+
+For this chapter, leave Claude Code and return to the normal Claude web app at `claude.ai`.
+
+## Step 1 — Confirm you are in the normal Claude app
+
+1. Open a new browser tab.
+2. Go to `https://claude.ai/`.
+3. Confirm you are in the normal Claude chat interface, not the Claude Code repository workspace.
+4. Look at the left sidebar.
+5. Find **Projects**.
+
+If you only see repository/task controls, you are still in Claude Code. Return to the normal Claude interface before continuing.
+
+## Step 2 — Create the project
+
+1. In the normal Claude sidebar, select **Projects**.
+2. Select **Create project** or the current equivalent.
+3. Name it:
 
 ```text
 High Director
 ```
 
-5. Add a description if Claude offers the field:
+4. Add a description if Claude offers the field:
 
 ```text
 Personal workspace for building, maintaining, and troubleshooting data pipelines, GitHub projects, automation, and AWS infrastructure.
 ```
 
-## Step 2 — Open project instructions
+## Step 3 — Open project instructions
 
 1. Open the new **High Director** project.
 2. Find **Set project instructions** or the current project-instructions control.
@@ -70,7 +95,7 @@ Never ask me to paste passwords, access keys, OAuth tokens, GitHub credentials, 
 
 4. Select **Save instructions**.
 
-## Step 3 — Keep project knowledge simple initially
+## Step 4 — Keep project knowledge simple initially
 
 Do not upload credentials, configuration exports containing secrets, or large collections of files just because Project knowledge is available.
 
@@ -84,7 +109,7 @@ Later, useful knowledge can include:
 - deployment standards;
 - project requirements.
 
-## Step 4 — Test the instructions
+## Step 5 — Test the instructions
 
 Start a new chat inside the High Director project.
 
@@ -104,9 +129,9 @@ I have never used GitHub before. Explain how I would create a repository.
 
 The answer should be beginner-oriented and ordered.
 
-## Step 5 — Understand the division of work
+## Step 6 — Understand the division of work
 
-Use the **High Director Project** for:
+Use the **High Director Project in normal Claude** for:
 
 - planning;
 - architecture;
@@ -117,15 +142,22 @@ Use the **High Director Project** for:
 
 Use **Claude Code on the web** for work that needs to inspect, edit, test, branch, and commit a GitHub repository.
 
-They use the same Claude account, but they are different working surfaces.
+They use the same Claude account, but they are different browser surfaces.
 
 ## What you should see
 
-You should have a project named **High Director** with saved project instructions and at least one successful test conversation.
+In the normal Claude web app, you should have a project named **High Director** with saved project instructions and at least one successful test conversation.
+
+You should **not** expect this Project to appear inside the Claude Code repository interface.
 
 ## If you do not see this
 
-If Projects or project instructions are missing, verify your Claude interface and plan before changing anything else.
+First confirm which interface you are in:
+
+- normal Claude chat interface → Projects should be available according to current account/product availability;
+- Claude Code repository interface → Projects are not expected there.
+
+If Projects are still missing in the normal Claude app, verify the current Claude interface and account availability before changing anything else.
 
 Do not create an API integration simply to recreate project instructions.
 
@@ -133,7 +165,10 @@ Do not create an API integration simply to recreate project instructions.
 
 ```text
 I am creating a Claude Project to act as a persistent coding/infrastructure assistant.
-I am stuck at: [creating the project / project instructions / project knowledge / starting a project chat]
+
+I understand that Projects are in the normal Claude web app, not Claude Code on the web.
+I am currently in: [normal Claude / Claude Code / unsure]
+I am stuck at: [finding Projects / creating the project / project instructions / project knowledge / starting a project chat]
 What I see: [describe it]
 Exact non-secret error: [paste it]
 
