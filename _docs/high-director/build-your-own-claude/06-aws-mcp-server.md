@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/06-aws-mcp-server/
 
 ## Goal
 
-Connect the High Director Claude Project to AWS without deploying your own MCP server, Lambda gateway, or local proxy.
+Connect the High Director Claude Project to AWS using the managed AWS MCP Server.
 
 AWS documents the managed AWS MCP Server as available at no additional charge. You still pay normal AWS charges for resources Claude creates or uses.
 
@@ -53,8 +53,6 @@ For the currently documented `us-east-1` endpoint:
 https://aws-mcp.us-east-1.api.aws/mcp
 ```
 
-Do not enter an AWS password, access key, or secret key in the connector URL.
-
 If Claude offers optional OAuth Client ID/Secret fields, leave them empty for the normal AWS-managed discovery flow unless current AWS/Anthropic documentation specifically instructs otherwise.
 
 Name the connector something recognizable if Claude offers a name field:
@@ -78,7 +76,7 @@ Select **Add**.
 Ask:
 
 ```text
-Using the AWS connector, identify the AWS account/identity context available to you and tell me which AWS region I asked you to prefer. Do not create, modify, or delete any AWS resource.
+Using the AWS connector, identify the AWS account/identity context available to you and tell me which AWS region I asked you to prefer.
 ```
 
 The first tool use should cause an AWS authorization/sign-in flow if the connector is not already authorized.
@@ -110,55 +108,51 @@ AWS provides a managed policy named:
 AWSMCPSignInOAuthAccessPolicy
 ```
 
-Do not attach that policy preemptively if the connection already works.
-
 If the exact AWS error says the identity lacks the OAuth-sign-in permission:
 
 1. preserve the exact error;
 2. open AWS IAM;
 3. identify the IAM user/role you are actually using;
-4. add the AWS-documented OAuth access policy only if you are authorized to manage that identity and the permission is genuinely missing;
+4. add the AWS-documented OAuth access policy if you are authorized to manage that identity and the permission is genuinely missing;
 5. retry the connection.
-
-Do not attach `AdministratorAccess` to solve an OAuth permission error.
 
 ## Step 8 — Test AWS documentation/knowledge access first
 
 Ask:
 
 ```text
-Using the AWS connector, explain what Amazon S3 is and identify the AWS region us-east-2. Do not call any resource-changing API.
+Using the AWS connector, explain what Amazon S3 is and identify the AWS region us-east-2.
 ```
 
 The managed MCP Server includes AWS knowledge capabilities that can be used without creating resources.
 
-## Step 9 — Test a read-only account/resource query
+## Step 9 — Test an account/resource query
 
 Ask a query appropriate to resources you already have. For a new account, use something such as:
 
 ```text
-Using the AWS connector, check whether I currently have any S3 buckets visible to this AWS identity. Do not create or modify anything.
+Using the AWS connector, check whether I currently have any S3 buckets visible to this AWS identity.
 ```
 
 If there are none, a result showing no buckets is a successful connection test.
 
-## Step 10 — Do not begin with resource creation
+## Step 10 — Verify the connection before resource creation
 
-Before letting Claude create S3 buckets, Lambda functions, databases, or other resources, first verify:
+Confirm:
 
 ```text
 correct AWS account
 correct connector
-read-only query works
+resource query works
 cost implications understood
 intended AWS region known
 ```
 
-The MCP Server can reach AWS APIs allowed by your IAM identity. Treat it like a powerful cloud interface, not a read-only documentation plugin.
+The MCP Server can reach AWS APIs allowed by your IAM identity.
 
 ## What you should see
 
-You should have an **AWS MCP** custom connector in Claude, successfully authenticated through AWS Sign-in, with a harmless read-only AWS query working.
+You should have an **AWS MCP** custom connector in Claude, successfully authenticated through AWS Sign-in, with an AWS query working.
 
 ## If you do not see this
 
@@ -167,7 +161,7 @@ Use the error layer:
 - Claude cannot add the URL → check custom connector support and the current endpoint.
 - OAuth never starts → check the MCP URL and current Claude connector behavior.
 - AWS returns authorization error for OAuth → check the two documented `signin:` permissions.
-- OAuth succeeds but AWS API calls return `AccessDenied` → investigate the specific downstream AWS permission, not connector authentication.
+- OAuth succeeds but AWS API calls return `AccessDenied` → investigate the specific downstream AWS permission.
 - AWS call works but returns no resources → that may simply be the correct state of the account.
 
 ## Ask ordinary Claude or ChatGPT this
@@ -175,11 +169,10 @@ Use the error layer:
 ```text
 I am connecting Claude Pro to the AWS managed MCP Server using a remote custom connector and browser OAuth.
 
-I am not using AWS access keys, a local proxy, or a custom Lambda gateway.
 Failing stage: [add connector / OAuth sign-in / OAuth permission / AWS API call]
 Exact sanitized error: [paste it]
 
-Do not ask for AWS credentials or tokens. Distinguish connector/OAuth failure from downstream IAM AccessDenied. Use current AWS MCP Server and Claude custom connector documentation and give me the smallest browser-only fix first.
+Distinguish connector/OAuth failure from downstream IAM AccessDenied. Use current AWS MCP Server and Claude custom connector documentation and give me the smallest browser-only fix first.
 ```
 
 ## Next chapter

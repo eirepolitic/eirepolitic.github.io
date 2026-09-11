@@ -25,13 +25,13 @@ Official reference: [Claude Code on the web](https://support.claude.com/en/artic
 
 For Claude Code on the web to work with a GitHub repository, Claude must be authorized through its GitHub integration/App and that App must have access to the repository you want Claude Code to use.
 
-For this guide, do **not** create a GitHub personal access token. Install/authorize the Claude GitHub App instead.
+Use the Claude GitHub App for repository access in this guide.
 
 ## Important — The agent is the repository operator
 
 This guide assumes Claude is the primary modifier and operator of the repositories connected to it.
 
-Do not design the normal workflow around the user manually reviewing and approving each pull request.
+The normal workflow proceeds without manual user review of each pull request.
 
 Claude may use branches and pull requests when they improve traceability, automated testing, rollback, or change history. Where repository tooling permits, Claude should complete the repository workflow itself. If the web product produces a pull request but does not itself provide an autonomous merge control, configure repository automation rather than making the user the routine merge gate.
 
@@ -40,8 +40,6 @@ Claude may use branches and pull requests when they improve traceability, automa
 1. Sign in to Claude with the Pro account from Chapter 1.
 2. Open Claude Code from the Claude interface or Anthropic's Claude Code web entry point.
 3. Confirm the page offers a way to choose or connect a GitHub repository.
-
-Do not install the terminal CLI for this guide.
 
 ## Step 2 — Check whether the Claude GitHub App is already installed
 
@@ -79,7 +77,7 @@ Continue to Step 3.
 Enter:
 
 ```text
-Inspect this repository. Read claude-test.txt and README.md. Do not change any files yet. Tell me what is currently in the repository.
+Inspect this repository. Read claude-test.txt and README.md. Tell me what is currently in the repository.
 ```
 
 Claude should inspect the repository and report the existing files.
@@ -94,16 +92,14 @@ Create a new file named claude-code-test.md containing:
 # Claude Code test
 This file was created through Claude Code on the web.
 
-Verify the change, run any relevant repository checks, and complete the repository-side workflow as far as the available GitHub/Claude tooling permits. Do not wait for me to approve the change.
+Verify the change, run any relevant repository checks, and complete the repository-side workflow as far as the available GitHub/Claude tooling permits. Proceed without waiting for my approval.
 ```
 
 Claude Code should work in its isolated environment and push the completed work to GitHub.
 
-## Step 7 — Confirm the repository result, not approve it
+## Step 7 — Confirm the repository result
 
-When the task finishes, inspect only to verify that the automation worked as intended.
-
-You are not acting as a required approval gate.
+When the task finishes, inspect the result to verify that the automation worked as intended.
 
 Check:
 
@@ -116,25 +112,19 @@ If the web workflow stops with an open pull request because autonomous merge is 
 
 ## Step 8 — Configure automatic completion when pull requests are used
 
-The objective is that ordinary Claude-created changes do not wait for a user to click **Merge**.
+The objective is that ordinary Claude-created changes complete without waiting for a user to click **Merge**.
 
 Use the simplest repository mechanism available to complete qualifying Claude-created pull requests automatically after required checks pass. Depending on the repository, this can be GitHub auto-merge or repository automation configured specifically for Claude-created branches/PRs.
 
-The important rule is:
+The intended flow is:
 
 ```text
 Claude change → automated validation → automated merge/completion
 ```
 
-not:
+Keep any automated merge rule narrow enough that it applies only to the intended Claude-created changes.
 
-```text
-Claude change → wait for user approval → user merges
-```
-
-Keep any automated merge rule narrow enough that unrelated pull requests are not merged unintentionally.
-
-If no autonomous merge mechanism is available for the repository, Claude may use a simpler supported write path instead where appropriate and permitted by the repository. Do not invent a human-approval requirement just to preserve a PR workflow.
+If no autonomous merge mechanism is available for the repository, Claude may use a simpler supported write path instead where appropriate and permitted by the repository.
 
 ## Step 9 — Understand what Claude Code replaces
 
@@ -165,7 +155,7 @@ When you create another repository:
 8. refresh the repository selector;
 9. select the newly authorized repository.
 
-Do not create a PAT simply because a new repository is missing from Claude Code. First check the Claude GitHub App's repository access.
+If a new repository is missing from Claude Code, first check the Claude GitHub App's repository access.
 
 ## What you should see
 
@@ -182,24 +172,24 @@ You should now have:
 
 - If Claude asks you to connect GitHub, install/authorize the Claude GitHub App.
 - If the App is installed but `claude-director-test` is missing, add that repository in the App configuration.
-- If Claude can create a branch/PR but it remains open indefinitely, inspect the repository's merge automation rather than asking the user to become the permanent approval step.
+- If Claude can create a branch/PR but it remains open indefinitely, inspect the repository's merge automation.
 - If repository rules prevent the intended autonomous workflow, decide whether those rules should be adjusted for this agent-operated repository.
 - If the task environment fails to set up, preserve the exact Claude Code error.
-- If Claude makes an incorrect change, correct or revert it through the repository workflow; do not redesign the normal process around manual pre-approval.
+- If Claude makes an incorrect change, correct or revert it through the repository workflow.
 
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
 I am using Claude Code on the web as the primary autonomous operator of a GitHub repository.
 
-I do not want routine user approval of pull requests or merges. Branches and PRs may be used for traceability and checks, but qualifying changes should complete automatically where the available tooling permits.
+Routine pull requests or merges should complete automatically where the available tooling permits. Branches and PRs may be used for traceability and checks.
 
 Failing stage: [GitHub App / repository access / task / branch / PR / checks / automatic merge or completion]
 What I expected: [describe it]
 What I see: [describe it]
 Exact non-secret error: [paste it]
 
-Do not ask for GitHub passwords, OAuth tokens, or credentials. Give me the simplest browser-based fix that preserves autonomous repository operation.
+Give me the simplest browser-based fix that preserves autonomous repository operation.
 ```
 
 ## Next chapter

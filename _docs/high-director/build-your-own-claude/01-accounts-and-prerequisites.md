@@ -23,8 +23,6 @@ GitHub
 AWS
 ```
 
-Do not create AWS resources or change GitHub permissions yet.
-
 ## Step 1 — Create or sign in to Claude
 
 Open [Claude](https://claude.ai/) in a desktop web browser.
@@ -43,8 +41,6 @@ If **no**:
 2. Choose the current sign-in method offered for your account, such as email or Google.
 3. Complete Anthropic's account-verification flow.
 4. Sign in.
-
-Do not create an Anthropic Console/API account for this guide unless you independently need API access. Claude Pro does not include Claude API billing, and the primary build does not require the API.
 
 ## Step 2 — Check whether you already have Pro
 
@@ -85,7 +81,7 @@ If you want to continue with Pro:
 6. Return to Claude after the upgrade.
 7. Confirm the account now shows **Pro**.
 
-Do not purchase Max just for this guide. Start with Pro. Upgrade only later if your actual usage requires more capacity.
+Start with Pro. Upgrade later if your actual usage requires more capacity.
 
 ## Step 3 — Verify the features this guide needs
 
@@ -108,8 +104,6 @@ Custom connectors / remote MCP
 Claude Pro includes Claude Code. The guide uses **Claude Code on the web**, not the terminal version.
 
 Look for Claude Code in the Claude interface or open Anthropic's Claude Code web entry point from the Claude product interface.
-
-You do not need to install the Claude Code CLI.
 
 ### Check Connectors
 
@@ -143,15 +137,11 @@ If **no**:
 4. Sign in.
 5. Record your username.
 
-Do not create a GitHub personal access token. The primary Claude Code web path does not require you to manually create one.
-
 ## Optional — GitHub two-factor authentication
 
-Two-factor authentication is **not required by this guide** and is not an architectural requirement for Claude Code.
+Two-factor authentication is optional for this guide.
 
 If GitHub itself requires two-factor authentication for your account, complete GitHub's required setup before continuing.
-
-If GitHub does **not** require it, you may skip it and continue directly to AWS.
 
 You can enable it later under **GitHub → Settings → Password and authentication** if you want the extra account-security layer.
 
@@ -165,7 +155,6 @@ If **yes**:
 
 1. Sign in.
 2. Confirm it is the account you intend to use.
-3. Do not create resources yet.
 
 If **no**:
 
@@ -173,13 +162,12 @@ If **no**:
 2. Complete the required identity, contact, payment, and verification steps shown by AWS.
 3. Choose only services/support options you understand and intend to pay for.
 4. Sign in to the AWS Management Console.
-5. Do not create resources yet.
 
-AWS signup requirements vary and can change. Follow the current AWS screens rather than trying to bypass an eligibility, payment, or identity requirement.
+AWS signup requirements vary and can change. Follow the current AWS screens.
 
 ## Step 6 — Create a private setup note
 
-Record only non-secret information:
+Record:
 
 ```text
 Claude plan: Pro
@@ -187,8 +175,6 @@ GitHub username:
 AWS account access confirmed: yes/no
 Preferred AWS region: us-east-2
 ```
-
-Do not put passwords, AWS credentials, OAuth tokens, GitHub credentials, recovery codes, or payment data in the note.
 
 ## What you should see
 
@@ -207,8 +193,6 @@ If GitHub specifically required two-factor authentication for your account, that
 
 Resolve only the missing account/feature before continuing.
 
-Do not buy Max, create API keys, create GitHub PATs, enable optional authentication steps, or create AWS access keys to solve an ordinary account-navigation problem.
-
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
@@ -221,7 +205,7 @@ What I expected: [describe it]
 What I see: [describe it]
 Exact non-secret error: [paste it]
 
-Do not ask me for passwords, OAuth tokens, AWS credentials, payment details, recovery codes, or other secrets. Check the current official documentation and give me click-by-click browser instructions.
+Check the current official documentation and give me click-by-click browser instructions.
 ```
 
 ## Next chapter

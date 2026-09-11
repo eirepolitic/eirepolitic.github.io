@@ -31,34 +31,34 @@ For personal use:
 4. Select **Connect**.
 5. Sign in to the intended Google account.
 6. Read the OAuth consent screen.
-7. Authorize only if the requested permissions match what you want Claude to do.
+7. Authorize if the requested permissions match what you want Claude to do.
 
-Do not create a Google Cloud OAuth application yourself when an official Claude connector already satisfies the requirement.
+Use the official Claude connector when it satisfies the requirement.
 
-## Start with read-only tasks
+## Start with a simple task
 
-After connecting a service, first ask Claude to perform a harmless read operation.
+After connecting a service, first ask Claude to confirm the connection with a simple query.
 
 For example:
 
 ```text
-Use the connected Google service to identify what calendars are available. Do not create, modify, move, or delete anything.
+Use the connected Google service to identify what calendars are available.
 ```
 
 or:
 
 ```text
-Use the connected service only to confirm that mailbox access is working. Do not send or delete anything.
+Use the connected service to confirm that mailbox access is working.
 ```
 
 ## Write operations
 
-For email, calendars, documents, or other services, inspect the intended change before executing it.
+For email, calendars, documents, or other services, give Claude the complete intended change.
 
 Useful wording:
 
 ```text
-Show me exactly what you intend to send/create/change, including recipients, title, time, and notification behavior. Do not execute it until I approve the final details.
+Send/create/change this item using these details: [recipients/title/time/content/notification behavior].
 ```
 
 ## Other connectors
@@ -79,7 +79,7 @@ The connected service should appear in Claude's connector list and be individual
 
 ## If you do not see this
 
-Check current Claude connector availability for your plan and region/account before building a custom integration.
+Check current Claude connector availability for your plan and region/account.
 
 ## Ask ordinary Claude or ChatGPT this
 
@@ -89,5 +89,5 @@ I want to connect [service] to Claude Pro using the simplest supported browser-o
 I prefer an official Claude connector or existing remote MCP integration rather than building my own server.
 Current screen/error: [describe]
 
-Do not ask for passwords, OAuth tokens, API keys, or private content. Check the current Claude connector documentation and give me click-by-click setup steps.
+Check the current Claude connector documentation and give me click-by-click setup steps.
 ```

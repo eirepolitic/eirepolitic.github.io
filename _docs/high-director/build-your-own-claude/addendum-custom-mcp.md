@@ -15,9 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/addendum-custom-mcp/
 
 ## When a custom MCP server is justified
 
-Do not build a custom MCP server merely because the technology is available.
-
-Use one when Claude needs a capability that is not already provided by:
+Use a custom MCP server when Claude needs a capability that is not already provided by:
 
 ```text
 Claude Code on the web
@@ -60,19 +58,19 @@ Decide:
 9. How will requests be logged/audited?
 10. How will credentials be rotated or revoked?
 
-Do not write code or IAM policies before these boundaries are known.
+Write code and IAM policies after these boundaries are known.
 
 ## Relationship to the original High Director Lambda wrapper
 
 The original ChatGPT High Director uses a custom Lambda wrapper because custom GPT Actions need an HTTP/OpenAPI bridge for the GitHub capabilities used by that design.
 
-For Claude, do **not** port that Lambda wrapper merely to reproduce the old architecture. Claude Code already provides the normal GitHub development path more simply.
+Claude Code already provides the normal GitHub development path more simply, so the Claude edition uses that path instead of porting the old wrapper by default.
 
 If a future requirement genuinely needs the old wrapper's API surface inside regular Claude chats, a separate project could adapt those backend operations into an MCP server. That would be a new implementation and should be tested independently rather than modifying the proven Claude Code path.
 
 ## Simplest hosting approach
 
-When a custom server is actually necessary, prefer a managed/serverless hosting option that:
+When a custom server is necessary, prefer a managed/serverless hosting option that:
 
 - supports HTTPS;
 - is publicly reachable from Anthropic's cloud;
@@ -80,13 +78,9 @@ When a custom server is actually necessary, prefer a managed/serverless hosting 
 - supports the required authentication method;
 - has clear logs and cost controls.
 
-Do not choose infrastructure solely because it resembles the ChatGPT version.
-
 ## Keep permissions narrow
 
-Expose only tools that correspond to intended user actions.
-
-For example, if the requirement is to read job status, do not expose delete-job or administrator tools just because the backend API supports them.
+Expose tools that correspond to the intended user actions.
 
 ## Test pattern
 
@@ -106,7 +100,7 @@ Keep the core Claude Code/GitHub and managed AWS MCP integrations unchanged whil
 
 ## What you should see
 
-A custom MCP server should appear as a separate Claude connector and its failure should not require changing GitHub or AWS managed MCP configuration.
+A custom MCP server should appear as a separate Claude connector and remain independent from GitHub and the managed AWS MCP configuration.
 
 ## Ask ordinary Claude or ChatGPT this
 
@@ -115,5 +109,5 @@ I have a working Claude Pro setup using Claude Code web for GitHub and the AWS m
 
 I am considering a custom remote MCP server for this missing capability: [describe capability].
 
-Before giving implementation steps, tell me whether an existing Claude connector, Claude Code, or managed MCP service already covers it. If not, help me define the smallest tool surface, authentication model, hosting choice, permissions, cost, and test plan. Do not broaden access beyond the stated requirement.
+Before giving implementation steps, tell me whether an existing Claude connector, Claude Code, or managed MCP service already covers it. If not, help me define the smallest tool surface, authentication model, hosting choice, permissions, cost, and test plan.
 ```

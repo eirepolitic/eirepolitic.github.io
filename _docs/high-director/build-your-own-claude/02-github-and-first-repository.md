@@ -63,13 +63,7 @@ Claude High Director connection test.
 
 4. Commit the file to the default branch.
 
-## Step 5 — Do not create a personal access token
-
-Claude Code on the web connects to GitHub through Anthropic's supported GitHub integration. The primary path in this guide does not require a manually created GitHub PAT.
-
-This is one of the major simplifications compared with the ChatGPT edition.
-
-## Step 6 — Record the repository name
+## Step 5 — Record the repository name
 
 Add to your private setup note:
 
@@ -91,8 +85,6 @@ claude-test.txt
 
 Check that you are signed in to the correct GitHub account and that the file was committed rather than left in an editor.
 
-Do not create credentials to fix a repository-creation problem.
-
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
@@ -102,7 +94,7 @@ I am stuck at: [creation / README / test file / branch]
 What I clicked: [describe it]
 Exact non-secret error: [paste it]
 
-Do not ask for passwords or GitHub credentials. Give me current click-by-click GitHub instructions.
+Give me current click-by-click GitHub instructions.
 ```
 
 ## Next chapter
