@@ -23,8 +23,6 @@ The entire primary path is browser-based.
 
 ## Cheapest and easiest architecture
 
-The recommended implementation is:
-
 ```text
 You
  |
@@ -52,15 +50,13 @@ Claude Pro
    Step Functions / other AWS services
 ```
 
-This design intentionally avoids rebuilding the custom AWS Lambda GitHub gateway used by the ChatGPT edition.
-
 ## Repository operating model
 
 The Claude edition assumes the agent is the primary modifier and operator of its connected repositories.
 
-Normal repository changes should not require the user to inspect or approve each pull request or merge.
+Normal repository changes proceed without routine user approval.
 
-Claude may still use branches, pull requests, CI checks, and merges when they improve traceability, isolation, rollback, or automated verification. Those mechanisms are repository-control tools, not mandatory human approval gates.
+Claude may use branches, pull requests, CI checks, and merges when they improve traceability, isolation, rollback, or automated verification.
 
 Where Claude Code web produces a pull request, the intended long-term repository workflow is:
 
@@ -70,8 +66,6 @@ Claude implementation
 → automated merge/completion where supported
 → Claude verifies final repository state
 ```
-
-If a simpler supported direct-write path is appropriate for a repository, the agent may use that instead.
 
 ## Why this architecture was chosen
 
@@ -97,8 +91,6 @@ Official references:
 
 The ChatGPT implementation needs a custom Action, OpenAPI schema, Function URL, application API key, GitHub personal access token, and Lambda wrapper because the custom GPT needs a bridge to GitHub.
 
-The Claude edition does not use that bridge for normal repository development.
-
 Claude Code handles repository work directly through its GitHub integration. The AWS integration uses AWS's managed MCP server instead of another custom Lambda gateway.
 
 That means the Claude edition has fewer credentials and fewer moving parts.
@@ -116,27 +108,20 @@ After the core guide is complete, you should be able to:
 - configure repository changes to complete automatically where supported;
 - create new GitHub repositories through the GitHub website and then hand them to Claude Code;
 - connect Claude to AWS through the managed AWS MCP Server;
-- let Claude inspect or operate AWS resources only within the permissions of the AWS identity you authorize.
+- let Claude inspect or operate AWS resources within the permissions of the AWS identity you authorize.
 
-## What this guide does not assume
+## What you need
 
-You do not need:
+The primary path uses:
 
-- Python installed locally;
-- Git installed locally;
-- an AWS CLI installation;
-- VS Code or another IDE;
-- a local terminal;
-- an Anthropic API account;
-- paid Claude API usage;
-- a custom Lambda gateway for GitHub;
-- a GitHub personal access token for the primary Claude Code path.
+- Claude Pro;
+- a GitHub account;
+- an AWS account;
+- a web browser.
 
 Claude Pro and Claude API billing are separate products. This guide uses the Claude Pro subscription and does not require API billing for the primary path.
 
 ## Before you start
-
-Answer these questions.
 
 ### Do you already have a Claude account?
 
@@ -160,8 +145,6 @@ Answer these questions.
 
 ## Core chapters
 
-Follow these in order for the first build:
-
 1. [Accounts and prerequisites]({{ '/docs/high-director/build-your-own-claude/01-accounts-and-prerequisites/' | relative_url }})
 2. [Create and prepare GitHub]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }})
 3. [Create the High Director Claude Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
@@ -177,32 +160,3 @@ Optional addenda:
 
 - [Google Workspace and other Claude connectors]({{ '/docs/high-director/build-your-own-claude/addendum-connectors/' | relative_url }})
 - [Advanced custom MCP servers]({{ '/docs/high-director/build-your-own-claude/addendum-custom-mcp/' | relative_url }})
-
-## Standard checkpoint format
-
-Every major chapter ends with:
-
-### What you should see
-
-The expected successful state.
-
-### If you do not see this
-
-The smallest safe checks to perform.
-
-### Ask ordinary Claude or ChatGPT this
-
-A copy/paste troubleshooting prompt that excludes credentials and private information.
-
-## Credential rule
-
-Never paste these values into documentation or an ordinary troubleshooting conversation:
-
-- passwords;
-- AWS access keys or secret keys;
-- OAuth tokens;
-- GitHub credentials;
-- private repository secrets;
-- payment information.
-
-The primary architecture is deliberately designed so you do not need to manually create a GitHub PAT or a custom application API key.
