@@ -362,25 +362,53 @@ If it does not, use the **Switch role** steps in Step 6B first.
 3. Select **+** or **Add connector**.
 4. Choose **Add custom connector**.
 
-### 7.4 — Add the AWS MCP Server
+### 7.4 — Enter the AWS MCP connector details
 
-For the currently documented AWS MCP Server endpoint in `us-east-1`, enter:
+Use these values:
 
 ```text
-https://aws-mcp.us-east-1.api.aws/mcp
+Name: AWS MCP
+Remote MCP server URL: https://aws-mcp.us-east-1.api.aws/mcp
+Authentication type: OAuth
 ```
 
-Then:
+Then complete the current Claude connector screens in this order:
 
-1. Enter the URL in the connector URL field.
-2. Name the connector:
+1. In **Name**, enter:
 
 ```text
 AWS MCP
 ```
 
-3. If Claude shows optional OAuth Client ID or Client Secret fields, leave them blank for the normal AWS-managed OAuth discovery flow.
-4. Select **Add**.
+2. In **Remote MCP server URL** or the equivalent URL field, enter:
+
+```text
+https://aws-mcp.us-east-1.api.aws/mcp
+```
+
+3. Continue until Claude shows the **Authentication type** selector.
+4. Select:
+
+```text
+OAuth
+```
+
+AWS MCP uses OAuth 2.1 through AWS Sign-in, so **OAuth** is the authentication type for this connector. Other authentication types in the selector apply to different MCP servers.
+
+5. Continue to the OAuth configuration screen.
+6. If Claude displays optional **OAuth Client ID** and **OAuth Client Secret** fields, leave those fields empty for AWS MCP. AWS MCP supports OAuth discovery and does not require you to create a separate OAuth client for this setup.
+7. Review the connector summary.
+8. Select **Add**, **Save**, or the current final button.
+
+### What you should see
+
+Claude's connector list should now contain:
+
+```text
+AWS MCP
+```
+
+The connector may show that authentication still needs to be completed. That is expected; the AWS sign-in flow is triggered when Claude first invokes an AWS MCP tool.
 
 ### 7.5 — Enable AWS MCP in the High Director Project
 
@@ -446,6 +474,8 @@ First retry the connection using AWS's documented OAuth-initialization endpoint 
 https://aws-mcp.us-east-1.api.aws/mcp?oauth=initialize
 ```
 
+When re-adding the connector, select **OAuth** again as the **Authentication type**.
+
 Then repeat Steps 7.5 through 7.9.
 
 If AWS instead shows a permission error mentioning:
@@ -472,6 +502,7 @@ AWS MCP authentication plan: OAuth through AWS Sign-in
 AWS identity path: existing identity / ClaudeHighDirectorRole
 AWS account ID:
 AWS role name: ClaudeHighDirectorRole   [if used]
+AWS MCP connector authentication type: OAuth
 AWS MCP connector added in Claude: yes/no
 AWS MCP OAuth completed: yes/no
 ```
@@ -484,7 +515,7 @@ You should now have:
 - a budget/alert;
 - either an existing IAM identity ready for MCP OAuth, or `ClaudeHighDirectorRole` ready to assume;
 - `AWSMCPSignInOAuthAccessPolicy` available on the identity that authorizes the MCP connection;
-- an **AWS MCP** connector in Claude;
+- an **AWS MCP** connector in Claude configured with **Authentication type: OAuth**;
 - completed AWS browser OAuth;
 - a successful first AWS resource query from the High Director Project.
 
@@ -509,10 +540,11 @@ I am preparing AWS for Claude High Director using the managed AWS MCP Server and
 Identity path: [existing IAM identity / dedicated ClaudeHighDirectorRole]
 AWS account ID: [12-digit ID]
 Current IAM username or identity type: [name/type]
-I am stuck at: [create role / attach policy / add sts:AssumeRole / switch role / add AWS MCP connector / AWS OAuth / first AWS query]
+Claude connector authentication type selected: OAuth
+I am stuck at: [create role / attach policy / add sts:AssumeRole / switch role / add AWS MCP connector / authentication type / AWS OAuth / first AWS query]
 Exact non-secret error: [paste it]
 
-Give me exact browser click-by-click steps and identify whether the issue is IAM role assumption, AWS MCP OAuth, or AWS service permissions.
+Give me exact browser click-by-click steps and identify whether the issue is IAM role assumption, Claude connector configuration, AWS MCP OAuth, or AWS service permissions.
 ```
 
 ## Next chapter
