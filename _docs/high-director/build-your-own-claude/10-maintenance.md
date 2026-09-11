@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/10-maintenance/
 
 ## Goal
 
-Keep the setup working without accumulating unnecessary permissions, credentials, or cost.
+Keep the setup working with clean permissions and controlled cost.
 
 ## Monthly checklist
 
@@ -40,7 +40,7 @@ If usage becomes a recurring limitation:
 2. Decide whether the problem is occasional or persistent.
 3. Compare optional usage credits or higher plans only if needed.
 
-Do not assume a larger plan improves GitHub or AWS permissions. Those are separate authorization systems.
+GitHub and AWS permissions are managed separately from the Claude subscription tier.
 
 ## Review GitHub authorization
 
@@ -54,7 +54,7 @@ In GitHub:
 4. Review repository access.
 5. Remove repositories Claude no longer needs.
 
-If you create a new repository and Claude Code cannot see it, add that repository rather than unnecessarily granting access to every repository.
+If you create a new repository and Claude Code cannot see it, add that repository to the App's access.
 
 ## Review old branches and pull requests
 
@@ -67,14 +67,12 @@ Periodically:
 3. Close obsolete test PRs.
 4. Review branches and delete obsolete merged/test branches where appropriate.
 
-Do not delete branches containing work you may still need.
-
 ## Review AWS cost
 
 1. Open **Billing and Cost Management**.
 2. Review current charges by service.
 3. Check whether resources created during experiments are still running.
-4. Delete only resources you understand and no longer need.
+4. Delete resources you understand and no longer need.
 
 Remember: the AWS MCP Server itself is documented as no additional charge, but the AWS resources it creates or uses are billed normally.
 
@@ -90,8 +88,6 @@ If you added permissions during setup or later work:
 4. Remove temporary permissions that are no longer needed.
 5. Keep the AWS MCP OAuth sign-in permissions only if you still use the connector.
 
-Do not remove permissions blindly from an identity used by unrelated AWS workloads.
-
 ## Revoke the AWS MCP connection
 
 If you no longer want Claude connected to AWS:
@@ -101,8 +97,6 @@ If you no longer want Claude connected to AWS:
 3. In AWS, review the identity/policies used for MCP access.
 4. Remove MCP-specific OAuth permission if it is no longer required and doing so will not affect another approved use.
 5. Review CloudTrail if you need an audit trail of recent MCP-originated activity.
-
-You do not need to rotate AWS access keys because this guide did not create long-lived access keys for the connection.
 
 ## Reconnect after authorization changes
 
@@ -123,8 +117,6 @@ When you want to change High Director behavior:
 4. Save.
 5. Start a fresh project chat and test the new behavior.
 
-Keep credentials out of project instructions and project knowledge.
-
 ## Retire the entire setup
 
 If you no longer want the Claude edition:
@@ -135,9 +127,7 @@ If you no longer want the Claude edition:
 4. Delete `claude-director-test` if you no longer need it.
 5. Review AWS for resources created through testing.
 6. Review AWS billing afterward.
-7. Downgrade/cancel Claude Pro only if you no longer want the paid features.
-
-Do not delete an AWS or GitHub account simply to retire this integration.
+7. Downgrade/cancel Claude Pro if you no longer want the paid features.
 
 ## Ask ordinary Claude or ChatGPT this
 
@@ -147,7 +137,7 @@ I maintain a browser-only Claude High Director setup using Claude Pro, Claude Co
 Maintenance task: [review access / remove repository / revoke AWS connector / reduce IAM / review cost / retire setup]
 Current working state: [describe]
 
-Do not ask for credentials or tokens. Give me a change-one-thing-at-a-time procedure that preserves unrelated GitHub/AWS access.
+Give me a change-one-thing-at-a-time procedure that preserves unrelated GitHub/AWS access.
 ```
 
 ## Core guide complete
