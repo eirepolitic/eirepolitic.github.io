@@ -370,6 +370,7 @@ Use these values:
 Name: AWS MCP
 Remote MCP server URL: https://aws-mcp.us-east-1.api.aws/mcp
 Authentication type: OAuth
+OAuth client: Register automatically
 ```
 
 Then complete the current Claude connector screens in this order:
@@ -393,12 +394,30 @@ https://aws-mcp.us-east-1.api.aws/mcp
 OAuth
 ```
 
-AWS MCP uses OAuth 2.1 through AWS Sign-in, so **OAuth** is the authentication type for this connector. Other authentication types in the selector apply to different MCP servers.
+5. Continue to the OAuth client selection screen.
+6. When Claude asks how the OAuth client should be provided, select:
 
-5. Continue to the OAuth configuration screen.
-6. If Claude displays optional **OAuth Client ID** and **OAuth Client Secret** fields, leave those fields empty for AWS MCP. AWS MCP supports OAuth discovery and does not require you to create a separate OAuth client for this setup.
-7. Review the connector summary.
-8. Select **Add**, **Save**, or the current final button.
+```text
+Register automatically
+```
+
+For this AWS MCP setup, **Register automatically** is the intended path. AWS MCP supports dynamic OAuth client registration, so Claude can register the OAuth client as part of the connection flow.
+
+The other choices are for different integration models:
+
+```text
+Claude's published identity
+→ use when the MCP provider explicitly supports Claude's published OAuth identity
+
+Use your own OAuth client
+→ use when you have separately registered and manage an OAuth client yourself
+```
+
+For this guide, continue with **Register automatically**.
+
+7. If the next screen shows optional OAuth client fields, leave them empty because the client is being registered automatically.
+8. Review the connector summary.
+9. Select **Add**, **Save**, or the current final button.
 
 ### What you should see
 
@@ -408,7 +427,9 @@ Claude's connector list should now contain:
 AWS MCP
 ```
 
-The connector may show that authentication still needs to be completed. That is expected; the AWS sign-in flow is triggered when Claude first invokes an AWS MCP tool.
+with an OAuth configuration based on automatic client registration.
+
+The connector may show that authentication still needs to be completed. The AWS sign-in flow is triggered when Claude first invokes an AWS MCP tool.
 
 ### 7.5 — Enable AWS MCP in the High Director Project
 
@@ -474,7 +495,12 @@ First retry the connection using AWS's documented OAuth-initialization endpoint 
 https://aws-mcp.us-east-1.api.aws/mcp?oauth=initialize
 ```
 
-When re-adding the connector, select **OAuth** again as the **Authentication type**.
+When re-adding the connector, use:
+
+```text
+Authentication type: OAuth
+OAuth client: Register automatically
+```
 
 Then repeat Steps 7.5 through 7.9.
 
@@ -503,6 +529,7 @@ AWS identity path: existing identity / ClaudeHighDirectorRole
 AWS account ID:
 AWS role name: ClaudeHighDirectorRole   [if used]
 AWS MCP connector authentication type: OAuth
+AWS MCP OAuth client: Register automatically
 AWS MCP connector added in Claude: yes/no
 AWS MCP OAuth completed: yes/no
 ```
@@ -515,7 +542,7 @@ You should now have:
 - a budget/alert;
 - either an existing IAM identity ready for MCP OAuth, or `ClaudeHighDirectorRole` ready to assume;
 - `AWSMCPSignInOAuthAccessPolicy` available on the identity that authorizes the MCP connection;
-- an **AWS MCP** connector in Claude configured with **Authentication type: OAuth**;
+- an **AWS MCP** connector in Claude configured with **Authentication type: OAuth** and **OAuth client: Register automatically**;
 - completed AWS browser OAuth;
 - a successful first AWS resource query from the High Director Project.
 
@@ -541,7 +568,8 @@ Identity path: [existing IAM identity / dedicated ClaudeHighDirectorRole]
 AWS account ID: [12-digit ID]
 Current IAM username or identity type: [name/type]
 Claude connector authentication type selected: OAuth
-I am stuck at: [create role / attach policy / add sts:AssumeRole / switch role / add AWS MCP connector / authentication type / AWS OAuth / first AWS query]
+Claude OAuth client option selected: Register automatically
+I am stuck at: [create role / attach policy / add sts:AssumeRole / switch role / add AWS MCP connector / authentication type / OAuth client selection / AWS OAuth / first AWS query]
 Exact non-secret error: [paste it]
 
 Give me exact browser click-by-click steps and identify whether the issue is IAM role assumption, Claude connector configuration, AWS MCP OAuth, or AWS service permissions.
