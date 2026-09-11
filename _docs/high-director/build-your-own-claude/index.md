@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition
-summary: A zero-assumed-knowledge, browser-only guide for building a High Director-style personal agent using Claude Pro, Claude Projects, Claude Code on the web, GitHub, and the managed AWS MCP Server.
+summary: Browser-only setup guide for a High Director-style personal agent using Claude Pro, Claude Projects, Claude Code on the web, GitHub, and the managed AWS MCP Server.
 section: high-director
 doc_type: runbook
 status: active
@@ -13,150 +13,71 @@ permalink: /docs/high-director/build-your-own-claude/
 
 # Build Your Own High Director — Claude Edition
 
-## What this guide does
+This guide is designed to be followed in order.
 
-This is the Claude/Anthropic counterpart to [Build Your Own High Director]({{ '/docs/high-director/build-your-own/' | relative_url }}).
-
-It is written for a person who may have no GitHub repositories, no AWS account, no knowledge of Git, no programming experience, and no locally installed development tools.
-
-The entire primary path is browser-based.
-
-## Cheapest and easiest architecture
+Each chapter is structured the same way:
 
 ```text
-You
- |
- v
+Goal
+→ Complete this step
+→ What you should see
+→ Additional information (expand only if needed)
+→ Troubleshooting (expand only if needed)
+```
+
+The main instructions contain only the shortest path needed to continue.
+
+## Architecture
+
+```text
 Claude Pro
- |
- +-- Claude Project
- |     persistent High Director instructions
- |
- +-- Claude Code on the web
- |     primary repository modifier/operator
- |     file changes
- |     tests
- |     branches / pull requests when useful
- |     automated repository completion
- |
- +-- Custom connector
-       |
-       v
-   AWS managed MCP Server
-       |
-       v
-   Your AWS account
-   S3 / Lambda / CloudWatch /
-   Step Functions / other AWS services
+├─ High Director Project
+│  └─ planning, instructions, AWS connector
+├─ Claude Code on the web
+│  └─ GitHub repository operation
+└─ AWS MCP connector
+   └─ AWS account
 ```
 
-## Repository operating model
+## Complete the guide in this order
 
-The Claude edition assumes the agent is the primary modifier and operator of its connected repositories.
+1. [Accounts and prerequisites]({{ '/docs/high-director/build-your-own-claude/01-accounts-and-prerequisites/' | relative_url }})
+2. [Create the GitHub test repository]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }})
+3. [Create the High Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
+4. [Connect Claude Code to GitHub]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
+5. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
+6. [Connect Claude to AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
+7. [Run end-to-end tests]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
+8. [Daily operation]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }})
+9. [Troubleshooting]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }})
+10. [Maintenance]({{ '/docs/high-director/build-your-own-claude/10-maintenance/' | relative_url }})
 
-Normal repository changes proceed without routine user approval.
+Optional:
 
-Claude may use branches, pull requests, CI checks, and merges when they improve traceability, isolation, rollback, or automated verification.
-
-Where Claude Code web produces a pull request, the intended long-term repository workflow is:
-
-```text
-Claude implementation
-→ automated tests/checks
-→ automated merge/completion where supported
-→ Claude verifies final repository state
-```
-
-## Why this architecture was chosen
-
-As verified on 2026-09-10:
-
-- Claude Pro costs USD $20/month when billed monthly or USD $200/year when billed annually.
-- Claude Code is included with Claude Pro.
-- Claude Projects provide persistent project instructions and project knowledge.
-- Claude supports remote MCP connectors on Pro.
-- AWS provides a managed AWS MCP Server at no additional charge beyond the AWS resources the agent uses.
-- AWS recommends OAuth for human users working through web clients and states that no local MCP proxy is required for that path.
-
-Official references:
-
-- [Claude pricing](https://claude.com/pricing)
-- [Claude Pro](https://support.claude.com/en/articles/8325606-what-is-the-pro-plan)
-- [Claude Projects](https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects)
-- [Claude custom connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)
-- [AWS MCP Server setup](https://docs.aws.amazon.com/agent-toolkit/latest/userguide/getting-started-aws-mcp-server.html)
-- [AWS MCP Server overview and pricing](https://docs.aws.amazon.com/agent-toolkit/latest/userguide/what-is-agent-toolkit.html)
-
-## Important difference from the ChatGPT edition
-
-The ChatGPT implementation needs a custom Action, OpenAPI schema, Function URL, application API key, GitHub personal access token, and Lambda wrapper because the custom GPT needs a bridge to GitHub.
-
-Claude Code handles repository work directly through its GitHub integration. The AWS integration uses AWS's managed MCP server instead of another custom Lambda gateway.
-
-That means the Claude edition has fewer credentials and fewer moving parts.
-
-## What you will be able to do
-
-After the core guide is complete, you should be able to:
-
-- keep High Director-style instructions in a Claude Project;
-- ask Claude to plan technical work in beginner-friendly language;
-- use Claude Code on the web as the main operator of GitHub repositories;
-- create and edit code and documentation;
-- run tests in Claude Code's cloud environment;
-- use branches and pull requests when useful without making the user a routine approval gate;
-- configure repository changes to complete automatically where supported;
-- create new GitHub repositories through the GitHub website and then hand them to Claude Code;
-- connect Claude to AWS through the managed AWS MCP Server;
-- let Claude inspect or operate AWS resources within the permissions of the AWS identity you authorize.
+- [Google Workspace and other connectors]({{ '/docs/high-director/build-your-own-claude/addendum-connectors/' | relative_url }})
+- [Custom MCP servers]({{ '/docs/high-director/build-your-own-claude/addendum-custom-mcp/' | relative_url }})
 
 ## What you need
 
-The primary path uses:
+- Claude Pro
+- GitHub account
+- AWS account
+- web browser
 
-- Claude Pro;
-- a GitHub account;
-- an AWS account;
-- a web browser.
+<details>
+<summary>Additional information</summary>
 
-Claude Pro and Claude API billing are separate products. This guide uses the Claude Pro subscription and does not require API billing for the primary path.
+Claude Code is included with Claude Pro. Claude API billing is separate and is not required for this guide.
 
-## Before you start
+The primary setup uses Claude Code's GitHub integration and AWS's managed MCP Server, so it does not require the custom Lambda/OpenAPI bridge used by the ChatGPT edition.
 
-### Do you already have a Claude account?
+Claude is intended to act as the primary repository operator. Branches and pull requests may still be used for tests, history, rollback, or repository rules, but routine user approval is not part of the intended workflow.
 
-- **Yes:** Chapter 1 will verify the plan and available features.
-- **No:** Chapter 1 starts from account creation.
+Official references:
 
-### Do you already have Claude Pro?
+- [Claude Pro](https://support.claude.com/en/articles/8325606-what-is-the-pro-plan)
+- [Claude Projects](https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects)
+- [Claude custom connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)
+- [AWS MCP Server](https://docs.aws.amazon.com/agent-toolkit/latest/userguide/getting-started-aws-mcp-server.html)
 
-- **Yes:** continue with the verification steps in Chapter 1.
-- **No:** Chapter 1 shows the current upgrade path and tells you what to verify before paying.
-
-### Do you already have GitHub?
-
-- **Yes:** Chapter 2 will create a disposable test repository if needed.
-- **No:** Chapter 2 includes GitHub account creation.
-
-### Do you already have AWS?
-
-- **Yes:** Chapter 5 starts with account and billing checks.
-- **No:** Chapter 5 includes AWS account creation guidance.
-
-## Core chapters
-
-1. [Accounts and prerequisites]({{ '/docs/high-director/build-your-own-claude/01-accounts-and-prerequisites/' | relative_url }})
-2. [Create and prepare GitHub]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }})
-3. [Create the High Director Claude Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
-4. [Connect and use Claude Code on the web]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
-5. [Create and prepare AWS]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
-6. [Connect Claude to the AWS MCP Server]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
-7. [End-to-end testing]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
-8. [Daily operation]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }})
-9. [Troubleshooting]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }})
-10. [Maintenance and access review]({{ '/docs/high-director/build-your-own-claude/10-maintenance/' | relative_url }})
-
-Optional addenda:
-
-- [Google Workspace and other Claude connectors]({{ '/docs/high-director/build-your-own-claude/addendum-connectors/' | relative_url }})
-- [Advanced custom MCP servers]({{ '/docs/high-director/build-your-own-claude/addendum-custom-mcp/' | relative_url }})
+</details>
