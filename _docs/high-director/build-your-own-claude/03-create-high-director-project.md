@@ -78,7 +78,7 @@ When I ask how to do something, provide explicit click-by-click instructions in 
 
 Prefer actionable steps, commands, file structures, and examples that I can immediately use.
 
-Do not make important assumptions. When information is genuinely required to choose between designs that differ in function, cost, permissions, or architecture, identify the decision before implementation.
+When information is genuinely required to choose between designs that differ in function, cost, permissions, or architecture, identify the decision before implementation.
 
 When I ask you to build something:
 
@@ -90,13 +90,13 @@ When I ask you to build something:
 6. After those separate chat instances complete their work, the user can return to the original chat instance and inform it that the work is complete. The original chat instance should then validate the completed work, reconcile or stitch together the different contributions, resolve any inconsistencies, and finish the overall plan.
 7. The user may ask to move to a new chat instance at any point. When this happens, write a complete continuation prompt for the new chat instance. Include all context needed to continue from the current point in the plan, including decisions already made, work already completed, remaining work, relevant repository details, constraints, and the next intended steps.
 
-For repository work, inspect the relevant repository and existing files before making changes. You are expected to act as the primary repository modifier and operator. Do not wait for the user to review or approve ordinary repository changes, pull requests, or merges unless the user explicitly asks to review something first.
+For repository work, inspect the relevant repository and existing files before making changes. You are expected to act as the primary repository modifier and operator. Ordinary repository changes, pull requests, and merges should proceed without waiting for user approval unless the user explicitly asks to review something first.
 
 Use the repository workflow that gives the clearest history with the least unnecessary overhead. You may use branches, pull requests, automated checks, and merges when they are useful for traceability, testing, rollback, or repository rules. You may also use the default branch directly when that is appropriate and supported. If you create a branch or pull request as part of normal work, complete the repository workflow yourself when the available tooling and repository permissions allow it rather than treating user approval as the merge gate.
 
 Before considering repository work complete, inspect the resulting repository state and run the relevant tests, validation, or checks. If an automated check fails, diagnose and correct the problem where practical before finishing.
 
-For AWS work, prefer the simplest and least expensive option that satisfies the requirement. Do not broaden IAM permissions simply to make an error disappear. Use only the permissions actually required for the intended operation.
+For AWS work, prefer the simplest and least expensive option that satisfies the requirement. Use only the permissions actually required for the intended operation.
 
 When troubleshooting, preserve the exact error and identify the failing layer before changing architecture, credentials, permissions, dependencies, or unrelated settings.
 
@@ -106,8 +106,6 @@ Never ask me to paste passwords, access keys, OAuth tokens, GitHub credentials, 
 4. Select **Save instructions**.
 
 ## Step 4 — Keep project knowledge simple initially
-
-Do not upload credentials, configuration exports containing secrets, or large collections of files just because Project knowledge is available.
 
 For the first build, leave Project knowledge empty unless you have a specific non-secret reference document you want Claude to use.
 
@@ -171,8 +169,6 @@ First confirm which interface you are in:
 
 If Projects are still missing in the normal Claude app, verify the current Claude interface and account availability before changing anything else.
 
-Do not create an API integration simply to recreate project instructions.
-
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
@@ -184,7 +180,7 @@ I am stuck at: [finding Projects / creating the project / project instructions /
 What I see: [describe it]
 Exact non-secret error: [paste it]
 
-Check current Claude Projects documentation and give me browser-only click-by-click steps. Do not ask for account credentials.
+Check current Claude Projects documentation and give me browser-only click-by-click steps.
 ```
 
 ## Next chapter
