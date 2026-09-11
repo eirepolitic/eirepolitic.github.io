@@ -45,13 +45,9 @@ Useful evidence includes:
 - HTTP/error code;
 - approximate failure time.
 
-Never share passwords, access keys, OAuth tokens, payment details, private secret values, or recovery codes.
-
 ## Problem: Claude Project behavior is wrong
 
 Check the Project instructions from Chapter 3 and start a fresh Project chat.
-
-Do not change GitHub or AWS permissions to fix instruction behavior.
 
 ## Problem: Claude Code cannot see the repository
 
@@ -63,8 +59,6 @@ Check:
 4. the App has access to that repository;
 5. refresh/reopen the Claude Code repository selector.
 
-Do not create a PAT as the first workaround.
-
 ## Problem: Claude Code can read but cannot push/create repository changes
 
 This points to GitHub App authorization, repository permissions, or repository rules rather than AWS.
@@ -73,8 +67,6 @@ This points to GitHub App authorization, repository permissions, or repository r
 2. Check the GitHub App's repository access.
 3. Check repository rules/branch protections.
 4. Confirm the connected GitHub identity/App has the required write capability.
-
-Do not change AWS IAM for a GitHub-only error.
 
 ## Problem: Claude completes work but the PR waits for the user
 
@@ -93,8 +85,6 @@ Check:
 3. whether GitHub auto-merge or an equivalent narrow repository automation is configured;
 4. whether branch/ruleset requirements make autonomous completion impossible;
 5. whether the automation is limited to the intended Claude-created changes rather than every PR.
-
-Do not solve this by making the user the permanent reviewer/merge button.
 
 ## Problem: Claude made an incorrect repository change
 
@@ -127,8 +117,6 @@ signin:CreateOAuth2Token
 ```
 
 Only add the AWS-documented OAuth access permission when the exact error shows it is missing and you are authorized to change that IAM identity.
-
-Do not use `AdministratorAccess` as an OAuth fix.
 
 ## Problem: OAuth succeeds but an AWS operation returns AccessDenied
 
@@ -164,7 +152,7 @@ Architecture:
 - Claude GitHub App for repository access
 - routine repository work should complete without user PR/merge approval
 - remote custom connector to the AWS managed MCP Server
-- AWS browser OAuth, no local proxy and no AWS access keys
+- AWS browser OAuth
 
 Surface that failed: [Claude Project / Claude Code / GitHub authorization / repository automation / connector / AWS OAuth / AWS API]
 Last checkpoint that passed: [describe it]
@@ -172,7 +160,7 @@ Exact sanitized error: [paste it]
 Expected result: [describe it]
 Observed result: [describe it]
 
-Do not ask for credentials, tokens, payment information, private secret values, or recovery codes. Identify the failing layer first, then give the smallest browser-only verification step. Preserve autonomous repository operation rather than adding routine human approval.
+Identify the failing layer first, then give the smallest browser-only verification step. Preserve autonomous repository operation rather than adding routine human approval.
 ```
 
 ## What you should see
