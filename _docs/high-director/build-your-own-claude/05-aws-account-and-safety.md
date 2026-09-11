@@ -326,11 +326,140 @@ Some AWS services also require `iam:PassRole` when Claude creates a resource tha
 
 ## Step 7 — Use browser OAuth
 
-The recommended web-client path uses OAuth through AWS Sign-in.
+Browser OAuth is the step that connects Claude to the AWS identity you prepared above. You complete it entirely in the browser.
 
-AWS documents OAuth as the simple option for supported MCP clients and uses the permissions of the signed-in AWS identity or assumed role.
+### 7.1 — Make sure the correct AWS identity is active
 
-If you created `ClaudeHighDirectorRole`, switch into that role before triggering the AWS MCP OAuth flow in Chapter 6.
+Keep the AWS Management Console open in one browser tab.
+
+If you chose **Path A — existing IAM identity**:
+
+1. Select the account/identity menu in the upper-right corner of AWS.
+2. Confirm the displayed IAM user, IAM Identity Center session, or federated role is the identity you want Claude to use.
+
+If you chose **Path B — `ClaudeHighDirectorRole`**:
+
+1. Select the account/identity menu in the upper-right corner.
+2. Confirm the active role/session shows:
+
+```text
+ClaudeHighDirectorRole
+```
+
+If it does not, use the **Switch role** steps in Step 6B first.
+
+### 7.2 — Open normal Claude
+
+1. Open a second browser tab.
+2. Go to `https://claude.ai/`.
+3. Sign in to your Claude Pro account.
+4. Confirm you are in the normal Claude interface rather than Claude Code.
+
+### 7.3 — Open Claude connectors
+
+1. In Claude, open **Customize** or the current customization/settings area.
+2. Select **Connectors**.
+3. Select **+** or **Add connector**.
+4. Choose **Add custom connector**.
+
+### 7.4 — Add the AWS MCP Server
+
+For the currently documented AWS MCP Server endpoint in `us-east-1`, enter:
+
+```text
+https://aws-mcp.us-east-1.api.aws/mcp
+```
+
+Then:
+
+1. Enter the URL in the connector URL field.
+2. Name the connector:
+
+```text
+AWS MCP
+```
+
+3. If Claude shows optional OAuth Client ID or Client Secret fields, leave them blank for the normal AWS-managed OAuth discovery flow.
+4. Select **Add**.
+
+### 7.5 — Enable AWS MCP in the High Director Project
+
+1. Return to the normal Claude sidebar.
+2. Open **Projects**.
+3. Open **High Director**.
+4. Start a new chat.
+5. Select the **+** button near the message field.
+6. Open **Connectors**.
+7. Enable **AWS MCP**.
+
+### 7.6 — Trigger AWS OAuth
+
+In the High Director chat, enter:
+
+```text
+Using the AWS connector, identify the AWS account and IAM identity or role available to you, and tell me the current identity name.
+```
+
+Send the message.
+
+Claude should attempt to use the AWS MCP connector. Because the connector has not yet been authorized, AWS Sign-in should open automatically in a new tab, window, or redirect.
+
+### 7.7 — Complete AWS Sign-in and consent
+
+When AWS opens:
+
+1. Confirm the AWS account is the account you prepared in this chapter.
+2. Confirm the identity/session is the one you selected in Step 7.1.
+3. Complete AWS sign-in if AWS asks you to authenticate again.
+4. AWS should display an authorization/consent screen for the AWS MCP connection.
+5. Review the account and identity shown on the page.
+6. Select the AWS button that authorizes/allows the connection.
+7. AWS should redirect you back to Claude, or show that authorization completed successfully.
+
+### 7.8 — Verify Claude is connected
+
+Return to the High Director chat if the browser does not return there automatically.
+
+Claude should now complete the request and identify the AWS account/identity context available through the connector.
+
+For the dedicated-role path, you should expect the AWS identity to be based on:
+
+```text
+ClaudeHighDirectorRole
+```
+
+### 7.9 — Run the first AWS query
+
+Ask:
+
+```text
+Using AWS MCP, list the S3 buckets visible to this AWS identity and tell me which AWS identity or role you are using.
+```
+
+If the account has no S3 buckets, an empty result is still a successful connection test.
+
+### 7.10 — If the AWS authorization page does not appear
+
+First retry the connection using AWS's documented OAuth-initialization endpoint as the custom connector URL:
+
+```text
+https://aws-mcp.us-east-1.api.aws/mcp?oauth=initialize
+```
+
+Then repeat Steps 7.5 through 7.9.
+
+If AWS instead shows a permission error mentioning:
+
+```text
+signin:AuthorizeOAuth2Access
+signin:CreateOAuth2Token
+```
+
+check that the active IAM identity or `ClaudeHighDirectorRole` has:
+
+```text
+AWSMCPSignInOAuthAccessPolicy
+```
 
 ## Step 8 — Record values
 
@@ -343,6 +472,8 @@ AWS MCP authentication plan: OAuth through AWS Sign-in
 AWS identity path: existing identity / ClaudeHighDirectorRole
 AWS account ID:
 AWS role name: ClaudeHighDirectorRole   [if used]
+AWS MCP connector added in Claude: yes/no
+AWS MCP OAuth completed: yes/no
 ```
 
 ## What you should see
@@ -352,7 +483,10 @@ You should now have:
 - a working AWS console session;
 - a budget/alert;
 - either an existing IAM identity ready for MCP OAuth, or `ClaudeHighDirectorRole` ready to assume;
-- `AWSMCPSignInOAuthAccessPolicy` available on the identity that will authorize the MCP connection.
+- `AWSMCPSignInOAuthAccessPolicy` available on the identity that authorizes the MCP connection;
+- an **AWS MCP** connector in Claude;
+- completed AWS browser OAuth;
+- a successful first AWS resource query from the High Director Project.
 
 ## If you do not see this
 
@@ -365,6 +499,8 @@ ClaudeHighDirectorRole trust policy
 + signed-in user has sts:AssumeRole on that role ARN
 ```
 
+If OAuth fails, use the Step 7.10 checks before changing IAM service permissions.
+
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
@@ -373,10 +509,10 @@ I am preparing AWS for Claude High Director using the managed AWS MCP Server and
 Identity path: [existing IAM identity / dedicated ClaudeHighDirectorRole]
 AWS account ID: [12-digit ID]
 Current IAM username or identity type: [name/type]
-I am stuck at: [create role / attach policy / add sts:AssumeRole / switch role]
+I am stuck at: [create role / attach policy / add sts:AssumeRole / switch role / add AWS MCP connector / AWS OAuth / first AWS query]
 Exact non-secret error: [paste it]
 
-Give me exact AWS-console click-by-click steps and distinguish the role trust policy from the user's sts:AssumeRole permission.
+Give me exact browser click-by-click steps and identify whether the issue is IAM role assumption, AWS MCP OAuth, or AWS service permissions.
 ```
 
 ## Next chapter
