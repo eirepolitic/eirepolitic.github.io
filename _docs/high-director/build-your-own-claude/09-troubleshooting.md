@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 09 — Troubleshooting
-summary: Troubleshoot Claude Project, Claude Code, GitHub, AWS MCP OAuth, and downstream IAM failures one layer at a time.
+summary: Troubleshoot Claude Project, autonomous Claude Code/GitHub operation, AWS MCP OAuth, and downstream IAM failures one layer at a time.
 section: high-director
 doc_type: runbook
 status: active
@@ -24,10 +24,11 @@ The Claude edition has these main layers:
 2. High Director Project instructions
 3. Claude Code on the web
 4. Claude Code ↔ GitHub authorization
-5. Claude custom connector configuration
-6. AWS MCP OAuth authorization
-7. downstream AWS IAM/service permissions
-8. the specific GitHub or AWS resource
+5. repository branch/check/merge automation
+6. Claude custom connector configuration
+7. AWS MCP OAuth authorization
+8. downstream AWS IAM/service permissions
+9. the specific GitHub or AWS resource
 ```
 
 ## First rule — preserve the exact error
@@ -38,7 +39,7 @@ Useful evidence includes:
 
 - which Claude surface you were using;
 - repository name;
-- GitHub task/PR state;
+- GitHub task/branch/PR/check state;
 - AWS service and region;
 - AWS API action if shown;
 - HTTP/error code;
@@ -48,19 +49,7 @@ Never share passwords, access keys, OAuth tokens, payment details, private secre
 
 ## Problem: Claude Project behavior is wrong
 
-Symptoms:
-
-- explanations are not beginner-friendly;
-- Claude skips planning decisions;
-- it assumes tools/accounts exist;
-- it proposes broad permissions without evidence.
-
-Check:
-
-1. Open the **High Director** Project.
-2. Open **Project instructions**.
-3. Confirm the instructions from Chapter 3 are present and saved.
-4. Start a fresh chat inside the Project and retest.
+Check the Project instructions from Chapter 3 and start a fresh Project chat.
 
 Do not change GitHub or AWS permissions to fix instruction behavior.
 
@@ -70,54 +59,63 @@ Check:
 
 1. the repository exists in GitHub;
 2. you are signed in to the intended GitHub account;
-3. the Claude Code GitHub integration is installed/authorized;
-4. the integration has access to that repository;
+3. the Claude GitHub App is installed/authorized;
+4. the App has access to that repository;
 5. refresh/reopen the Claude Code repository selector.
 
 Do not create a PAT as the first workaround.
 
-## Problem: Claude Code can read but cannot push or create a PR
+## Problem: Claude Code can read but cannot push/create repository changes
 
-This points to the GitHub integration/authorization or repository permissions rather than AWS.
+This points to GitHub App authorization, repository permissions, or repository rules rather than AWS.
 
 1. Preserve Claude Code's exact error.
-2. Check the GitHub integration's repository access.
-3. Check whether repository rules/branch protections restrict the attempted operation.
-4. Verify your own GitHub account has permission to create branches/PRs.
+2. Check the GitHub App's repository access.
+3. Check repository rules/branch protections.
+4. Confirm the connected GitHub identity/App has the required write capability.
 
-Do not disable branch protection merely to make a test pass.
+Do not change AWS IAM for a GitHub-only error.
 
-## Problem: Claude Code changed the wrong files
+## Problem: Claude completes work but the PR waits for the user
 
-Do not merge the pull request.
+That is not the intended operating model for this guide.
 
-1. Review the diff.
-2. Close or abandon the unwanted PR/task if appropriate.
-3. Start a new task with narrower requirements.
-4. Explicitly name the allowed files or acceptance criteria when useful.
+The target repository flow is:
 
-Because web tasks run in isolated environments, a bad proposed change does not need to be merged.
-
-## Problem: custom connector cannot be added
+```text
+Claude change → checks/validation → automated completion/merge → final verification
+```
 
 Check:
 
-1. your Claude account is signed in correctly;
-2. **Customize → Connectors** is available;
-3. the AWS MCP URL matches current AWS documentation;
-4. there are no accidental spaces or extra text in the URL.
+1. whether the repository uses pull requests for Claude Code web tasks;
+2. whether required checks are passing;
+3. whether GitHub auto-merge or an equivalent narrow repository automation is configured;
+4. whether branch/ruleset requirements make autonomous completion impossible;
+5. whether the automation is limited to the intended Claude-created changes rather than every PR.
 
-Do not deploy your own MCP server just because the managed connector was typed incorrectly.
+Do not solve this by making the user the permanent reviewer/merge button.
+
+## Problem: Claude made an incorrect repository change
+
+Because Claude is the repository operator, use repository history for recovery rather than relying on manual pre-approval.
+
+1. Identify the bad commit/branch/merge.
+2. Preserve the exact repository state.
+3. Ask Claude to diagnose the error.
+4. Revert or correct the change through the normal repository workflow.
+5. Run relevant tests/checks again.
+6. Verify the final state.
+
+If the same category of error repeats, improve tests, validation, repository instructions, or automation instead of introducing routine manual approval for every change.
+
+## Problem: custom connector cannot be added
+
+Check Claude account access, **Customize → Connectors**, the AWS MCP URL, and accidental URL formatting errors.
 
 ## Problem: AWS OAuth does not start
 
-This usually points to the connector URL or MCP OAuth discovery.
-
-1. Compare the endpoint with AWS's current AWS MCP Server setup page.
-2. Remove and re-add the connector only after confirming the URL.
-3. Retry a harmless AWS knowledge/read request.
-
-If AWS documentation currently requires `?oauth=initialize` for a legacy/non-discovering client, use it only when the client behavior actually requires that compatibility path.
+Compare the connector endpoint with AWS's current AWS MCP Server documentation and retry a harmless request.
 
 ## Problem: AWS OAuth returns an authorization error
 
@@ -128,15 +126,7 @@ signin:AuthorizeOAuth2Access
 signin:CreateOAuth2Token
 ```
 
-Check whether the AWS identity used for sign-in has those permissions.
-
-AWS currently provides the managed policy:
-
-```text
-AWSMCPSignInOAuthAccessPolicy
-```
-
-Only add it when the exact error/evidence shows the OAuth permissions are missing and you are authorized to change that IAM identity.
+Only add the AWS-documented OAuth access permission when the exact error shows it is missing and you are authorized to change that IAM identity.
 
 Do not use `AdministratorAccess` as an OAuth fix.
 
@@ -144,56 +134,23 @@ Do not use `AdministratorAccess` as an OAuth fix.
 
 The connector is working. The downstream AWS service is denying the requested API action.
 
-Use the exact error to identify:
-
-```text
-AWS service
-API action
-resource ARN if shown
-IAM principal
-region
-```
-
-Then decide whether that operation is genuinely part of the intended capability.
-
-Add only the required permission when appropriate.
-
-Do not make the identity broadly administrative simply to eliminate one `AccessDenied`.
+Identify the exact service, API action, resource, IAM principal, and region. Add only the intended permission where appropriate.
 
 ## Problem: AWS query returns no resources
 
-An empty result is not necessarily an error.
-
-Check:
-
-1. correct AWS account;
-2. correct resource region when the service is regional;
-3. correct service/resource type;
-4. whether the account genuinely contains that resource.
+An empty result may be correct. Check account, region, resource type, and whether the resource actually exists.
 
 ## Problem: Claude says usage limit reached
 
-Claude Pro and Claude Code share plan usage.
-
-This is not a GitHub/AWS authentication failure.
-
-Options can include waiting for the usage window to reset, purchasing optional usage credits if offered, or considering a higher plan if the limit is consistently restrictive.
-
-Do not buy additional capacity until you know the limitation is actually usage-related.
+Claude Pro and Claude Code share plan usage. This is not a GitHub or AWS authentication failure.
 
 ## Problem: GitHub works but AWS fails
 
-Treat them independently.
-
-Claude Code/GitHub authorization does not authenticate AWS MCP.
-
-Do not modify GitHub access to troubleshoot AWS.
+Treat them independently. Claude Code/GitHub authorization does not authenticate AWS MCP.
 
 ## Problem: AWS works but repository work fails
 
-Treat the problem as Claude Code/GitHub unless the repository task itself calls AWS.
-
-Do not change IAM to fix a GitHub-only task.
+Treat the problem as Claude Code/GitHub/repository automation unless the repository task itself calls AWS.
 
 ## Standard troubleshooting prompt
 
@@ -203,25 +160,27 @@ I am troubleshooting a browser-only High Director-style Claude setup.
 Architecture:
 - Claude Pro
 - High Director Claude Project for planning
-- Claude Code on the web for GitHub
+- Claude Code on the web as the primary repository modifier/operator
+- Claude GitHub App for repository access
+- routine repository work should complete without user PR/merge approval
 - remote custom connector to the AWS managed MCP Server
 - AWS browser OAuth, no local proxy and no AWS access keys
 
-Surface that failed: [Claude Project / Claude Code / GitHub / connector / AWS OAuth / AWS API]
+Surface that failed: [Claude Project / Claude Code / GitHub authorization / repository automation / connector / AWS OAuth / AWS API]
 Last checkpoint that passed: [describe it]
 Exact sanitized error: [paste it]
 Expected result: [describe it]
 Observed result: [describe it]
 
-Do not ask for credentials, tokens, payment information, private secret values, or recovery codes. Identify the failing layer first, then give the smallest browser-only verification step. Do not suggest broad IAM or repository-permission changes unless the evidence specifically requires them.
+Do not ask for credentials, tokens, payment information, private secret values, or recovery codes. Identify the failing layer first, then give the smallest browser-only verification step. Preserve autonomous repository operation rather than adding routine human approval.
 ```
 
 ## What you should see
 
-A useful diagnosis should be specific, for example:
+A useful diagnosis should identify the exact failing layer, for example:
 
 ```text
-Claude can connect to AWS and list S3 buckets, but creating a Lambda function returns AccessDenied for lambda:CreateFunction. Therefore MCP/OAuth works; the missing capability is a downstream IAM permission for the requested AWS action.
+Claude successfully pushes the change and CI passes, but the PR remains open. Therefore Claude/GitHub write access works; the remaining issue is repository merge automation rather than user approval.
 ```
 
 ## Next chapter
