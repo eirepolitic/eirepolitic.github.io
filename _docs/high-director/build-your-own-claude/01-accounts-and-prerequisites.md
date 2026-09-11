@@ -145,16 +145,17 @@ If **no**:
 
 Do not create a GitHub personal access token. The primary Claude Code web path does not require you to manually create one.
 
-## Step 5 — Enable GitHub two-factor authentication
+## Optional — GitHub two-factor authentication
 
-1. In GitHub, open your profile menu.
-2. Select **Settings**.
-3. Select **Password and authentication**.
-4. Find **Two-factor authentication**.
-5. Follow GitHub's current setup flow.
-6. Store recovery information safely.
+Two-factor authentication is **not required by this guide** and is not an architectural requirement for Claude Code.
 
-## Step 6 — Check AWS
+If GitHub itself requires two-factor authentication for your account, complete GitHub's required setup before continuing.
+
+If GitHub does **not** require it, you may skip it and continue directly to AWS.
+
+You can enable it later under **GitHub → Settings → Password and authentication** if you want the extra account-security layer.
+
+## Step 5 — Check AWS
 
 Open the [AWS Management Console](https://console.aws.amazon.com/).
 
@@ -176,7 +177,7 @@ If **no**:
 
 AWS signup requirements vary and can change. Follow the current AWS screens rather than trying to bypass an eligibility, payment, or identity requirement.
 
-## Step 7 — Create a private setup note
+## Step 6 — Create a private setup note
 
 Record only non-secret information:
 
@@ -197,14 +198,16 @@ You should now have:
 - access to Projects;
 - access to Claude Code;
 - access to custom connectors;
-- a working GitHub account with two-factor authentication;
+- a working GitHub account;
 - access to an AWS account you control.
+
+If GitHub specifically required two-factor authentication for your account, that requirement should also be complete.
 
 ## If you do not see this
 
 Resolve only the missing account/feature before continuing.
 
-Do not buy Max, create API keys, create GitHub PATs, or create AWS access keys to solve an ordinary account-navigation problem.
+Do not buy Max, create API keys, create GitHub PATs, enable optional authentication steps, or create AWS access keys to solve an ordinary account-navigation problem.
 
 ## Ask ordinary Claude or ChatGPT this
 
