@@ -1,6 +1,6 @@
 ---
 title: "Build Your Own High Director — Claude Edition — Addendum A: Connectors"
-summary: Add optional Claude connectors such as Google Workspace after the core GitHub and AWS setup is working.
+summary: Add optional Claude connectors after the core GitHub and AWS setup works.
 section: high-director
 doc_type: runbook
 status: active
@@ -11,83 +11,54 @@ order: 91
 permalink: /docs/high-director/build-your-own-claude/addendum-connectors/
 ---
 
-# Addendum A — Google Workspace and Other Claude Connectors
+# Addendum A — Google Workspace and Other Connectors
 
-## When to use this addendum
+## Goal
 
-Complete the core guide first.
+Add another service to Claude using an existing connector.
 
-Claude's connector system can add cloud services without building a custom Action or Lambda gateway. Use an existing connector when it provides the capabilities you need.
-
-## Google Workspace
-
-Claude currently offers Google Workspace-related integrations/features depending on plan, account, and current product availability.
-
-For personal use:
+## Complete this step
 
 1. Open Claude.
-2. Open **Customize → Connectors** or the current connector directory.
-3. Look for the Google service you want to connect.
+2. Open **Customize → Connectors**.
+3. Find the service you want to connect.
 4. Select **Connect**.
-5. Sign in to the intended Google account.
-6. Read the OAuth consent screen.
-7. Authorize if the requested permissions match what you want Claude to do.
-
-Use the official Claude connector when it satisfies the requirement.
-
-## Start with a simple task
-
-After connecting a service, first ask Claude to confirm the connection with a simple query.
-
-For example:
-
-```text
-Use the connected Google service to identify what calendars are available.
-```
-
-or:
-
-```text
-Use the connected service to confirm that mailbox access is working.
-```
-
-## Write operations
-
-For email, calendars, documents, or other services, give Claude the complete intended change.
-
-Useful wording:
-
-```text
-Send/create/change this item using these details: [recipients/title/time/content/notification behavior].
-```
-
-## Other connectors
-
-Use the same preference order:
-
-```text
-1. official/built-in connector
-2. established remote MCP connector
-3. custom MCP server only when required
-```
-
-This keeps setup and maintenance simpler.
+5. Sign in to the service account you want Claude to use.
+6. Complete the service's authorization screen.
+7. Open a High Director chat.
+8. Enable the connector from the **+ → Connectors** menu.
+9. Ask Claude for one simple query to verify the connection.
 
 ## What you should see
 
-The connected service should appear in Claude's connector list and be individually enableable for conversations.
+The service should appear in Claude's connectors and respond to a simple request.
 
-## If you do not see this
+<details>
+<summary>Additional information</summary>
 
-Check current Claude connector availability for your plan and region/account.
-
-## Ask ordinary Claude or ChatGPT this
+Preferred order:
 
 ```text
-I want to connect [service] to Claude Pro using the simplest supported browser-only method.
-
-I prefer an official Claude connector or existing remote MCP integration rather than building my own server.
-Current screen/error: [describe]
-
-Check the current Claude connector documentation and give me click-by-click setup steps.
+official Claude connector
+→ established remote MCP connector
+→ custom MCP server
 ```
+
+For Google Workspace, connector availability can vary by product/account. Use the official connector when it provides the capability you need.
+
+Start with a simple read/query before relying on a connector for more complex actions.
+
+</details>
+
+<details>
+<summary>Troubleshooting</summary>
+
+Useful prompt:
+
+```text
+I want to connect [service] to Claude using the simplest browser-only method.
+Current screen/error: [describe]
+Give me the shortest current click-by-click setup steps.
+```
+
+</details>
