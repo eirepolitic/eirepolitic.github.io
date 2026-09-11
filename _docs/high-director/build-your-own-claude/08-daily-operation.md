@@ -57,9 +57,9 @@ Inspect this repository and implement the scheduled import described below. Use 
 
 Claude is expected to be the primary repository modifier and operator.
 
-Normal repository work should **not** stop for user review or approval.
+Normal repository work proceeds without routine user review or approval.
 
-Branches and pull requests are still useful when they provide:
+Branches and pull requests are useful when they provide:
 
 - history;
 - CI/check execution;
@@ -67,15 +67,13 @@ Branches and pull requests are still useful when they provide:
 - rollback points;
 - compatibility with repository rules.
 
-They are not intended to make the user a mandatory reviewer.
-
 If a branch/PR workflow is used, the desired cycle is:
 
 ```text
 plan → implement → test → branch/PR if useful → automated checks → automated completion/merge → verify final state
 ```
 
-If the repository safely supports a simpler direct-write workflow, Claude may use that instead.
+If the repository supports a simpler direct-write workflow, Claude may use that instead.
 
 ## Recommended normal workflow
 
@@ -91,8 +89,6 @@ For an important repository change:
 8. Return to the High Director Project for AWS deployment/operations if necessary.
 9. Verify the live result.
 
-Do not insert a manual user-review step merely because a pull request exists.
-
 ## New repositories
 
 Claude Code works with repositories that already exist in GitHub.
@@ -107,7 +103,7 @@ For a new tool:
 
 ## AWS operations
 
-The removal of repository approval gates does **not** remove planning decisions for AWS changes that materially affect cost, access, deletion, public exposure, or architecture.
+Planning decisions still apply to AWS changes that materially affect cost, access, deletion, public exposure, or architecture.
 
 Useful wording:
 
@@ -119,16 +115,10 @@ Before making this AWS change, tell me exactly which resource will change, which
 
 For S3 work, specify the bucket and intended action clearly.
 
-Prefer:
+Example:
 
 ```text
-Using AWS, list objects under the reports/ prefix in bucket example-bucket. Do not modify anything.
-```
-
-rather than an ambiguous request such as:
-
-```text
-Check my S3 and fix it.
+Using AWS, list objects under the reports/ prefix in bucket example-bucket.
 ```
 
 ## Lambda, Step Functions, and CloudWatch
@@ -141,13 +131,13 @@ A useful diagnostic sequence is:
 resource → configuration → recent execution → logs/metrics → diagnosis → proposed change
 ```
 
-Do not respond to a failed Lambda or workflow by changing IAM, timeouts, memory, networking, and code simultaneously.
+Change one relevant layer at a time when troubleshooting.
 
 ## Usage limits
 
 Claude Pro and Claude Code share plan usage. If you reach the included usage limit, that is not a GitHub or AWS failure.
 
-Anthropic may offer additional usage credits or higher-tier plans. Do not upgrade automatically; first determine whether the limitation is occasional or persistent enough to justify additional cost.
+Anthropic may offer additional usage credits or higher-tier plans. First determine whether the limitation is occasional or persistent enough to justify additional cost.
 
 ## Keep GitHub and AWS permissions separate
 
@@ -182,12 +172,12 @@ If Claude is trying to perform repository implementation in a normal Project cha
 ```text
 I have a High Director-style Claude setup where Claude is the primary repository modifier/operator.
 
-Routine repository changes should not require me to approve pull requests or merges. Branches/PRs may still be used for history and automated checks.
+Routine repository changes should complete without requiring me to approve pull requests or merges. Branches/PRs may still be used for history and automated checks.
 
 Task I want to perform: [describe it]
 Current repository workflow: [describe it]
 
-Tell me the simplest autonomous sequence using Claude Code web and GitHub. Do not ask for credentials or secrets.
+Tell me the simplest autonomous sequence using Claude Code web and GitHub.
 ```
 
 ## Next chapter
