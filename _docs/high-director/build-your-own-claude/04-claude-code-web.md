@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 04 — Claude Code on the Web
-summary: Install and authorize the Claude GitHub App, connect Claude Code on the web to GitHub, and verify browser-only repository editing, testing, branches, and pull requests.
+summary: Install and authorize the Claude GitHub App, connect Claude Code on the web to GitHub, and verify autonomous browser-only repository operation.
 section: high-director
 doc_type: runbook
 status: active
@@ -17,7 +17,7 @@ permalink: /docs/high-director/build-your-own-claude/04-claude-code-web/
 
 Install and authorize the Claude GitHub App, then prove that Claude Code on the web can work in `claude-director-test` without installing anything locally.
 
-Anthropic documents Claude Code on the web as a browser-based service that works with GitHub repositories in a remote environment, makes changes, runs commands/tests, pushes a branch, and prepares work for pull-request review.
+Claude Code on the web runs repository tasks remotely, can make changes and run tests, and normally pushes completed work to a branch and creates a pull request. In this guide, that pull request is treated as a repository record and automation boundary, not as a required user-approval step.
 
 Official reference: [Claude Code on the web](https://support.claude.com/en/articles/12618689-claude-code-on-the-web).
 
@@ -26,6 +26,14 @@ Official reference: [Claude Code on the web](https://support.claude.com/en/artic
 For Claude Code on the web to work with a GitHub repository, Claude must be authorized through its GitHub integration/App and that App must have access to the repository you want Claude Code to use.
 
 For this guide, do **not** create a GitHub personal access token. Install/authorize the Claude GitHub App instead.
+
+## Important — The agent is the repository operator
+
+This guide assumes Claude is the primary modifier and operator of the repositories connected to it.
+
+Do not design the normal workflow around the user manually reviewing and approving each pull request.
+
+Claude may use branches and pull requests when they improve traceability, automated testing, rollback, or change history. Where repository tooling permits, Claude should complete the repository workflow itself. If the web product produces a pull request but does not itself provide an autonomous merge control, configure repository automation rather than making the user the routine merge gate.
 
 ## Step 1 — Open Claude Code on the web
 
@@ -53,39 +61,17 @@ Continue to Step 3.
 2. GitHub will open an authorization/installation page.
 3. Confirm you are signed in to the GitHub account from Chapter 2.
 4. Confirm the App/integration being installed is the Claude/Anthropic GitHub integration presented by Claude Code.
-5. GitHub may ask which account or organization should receive the App. Select your personal GitHub account for this guide.
-6. GitHub may offer repository-access choices such as:
-   - **All repositories**; or
-   - **Only select repositories**.
-7. For the first test, choose **Only select repositories** if that option is available.
-8. Select:
-
-```text
-claude-director-test
-```
-
-9. Select GitHub's **Install**, **Authorize**, **Save**, or current equivalent button.
-10. Complete any normal GitHub confirmation GitHub itself requires.
-11. Return to Claude Code.
-12. Refresh the repository selector if necessary.
-
-You should now be able to see `claude-director-test` in Claude Code.
-
-### Why selected repositories first?
-
-Using only `claude-director-test` makes the initial setup easier to review. Later, you can add other repositories to the Claude GitHub App without creating a new personal access token.
-
-If you deliberately want Claude Code to work across every repository in your personal GitHub account, you can change the App to **All repositories** later.
+5. Select your personal GitHub account for this guide.
+6. If GitHub offers **All repositories** or **Only select repositories**, choose **Only select repositories** for the first test.
+7. Select `claude-director-test`.
+8. Select GitHub's **Install**, **Authorize**, **Save**, or current equivalent button.
+9. Complete any normal GitHub confirmation GitHub itself requires.
+10. Return to Claude Code and refresh the repository selector if necessary.
 
 ## Step 4 — Select the test repository
 
 1. Start a new Claude Code web task/session.
-2. Select:
-
-```text
-claude-director-test
-```
-
+2. Select `claude-director-test`.
 3. If Claude asks which branch to start from, use `main` unless your repository uses another default branch.
 
 ## Step 5 — Start with a read-only task
@@ -96,9 +82,9 @@ Enter:
 Inspect this repository. Read claude-test.txt and README.md. Do not change any files yet. Tell me what is currently in the repository.
 ```
 
-Claude should inspect the repository in its remote environment and report the existing files.
+Claude should inspect the repository and report the existing files.
 
-## Step 6 — Give Claude a small test task
+## Step 6 — Give Claude a complete test task
 
 Enter:
 
@@ -108,44 +94,49 @@ Create a new file named claude-code-test.md containing:
 # Claude Code test
 This file was created through Claude Code on the web.
 
-Before finishing, verify the file exists and show me what you changed.
+Verify the change, run any relevant repository checks, and complete the repository-side workflow as far as the available GitHub/Claude tooling permits. Do not wait for me to approve the change.
 ```
 
-Claude Code should work in its isolated environment.
+Claude Code should work in its isolated environment and push the completed work to GitHub.
 
-## Step 7 — Review the task result
+## Step 7 — Confirm the repository result, not approve it
 
-When the task finishes:
+When the task finishes, inspect only to verify that the automation worked as intended.
 
-1. Review Claude's summary.
-2. Review the file diff if the interface provides it.
-3. Confirm the only intended repository change is `claude-code-test.md`.
-4. Look for the branch/PR controls presented by Claude Code.
+You are not acting as a required approval gate.
 
-Anthropic's current documentation states that completed web tasks can push changes to a new GitHub branch and present them for pull-request review.
+Check:
 
-## Step 8 — Create or open the pull request
+1. Claude's task summary.
+2. The branch or pull request it created, if applicable.
+3. Any tests or checks it ran.
+4. Whether `claude-code-test.md` reached the intended final repository state.
 
-Use the Claude Code web interface to create/open the pull request for the completed task.
+If the web workflow stops with an open pull request because autonomous merge is not available in that surface, continue to Step 8.
 
-Then in GitHub:
+## Step 8 — Configure automatic completion when pull requests are used
 
-1. Open `claude-director-test`.
-2. Select **Pull requests**.
-3. Open the pull request Claude created.
-4. Review the **Files changed** tab.
-5. Confirm `claude-code-test.md` is the intended change.
+The objective is that ordinary Claude-created changes do not wait for a user to click **Merge**.
 
-## Step 9 — Merge the safe test pull request
+Use the simplest repository mechanism available to complete qualifying Claude-created pull requests automatically after required checks pass. Depending on the repository, this can be GitHub auto-merge or repository automation configured specifically for Claude-created branches/PRs.
 
-Because this is the disposable repository and the change is known:
+The important rule is:
 
-1. Review the PR one final time.
-2. Merge it using the repository's normal merge option.
-3. Return to the repository's `main` branch.
-4. Confirm `claude-code-test.md` now exists.
+```text
+Claude change → automated validation → automated merge/completion
+```
 
-## Step 10 — Understand what Claude Code replaces
+not:
+
+```text
+Claude change → wait for user approval → user merges
+```
+
+Keep any automated merge rule narrow enough that unrelated pull requests are not merged unintentionally.
+
+If no autonomous merge mechanism is available for the repository, Claude may use a simpler supported write path instead where appropriate and permitted by the repository. Do not invent a human-approval requirement just to preserve a PR workflow.
+
+## Step 9 — Understand what Claude Code replaces
 
 For normal GitHub development, Claude Code web replaces the following custom components from the ChatGPT edition:
 
@@ -160,7 +151,7 @@ manual branch/write API calls
 
 Claude Code's GitHub App/integration handles repository authorization instead.
 
-## Step 11 — Add additional repositories later
+## Step 10 — Add additional repositories later
 
 When you create another repository:
 
@@ -184,31 +175,31 @@ You should now have:
 - `claude-director-test` included in the App's repository access;
 - Claude Code web able to select that repository;
 - a successful remote repository task;
-- a branch/pull request containing `claude-code-test.md`;
-- the merged file visible on `main`.
+- automated tests/checks where relevant;
+- repository changes able to reach their intended final state without routine user approval.
 
 ## If you do not see this
 
 - If Claude asks you to connect GitHub, install/authorize the Claude GitHub App.
-- If the App is installed but `claude-director-test` is missing, open the App's GitHub configuration and add that repository.
-- If Claude cannot push/create a PR, check the GitHub App authorization and repository rules rather than creating a PAT.
+- If the App is installed but `claude-director-test` is missing, add that repository in the App configuration.
+- If Claude can create a branch/PR but it remains open indefinitely, inspect the repository's merge automation rather than asking the user to become the permanent approval step.
+- If repository rules prevent the intended autonomous workflow, decide whether those rules should be adjusted for this agent-operated repository.
 - If the task environment fails to set up, preserve the exact Claude Code error.
-- If Claude made unwanted changes, do not merge the PR. Refine the task and run a new isolated task.
+- If Claude makes an incorrect change, correct or revert it through the repository workflow; do not redesign the normal process around manual pre-approval.
 
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
-I am using Claude Code on the web with a Claude Pro account and GitHub.
-Repository: claude-director-test
-I am not using the Claude Code CLI, local Git, or a personal access token.
-Claude Code should access GitHub through the Claude GitHub App/integration.
+I am using Claude Code on the web as the primary autonomous operator of a GitHub repository.
 
-Failing stage: [install GitHub App / authorize GitHub / grant repository access / select repository / start task / edit / push branch / create PR]
+I do not want routine user approval of pull requests or merges. Branches and PRs may be used for traceability and checks, but qualifying changes should complete automatically where the available tooling permits.
+
+Failing stage: [GitHub App / repository access / task / branch / PR / checks / automatic merge or completion]
 What I expected: [describe it]
 What I see: [describe it]
 Exact non-secret error: [paste it]
 
-Do not ask for GitHub passwords, OAuth tokens, or credentials. Check current Claude Code web documentation and give me browser-only troubleshooting steps.
+Do not ask for GitHub passwords, OAuth tokens, or credentials. Give me the simplest browser-based fix that preserves autonomous repository operation.
 ```
 
 ## Next chapter
