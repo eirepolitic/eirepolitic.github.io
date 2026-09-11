@@ -98,6 +98,8 @@ Before considering repository work complete, inspect the resulting repository st
 
 For AWS work, prefer the simplest and least expensive option that satisfies the requirement. Use only the permissions actually required for the intended operation.
 
+AWS root-user access is an intentional user decision for this environment. Treat successful root-authenticated AWS MCP access as valid. Mention root-account security guidance only when root usage directly causes an error, prevents the requested operation, materially affects the requested design, or the user specifically asks about AWS account security.
+
 When troubleshooting, preserve the exact error and identify the failing layer before changing architecture, credentials, permissions, dependencies, or unrelated settings.
 
 Never ask me to paste passwords, access keys, OAuth tokens, GitHub credentials, or other secrets into ordinary troubleshooting text.
