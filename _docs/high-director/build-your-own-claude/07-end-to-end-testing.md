@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 07 — End-to-End Testing
-summary: Verify the High Director Claude Project, Claude Code GitHub workflow, and AWS MCP connection before using important repositories or AWS resources.
+summary: Verify the High Director Claude Project, autonomous Claude Code GitHub workflow, and AWS MCP connection before using important repositories or AWS resources.
 section: high-director
 doc_type: runbook
 status: active
@@ -43,15 +43,22 @@ Inspect the repository and summarize its files. Do not make changes.
 
 Expected result: Claude sees the files already committed to GitHub.
 
-## Test 3 — Claude Code branch and PR
+## Test 3 — Autonomous repository change
 
 Ask Claude Code:
 
 ```text
-Create a file named end-to-end-test.md containing a short explanation that this is the Claude edition end-to-end test. Verify the change, then prepare it on a branch for pull-request review.
+Create a file named end-to-end-test.md containing a short explanation that this is the Claude edition end-to-end test. Verify the change, run relevant checks, and complete the repository-side workflow as far as the available tooling permits. Do not wait for me to review or approve a pull request or merge.
 ```
 
-Review the resulting change and PR in GitHub. Merge it only after confirming the change is correct.
+Expected result:
+
+- Claude makes the change;
+- it uses a branch/PR if that is the supported workflow;
+- relevant checks run;
+- the repository workflow is configured so qualifying changes can complete without the user acting as the approval gate.
+
+The test is successful when `end-to-end-test.md` reaches the intended final repository state without routine manual approval.
 
 ## Test 4 — AWS MCP read-only connection
 
@@ -80,7 +87,7 @@ how to verify success
 how to undo the change
 ```
 
-Review that plan before telling Claude to execute the AWS operation.
+This planning checkpoint remains because it concerns function, cost, permissions, and infrastructure design. It is separate from repository PR approval.
 
 ## Test 6 — Cross-surface workflow
 
@@ -89,10 +96,8 @@ Use the intended operating model:
 1. In the High Director Project, plan a tiny repository change.
 2. Open Claude Code web for `claude-director-test`.
 3. Have Claude Code implement it.
-4. Review/merge the PR in GitHub.
+4. Let the repository workflow complete automatically where supported.
 5. Return to the High Director Project for AWS/deployment planning if needed.
-
-This is the Claude equivalent of the original High Director's combined planning + GitHub + AWS workflow, but it uses two Claude surfaces optimized for different jobs.
 
 ## Minimum readiness checklist
 
@@ -101,9 +106,10 @@ Before using an important repository or AWS workload, confirm:
 ```text
 High Director project instructions behave correctly: yes
 Claude Code can read test repository: yes
-Claude Code can create reviewed PR: yes
+Claude Code can modify/test repository: yes
+repository changes can complete without routine user approval: yes
 AWS MCP connector authenticates: yes
-Read-only AWS query works: yes
+read-only AWS query works: yes
 AWS account is correct: yes
 AWS budget alert exists: yes
 ```
@@ -114,7 +120,7 @@ The system should now have two independently proven paths:
 
 ```text
 Claude Project → AWS MCP → AWS
-Claude Code web → GitHub
+Claude Code web → GitHub → automated repository completion
 ```
 
 ## If you do not see this
@@ -122,7 +128,8 @@ Claude Code web → GitHub
 Do not rebuild both integrations when only one failed.
 
 - Project behavior problem → fix project instructions.
-- Repository problem → focus on Claude Code/GitHub authorization.
+- Repository problem → focus on Claude Code/GitHub authorization or repository automation.
+- Open PR waiting for a person → focus on autonomous merge/completion configuration rather than adding the user as the normal approval step.
 - AWS connector problem → focus on MCP/OAuth.
 - AWS `AccessDenied` after OAuth works → focus on the exact downstream IAM permission.
 
@@ -131,9 +138,7 @@ Do not rebuild both integrations when only one failed.
 ```text
 I am testing a Claude Pro High Director-style setup.
 
-Paths:
-1. Claude Project → AWS managed MCP Server → AWS
-2. Claude Code on the web → GitHub
+The GitHub side is intended to operate autonomously: Claude is the primary repository modifier/operator, and routine pull requests or merges should not wait for user approval.
 
 Test that passed most recently: [describe]
 Test that failed: [describe]
