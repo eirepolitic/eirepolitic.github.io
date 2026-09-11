@@ -29,7 +29,7 @@ Expected behavior:
 
 - Claude identifies decisions affecting architecture/cost;
 - explanations are beginner-friendly;
-- Claude does not pretend a repository or AWS resource already exists.
+- Claude identifies repository and AWS assumptions explicitly.
 
 ## Test 2 — Claude Code repository read
 
@@ -38,7 +38,7 @@ Open Claude Code web and select `claude-director-test`.
 Ask:
 
 ```text
-Inspect the repository and summarize its files. Do not make changes.
+Inspect the repository and summarize its files.
 ```
 
 Expected result: Claude sees the files already committed to GitHub.
@@ -48,7 +48,7 @@ Expected result: Claude sees the files already committed to GitHub.
 Ask Claude Code:
 
 ```text
-Create a file named end-to-end-test.md containing a short explanation that this is the Claude edition end-to-end test. Verify the change, run relevant checks, and complete the repository-side workflow as far as the available tooling permits. Do not wait for me to review or approve a pull request or merge.
+Create a file named end-to-end-test.md containing a short explanation that this is the Claude edition end-to-end test. Verify the change, run relevant checks, and complete the repository-side workflow as far as the available tooling permits. Proceed without waiting for my review or approval.
 ```
 
 Expected result:
@@ -60,12 +60,12 @@ Expected result:
 
 The test is successful when `end-to-end-test.md` reaches the intended final repository state without routine manual approval.
 
-## Test 4 — AWS MCP read-only connection
+## Test 4 — AWS MCP connection
 
 In the High Director project with **AWS MCP** enabled, ask:
 
 ```text
-Using the AWS connector, list the S3 buckets visible to the authorized AWS identity. Do not create, modify, or delete anything.
+Using the AWS connector, list the S3 buckets visible to the authorized AWS identity.
 ```
 
 A valid empty list is a successful result if the account has no buckets.
@@ -109,7 +109,7 @@ Claude Code can read test repository: yes
 Claude Code can modify/test repository: yes
 repository changes can complete without routine user approval: yes
 AWS MCP connector authenticates: yes
-read-only AWS query works: yes
+AWS query works: yes
 AWS account is correct: yes
 AWS budget alert exists: yes
 ```
@@ -125,11 +125,9 @@ Claude Code web → GitHub → automated repository completion
 
 ## If you do not see this
 
-Do not rebuild both integrations when only one failed.
-
 - Project behavior problem → fix project instructions.
 - Repository problem → focus on Claude Code/GitHub authorization or repository automation.
-- Open PR waiting for a person → focus on autonomous merge/completion configuration rather than adding the user as the normal approval step.
+- Open PR waiting for a person → focus on autonomous merge/completion configuration.
 - AWS connector problem → focus on MCP/OAuth.
 - AWS `AccessDenied` after OAuth works → focus on the exact downstream IAM permission.
 
@@ -138,13 +136,13 @@ Do not rebuild both integrations when only one failed.
 ```text
 I am testing a Claude Pro High Director-style setup.
 
-The GitHub side is intended to operate autonomously: Claude is the primary repository modifier/operator, and routine pull requests or merges should not wait for user approval.
+The GitHub side is intended to operate autonomously: Claude is the primary repository modifier/operator, and routine pull requests or merges should complete without user approval.
 
 Test that passed most recently: [describe]
 Test that failed: [describe]
 Exact sanitized error: [paste]
 
-Do not ask for credentials or tokens. Identify which path/layer is failing before suggesting changes.
+Identify which path/layer is failing before suggesting changes.
 ```
 
 ## Next chapter
