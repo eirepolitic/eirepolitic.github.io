@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 07 — End-to-End Testing
-summary: Verify the High Director Claude Project, autonomous Claude Code GitHub workflow, and AWS MCP connection before using important repositories or AWS resources.
+summary: Verify the Claude Project, GitHub workflow, and AWS MCP connection.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,136 +15,85 @@ permalink: /docs/high-director/build-your-own-claude/07-end-to-end-testing/
 
 ## Goal
 
-Prove each part independently before using the setup for important work.
+Verify the three parts of the setup work together.
 
-## Test 1 — High Director project behavior
+## Complete this step
 
-Inside the **High Director** project, ask:
+### Test 1 — High Director Project
+
+1. Open **Projects → High Director**.
+2. Ask:
 
 ```text
-I want to build a data-import tool in GitHub and eventually deploy it on AWS. I have not decided how it should run or what it may cost. Plan the decisions we need before implementation.
+I want to build a small data-import tool in GitHub and eventually deploy it on AWS. Plan the decisions we need before implementation.
 ```
 
-Expected behavior:
+### Test 2 — Claude Code repository change
 
-- Claude identifies decisions affecting architecture/cost;
-- explanations are beginner-friendly;
-- Claude identifies repository and AWS assumptions explicitly.
-
-## Test 2 — Claude Code repository read
-
-Open Claude Code web and select `claude-director-test`.
-
-Ask:
+1. Open Claude Code on the web.
+2. Select `claude-director-test`.
+3. Ask:
 
 ```text
-Inspect the repository and summarize its files.
+Create a file named end-to-end-test.md containing a short explanation that this is the Claude edition end-to-end test. Verify the change, run relevant checks, and complete the repository-side workflow as far as the available tooling permits. Proceed without waiting for my approval.
 ```
 
-Expected result: Claude sees the files already committed to GitHub.
+4. Confirm the file appears in GitHub through the repository workflow.
 
-## Test 3 — Autonomous repository change
+### Test 3 — AWS MCP
 
-Ask Claude Code:
-
-```text
-Create a file named end-to-end-test.md containing a short explanation that this is the Claude edition end-to-end test. Verify the change, run relevant checks, and complete the repository-side workflow as far as the available tooling permits. Proceed without waiting for my review or approval.
-```
-
-Expected result:
-
-- Claude makes the change;
-- it uses a branch/PR if that is the supported workflow;
-- relevant checks run;
-- the repository workflow is configured so qualifying changes can complete without the user acting as the approval gate.
-
-The test is successful when `end-to-end-test.md` reaches the intended final repository state without routine manual approval.
-
-## Test 4 — AWS MCP connection
-
-In the High Director project with **AWS MCP** enabled, ask:
+1. Return to **Projects → High Director**.
+2. Enable **AWS MCP** for the chat.
+3. Ask:
 
 ```text
-Using the AWS connector, list the S3 buckets visible to the authorized AWS identity.
-```
-
-A valid empty list is a successful result if the account has no buckets.
-
-## Test 5 — First controlled AWS write
-
-Only perform this test after you understand that AWS resources can incur charges.
-
-Choose a low-impact resource you actually need rather than creating infrastructure solely for a test. If you have no current AWS write task, skip this test until you do.
-
-When you are ready, ask Claude first for a plan containing:
-
-```text
-resource to be created or changed
-AWS region
-expected cost category
-IAM permission required
-how to verify success
-how to undo the change
-```
-
-This planning checkpoint remains because it concerns function, cost, permissions, and infrastructure design. It is separate from repository PR approval.
-
-## Test 6 — Cross-surface workflow
-
-Use the intended operating model:
-
-1. In the High Director Project, plan a tiny repository change.
-2. Open Claude Code web for `claude-director-test`.
-3. Have Claude Code implement it.
-4. Let the repository workflow complete automatically where supported.
-5. Return to the High Director Project for AWS/deployment planning if needed.
-
-## Minimum readiness checklist
-
-Before using an important repository or AWS workload, confirm:
-
-```text
-High Director project instructions behave correctly: yes
-Claude Code can read test repository: yes
-Claude Code can modify/test repository: yes
-repository changes can complete without routine user approval: yes
-AWS MCP connector authenticates: yes
-AWS query works: yes
-AWS account is correct: yes
-AWS budget alert exists: yes
+Using AWS MCP, list the S3 buckets visible to this AWS identity and identify the AWS account and identity you are using.
 ```
 
 ## What you should see
 
-The system should now have two independently proven paths:
+All three should work:
 
 ```text
-Claude Project → AWS MCP → AWS
-Claude Code web → GitHub → automated repository completion
+High Director Project: follows project instructions
+Claude Code: can modify the test repository
+AWS MCP: can query the AWS account
 ```
 
-## If you do not see this
+Continue to [Chapter 8 — Daily Operation]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }}).
 
-- Project behavior problem → fix project instructions.
-- Repository problem → focus on Claude Code/GitHub authorization or repository automation.
-- Open PR waiting for a person → focus on autonomous merge/completion configuration.
-- AWS connector problem → focus on MCP/OAuth.
-- AWS `AccessDenied` after OAuth works → focus on the exact downstream IAM permission.
+<details>
+<summary>Additional information</summary>
 
-## Ask ordinary Claude or ChatGPT this
+An empty S3 bucket list still proves the AWS connection works.
+
+The GitHub test succeeds when the requested file reaches the intended repository state. Branches and pull requests may appear as part of that workflow.
+
+Use the High Director Project for planning and AWS work. Use Claude Code for repository implementation.
+
+</details>
+
+<details>
+<summary>Troubleshooting</summary>
+
+Identify which of the three layers failed:
 
 ```text
-I am testing a Claude Pro High Director-style setup.
-
-The GitHub side is intended to operate autonomously: Claude is the primary repository modifier/operator, and routine pull requests or merges should complete without user approval.
-
-Test that passed most recently: [describe]
-Test that failed: [describe]
-Exact sanitized error: [paste]
-
-Identify which path/layer is failing before suggesting changes.
+Project behavior
+GitHub / Claude Code
+AWS MCP
 ```
 
-## Next chapter
+Fix only that layer.
 
-Continue to [Chapter 8 — Daily operation]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }}).
+Useful prompt:
+
+```text
+I am testing my Claude High Director setup.
+Working test: [Project / GitHub / AWS]
+Failing test: [Project / GitHub / AWS]
+Exact non-secret error: [paste it]
+Identify the failing layer and give me the smallest fix.
+```
+
+</details>
