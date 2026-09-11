@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 08 — Daily Operation
-summary: Use the High Director Claude Project, autonomous Claude Code repository operation, GitHub, and AWS MCP together after initial testing.
+summary: Use the High Director Project, Claude Code, GitHub, and AWS MCP together after setup.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,171 +15,64 @@ permalink: /docs/high-director/build-your-own-claude/08-daily-operation/
 
 ## Goal
 
-Use the right Claude surface for each task while allowing Claude to operate repositories without routine user approval.
+Use the correct Claude surface for each type of work.
 
-## Use the High Director Project for planning
+## Complete this step
 
-Use the Project when you need to:
+### For planning or AWS work
 
-- define requirements;
-- compare architectures;
-- decide cost/security tradeoffs;
-- plan AWS resources;
-- troubleshoot errors;
-- write documentation or implementation plans;
-- use the AWS MCP connector.
+1. Open **Projects → High Director**.
+2. Describe what you want built or changed.
+3. Let Claude identify any required architecture, cost, or permission decisions.
+4. Enable **AWS MCP** when AWS access is needed.
+5. Let Claude perform the requested AWS work.
+6. Verify the result in the AWS console when appropriate.
 
-Example:
+### For repository work
 
-```text
-I want to build a scheduled data import that stores results in S3. Ask me only the decisions that materially affect cost, permissions, or architecture. Then produce the implementation plan.
-```
-
-## Use Claude Code web for repository implementation and operation
-
-Use Claude Code when work requires the repository itself:
-
-- inspect files;
-- modify Python/YAML/docs;
-- run tests or linters;
-- create branches;
-- create pull requests when useful;
-- complete merges or repository workflows where supported;
-- fix issues in an existing codebase.
-
-Example:
-
-```text
-Inspect this repository and implement the scheduled import described below. Use the repository workflow that provides useful traceability with the least unnecessary overhead. Run the relevant tests/checks and complete the repository-side work without waiting for me to approve a pull request or merge.
-```
-
-## Repository operating model
-
-Claude is expected to be the primary repository modifier and operator.
-
-Normal repository work proceeds without routine user review or approval.
-
-Branches and pull requests are useful when they provide:
-
-- history;
-- CI/check execution;
-- isolation;
-- rollback points;
-- compatibility with repository rules.
-
-If a branch/PR workflow is used, the desired cycle is:
-
-```text
-plan → implement → test → branch/PR if useful → automated checks → automated completion/merge → verify final state
-```
-
-If the repository supports a simpler direct-write workflow, Claude may use that instead.
-
-## Recommended normal workflow
-
-For an important repository change:
-
-1. Plan it in the High Director Project when architecture/cost/design decisions are involved.
-2. Open the relevant repository in Claude Code web.
-3. Give Claude Code the requirements and acceptance criteria.
-4. Let it inspect the repository before editing.
-5. Let it implement and run the relevant verification.
-6. Let the repository workflow complete automatically where the available tooling supports it.
-7. Have Claude verify the final repository state.
-8. Return to the High Director Project for AWS deployment/operations if necessary.
-9. Verify the live result.
-
-## New repositories
-
-Claude Code works with repositories that already exist in GitHub.
-
-For a new tool:
-
-1. Create the repository on GitHub.
-2. Add a README so the repository has an initial branch.
-3. Ensure the Claude Code GitHub App has access to the repository.
-4. Open it in Claude Code web.
-5. Ask Claude Code to scaffold and operate the project based on the agreed plan.
-
-## AWS operations
-
-Planning decisions still apply to AWS changes that materially affect cost, access, deletion, public exposure, or architecture.
-
-Useful wording:
-
-```text
-Before making this AWS change, tell me exactly which resource will change, which region it is in, what permission is required, the likely cost category, and how to undo the change. Then proceed once the required design/cost decisions are settled.
-```
-
-## S3
-
-For S3 work, specify the bucket and intended action clearly.
-
-Example:
-
-```text
-Using AWS, list objects under the reports/ prefix in bucket example-bucket.
-```
-
-## Lambda, Step Functions, and CloudWatch
-
-Use AWS MCP to inspect existing resources first.
-
-A useful diagnostic sequence is:
-
-```text
-resource → configuration → recent execution → logs/metrics → diagnosis → proposed change
-```
-
-Change one relevant layer at a time when troubleshooting.
-
-## Usage limits
-
-Claude Pro and Claude Code share plan usage. If you reach the included usage limit, that is not a GitHub or AWS failure.
-
-Anthropic may offer additional usage credits or higher-tier plans. First determine whether the limitation is occasional or persistent enough to justify additional cost.
-
-## Keep GitHub and AWS permissions separate
-
-The Claude Code GitHub integration and AWS MCP authorization are independent.
-
-A GitHub failure is not fixed by changing AWS IAM.
-
-An AWS `AccessDenied` is not fixed by changing GitHub authorization.
+1. Open Claude Code on the web.
+2. Select the repository.
+3. Give Claude the task and acceptance criteria.
+4. Let Claude inspect, edit, test, and complete the repository workflow.
+5. Verify the final repository state in GitHub.
 
 ## What you should see
 
-Normal repository work should look like:
+Normal operation should look like:
 
 ```text
-Plan if needed → Claude Code → implementation → tests/checks → automatic repository completion → verification
+Planning/AWS → High Director Project
+Repository implementation → Claude Code
 ```
-
-AWS work should look like:
-
-```text
-Plan/decision if needed → AWS MCP → AWS change/query → verification
-```
-
-## If you do not see this
-
-If Claude Code stops at an open PR waiting for you, treat that as a repository automation/configuration issue rather than the desired daily workflow.
-
-If Claude is trying to perform repository implementation in a normal Project chat without repository tooling, move that task to Claude Code web.
-
-## Ask ordinary Claude or ChatGPT this
-
-```text
-I have a High Director-style Claude setup where Claude is the primary repository modifier/operator.
-
-Routine repository changes should complete without requiring me to approve pull requests or merges. Branches/PRs may still be used for history and automated checks.
-
-Task I want to perform: [describe it]
-Current repository workflow: [describe it]
-
-Tell me the simplest autonomous sequence using Claude Code web and GitHub.
-```
-
-## Next chapter
 
 Continue to [Chapter 9 — Troubleshooting]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }}).
+
+<details>
+<summary>Additional information</summary>
+
+Claude is the intended primary repository operator. Routine user approval of pull requests or merges is not part of the normal workflow.
+
+Branches and pull requests may still be useful for automated checks, history, rollback, or repository rules.
+
+For new repositories, create the repository in GitHub first, make sure the Claude GitHub App can access it, then open it in Claude Code.
+
+Claude Pro and Claude Code share plan usage. A usage-limit message is a Claude-plan issue, not a GitHub or AWS authentication failure.
+
+</details>
+
+<details>
+<summary>Useful prompts</summary>
+
+Repository task:
+
+```text
+Inspect this repository and implement the following requirement: [requirement]. Run the relevant checks and complete the repository workflow as far as the available tooling permits.
+```
+
+AWS task:
+
+```text
+Using AWS MCP, complete this task: [task]. Use us-east-2 for new workload resources unless the service or requirement needs another region.
+```
+
+</details>

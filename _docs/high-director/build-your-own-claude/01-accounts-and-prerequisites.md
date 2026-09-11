@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 01 — Accounts and Prerequisites
-summary: Create or verify the Claude, GitHub, and AWS accounts required for the browser-only Claude edition before changing repositories or cloud infrastructure.
+summary: Confirm the Claude, GitHub, and AWS accounts needed for the browser-only setup.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,199 +15,70 @@ permalink: /docs/high-director/build-your-own-claude/01-accounts-and-prerequisit
 
 ## Goal
 
-At the end of this chapter you will know whether you have the three accounts needed for the core build:
+Confirm you can access Claude Pro, GitHub, and AWS.
 
-```text
-Claude
-GitHub
-AWS
-```
+## Complete this step
 
-## Step 1 — Create or sign in to Claude
+### Claude
 
-Open [Claude](https://claude.ai/) in a desktop web browser.
+1. Open [Claude](https://claude.ai/).
+2. Sign in or create an account.
+3. Open **Settings → Billing**.
+4. Confirm your plan is **Pro**.
+5. In Claude, confirm you can access **Projects**.
+6. Open **Customize → Connectors** and confirm you can add connectors.
 
-### Do you already have a Claude account?
+### GitHub
 
-If **yes**:
+1. Open [GitHub](https://github.com/).
+2. Sign in or create an account.
+3. Record your GitHub username.
 
-1. Sign in.
-2. Confirm you can open a normal Claude conversation.
-3. Continue to Step 2.
+### AWS
 
-If **no**:
-
-1. Open `claude.ai`.
-2. Choose the current sign-in method offered for your account, such as email or Google.
-3. Complete Anthropic's account-verification flow.
-4. Sign in.
-
-## Step 2 — Check whether you already have Pro
-
-In Claude:
-
-1. Select your initials or account menu.
-2. Open **Settings**.
-3. Open **Billing** or the current plan/billing area.
-4. Look for your current plan.
-
-### If the plan says Pro
-
-Continue to Step 3.
-
-### If the plan is Free
-
-As verified on 2026-09-10, Anthropic lists Claude Pro at:
-
-```text
-USD $20/month when billed monthly
-USD $200/year when billed annually
-```
-
-Pricing can differ by country, currency, taxes, and platform.
-
-Official references:
-
-- [Choose a Claude plan](https://support.claude.com/en/articles/11049762-choose-a-claude-plan)
-- [Sign up for Pro](https://support.claude.com/en/articles/8325609-how-do-i-sign-up-for-the-pro-plan)
-
-If you want to continue with Pro:
-
-1. In **Settings → Billing**, select **Upgrade plan**.
-2. Select **Get Pro plan**.
-3. Choose monthly or annual billing based on your own preference.
-4. Review the current price shown to you before paying.
-5. Complete the payment process only if you are authorized to make that purchase.
-6. Return to Claude after the upgrade.
-7. Confirm the account now shows **Pro**.
-
-Start with Pro. Upgrade later if your actual usage requires more capacity.
-
-## Step 3 — Verify the features this guide needs
-
-The primary build depends on these Claude features:
-
-```text
-Projects
-Claude Code
-Custom connectors / remote MCP
-```
-
-### Check Projects
-
-1. Look in the Claude sidebar for **Projects**.
-2. Open it.
-3. Confirm you can create a project.
-
-### Check Claude Code
-
-Claude Pro includes Claude Code. The guide uses **Claude Code on the web**, not the terminal version.
-
-Look for Claude Code in the Claude interface or open Anthropic's Claude Code web entry point from the Claude product interface.
-
-### Check Connectors
-
-1. Open the Claude customization/settings area.
-2. Find **Connectors**.
-3. Confirm there is an option to add or manage connectors.
-4. On an individual Pro account, look for **Add custom connector** or equivalent wording.
-
-Anthropic currently documents remote custom connectors for Pro users.
-
-Official reference: [Get started with custom connectors using remote MCP](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp).
-
-## Step 4 — Check GitHub
-
-Open [GitHub](https://github.com/).
-
-### Do you already have an account?
-
-If **yes**:
-
-1. Sign in.
-2. Select your profile picture.
-3. Confirm the username is the account you want Claude Code to work with.
-4. Record the username in a private setup note.
-
-If **no**:
-
-1. Select **Sign up**.
-2. Follow GitHub's account-creation prompts.
-3. Verify your email address.
-4. Sign in.
-5. Record your username.
-
-## Optional — GitHub two-factor authentication
-
-Two-factor authentication is optional for this guide.
-
-If GitHub itself requires two-factor authentication for your account, complete GitHub's required setup before continuing.
-
-You can enable it later under **GitHub → Settings → Password and authentication** if you want the extra account-security layer.
-
-## Step 5 — Check AWS
-
-Open the [AWS Management Console](https://console.aws.amazon.com/).
-
-### Do you already control an AWS account?
-
-If **yes**:
-
-1. Sign in.
-2. Confirm it is the account you intend to use.
-
-If **no**:
-
-1. Use AWS's official account-creation flow.
-2. Complete the required identity, contact, payment, and verification steps shown by AWS.
-3. Choose only services/support options you understand and intend to pay for.
-4. Sign in to the AWS Management Console.
-
-AWS signup requirements vary and can change. Follow the current AWS screens.
-
-## Step 6 — Create a private setup note
-
-Record:
-
-```text
-Claude plan: Pro
-GitHub username:
-AWS account access confirmed: yes/no
-Preferred AWS region: us-east-2
-```
+1. Open the [AWS Management Console](https://console.aws.amazon.com/).
+2. Sign in or create an AWS account.
+3. Confirm you can reach the AWS console home page.
 
 ## What you should see
 
 You should now have:
 
-- Claude Pro;
-- access to Projects;
-- access to Claude Code;
-- access to custom connectors;
-- a working GitHub account;
-- access to an AWS account you control.
-
-If GitHub specifically required two-factor authentication for your account, that requirement should also be complete.
-
-## If you do not see this
-
-Resolve only the missing account/feature before continuing.
-
-## Ask ordinary Claude or ChatGPT this
-
 ```text
-I am following a browser-only guide to build a High Director-style setup using Claude Pro, Claude Code on the web, GitHub, and the AWS managed MCP Server.
-
-I am stuck at the account/prerequisite stage.
-Service: [Claude / GitHub / AWS]
-What I clicked: [describe it]
-What I expected: [describe it]
-What I see: [describe it]
-Exact non-secret error: [paste it]
-
-Check the current official documentation and give me click-by-click browser instructions.
+Claude Pro: yes
+Claude Projects: available
+Claude Connectors: available
+GitHub account: working
+AWS account: working
 ```
 
-## Next chapter
+Continue to [Chapter 2 — Create the GitHub test repository]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }}).
 
-Continue to [Chapter 2 — Create and prepare GitHub]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }}).
+<details>
+<summary>Additional information</summary>
+
+Claude Pro currently includes Claude Code. Claude API usage is billed separately and is not needed for this guide.
+
+GitHub two-factor authentication is optional unless GitHub itself requires it for your account.
+
+For AWS, use an account you control and are authorized to operate.
+
+</details>
+
+<details>
+<summary>Troubleshooting</summary>
+
+If one account or feature is missing, resolve only that item before continuing.
+
+Useful prompt:
+
+```text
+I am following a browser-only Claude High Director setup guide.
+Service: [Claude / GitHub / AWS]
+I am stuck at: [describe step]
+What I see: [describe screen]
+Exact non-secret error: [paste it]
+Give me current click-by-click browser instructions.
+```
+
+</details>
