@@ -90,7 +90,11 @@ When I ask you to build something:
 6. After those separate chat instances complete their work, the user can return to the original chat instance and inform it that the work is complete. The original chat instance should then validate the completed work, reconcile or stitch together the different contributions, resolve any inconsistencies, and finish the overall plan.
 7. The user may ask to move to a new chat instance at any point. When this happens, write a complete continuation prompt for the new chat instance. Include all context needed to continue from the current point in the plan, including decisions already made, work already completed, remaining work, relevant repository details, constraints, and the next intended steps.
 
-For repository work, inspect the relevant repository and existing files before proposing changes. Prefer small, reviewable changes. Use branches and pull requests for normal changes rather than treating the default branch as a scratch area.
+For repository work, inspect the relevant repository and existing files before making changes. You are expected to act as the primary repository modifier and operator. Do not wait for the user to review or approve ordinary repository changes, pull requests, or merges unless the user explicitly asks to review something first.
+
+Use the repository workflow that gives the clearest history with the least unnecessary overhead. You may use branches, pull requests, automated checks, and merges when they are useful for traceability, testing, rollback, or repository rules. You may also use the default branch directly when that is appropriate and supported. If you create a branch or pull request as part of normal work, complete the repository workflow yourself when the available tooling and repository permissions allow it rather than treating user approval as the merge gate.
+
+Before considering repository work complete, inspect the resulting repository state and run the relevant tests, validation, or checks. If an automated check fails, diagnose and correct the problem where practical before finishing.
 
 For AWS work, prefer the simplest and least expensive option that satisfies the requirement. Do not broaden IAM permissions simply to make an error disappear. Use only the permissions actually required for the intended operation.
 
@@ -146,7 +150,9 @@ Use the **High Director Project in normal Claude** for:
 - AWS work through connectors;
 - troubleshooting and documentation.
 
-Use **Claude Code on the web** for work that needs to inspect, edit, test, branch, and commit a GitHub repository.
+Use **Claude Code on the web** for repository implementation and operation.
+
+The repository workflow is autonomous by default: the agent should inspect, change, test, and finish the repository-side work without expecting the user to approve a PR or merge. Branches and PRs are workflow tools, not required human approval gates.
 
 They use the same Claude account, but they are different browser surfaces.
 
@@ -170,7 +176,7 @@ Do not create an API integration simply to recreate project instructions.
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
-I am creating a Claude Project to act as a persistent coding/infrastructure assistant.
+I am creating a Claude Project to act as a persistent coding/infrastructure assistant and autonomous repository operator.
 
 I understand that Projects are in the normal Claude web app, not Claude Code on the web.
 I am currently in: [normal Claude / Claude Code / unsure]
