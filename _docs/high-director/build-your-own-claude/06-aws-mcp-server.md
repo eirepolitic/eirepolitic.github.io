@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 06 — AWS MCP Server
-summary: Connect Claude Pro to the managed AWS MCP Server using a remote custom connector and browser OAuth, then verify safe AWS read access.
+summary: Connect Claude Pro to the managed AWS MCP Server using a remote custom connector, browser OAuth, and the AWS identity or role prepared in Chapter 5.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,164 +15,277 @@ permalink: /docs/high-director/build-your-own-claude/06-aws-mcp-server/
 
 ## Goal
 
-Connect the High Director Claude Project to AWS using the managed AWS MCP Server.
+Connect the High Director Claude Project to AWS using the managed AWS MCP Server and the AWS identity prepared in Chapter 5.
 
-AWS documents the managed AWS MCP Server as available at no additional charge. You still pay normal AWS charges for resources Claude creates or uses.
+AWS documents the managed AWS MCP Server as available at no additional charge. Normal AWS resource charges still apply to services Claude creates or uses.
 
-## Step 1 — Confirm the managed endpoint
+## Step 1 — Confirm which AWS identity Claude will use
 
-AWS's managed MCP endpoint format is region-specific. For the AWS MCP Server endpoint documented for `us-east-1`, AWS currently uses:
+Use the path you selected in Chapter 5.
+
+### Path A — Existing IAM identity
+
+Remain signed in with the IAM user, IAM Identity Center identity, or federated role whose AWS permissions you want Claude to inherit.
+
+That identity needs:
+
+```text
+AWSMCPSignInOAuthAccessPolicy
++ the AWS service permissions Claude needs
+```
+
+### Path B — `ClaudeHighDirectorRole`
+
+Switch into the role before starting OAuth:
+
+1. Open the AWS console.
+2. Select the account/identity menu in the upper-right corner.
+3. Select **Switch role** or **Add session → Switch role**.
+4. Enter your 12-digit AWS account ID.
+5. Enter:
+
+```text
+ClaudeHighDirectorRole
+```
+
+6. Select **Switch Role**.
+7. Confirm the upper-right AWS menu now identifies the role session.
+
+The OAuth session will use the permissions of the active AWS identity/role.
+
+## Step 2 — Add the MCP OAuth policy to an existing IAM user if needed
+
+Skip this step if:
+
+- you created `ClaudeHighDirectorRole` in Chapter 5; or
+- your existing identity already has `signin:AuthorizeOAuth2Access` and `signin:CreateOAuth2Token`.
+
+For a normal IAM user:
+
+1. Open **AWS Console → IAM**.
+2. Select **Users**.
+3. Select the IAM user that will authorize Claude.
+4. Open **Permissions**.
+5. Select **Add permissions**.
+6. Choose **Attach policies directly**.
+7. Search for:
+
+```text
+AWSMCPSignInOAuthAccessPolicy
+```
+
+8. Select the policy checkbox.
+9. Select **Next** or **Add permissions**, depending on the current IAM screen.
+10. Confirm the policy is listed under the user's permissions.
+
+For an IAM Identity Center or federated identity, grant the equivalent AWS managed policy/action through the permission set or identity mechanism that controls that session.
+
+## Step 3 — Confirm the managed MCP endpoint
+
+AWS's managed MCP endpoint is region-specific. AWS currently documents this `us-east-1` endpoint:
 
 ```text
 https://aws-mcp.us-east-1.api.aws/mcp
 ```
 
-AWS documentation states that you may use the endpoint for your preferred supported MCP Server region. The MCP Server region is the server endpoint location; it does not force every downstream AWS resource to be in that same region.
-
 Official reference: [OAuth authentication for AWS MCP Server](https://docs.aws.amazon.com/agent-toolkit/latest/userguide/oauth-authentication.html).
 
-For the first setup, use the endpoint currently shown by AWS's setup documentation unless AWS has changed it.
+The MCP Server endpoint region and the region of the AWS resources Claude operates can be different.
 
-## Step 2 — Open Claude Connectors
+## Step 4 — Open Claude Connectors
 
-1. Open Claude in your browser.
+1. Open normal Claude in your browser.
 2. Open **Customize** or the current customization area.
 3. Select **Connectors**.
 4. Select **+**.
 5. Select **Add custom connector**.
 
-Anthropic currently documents this path for individual Pro and Max users.
+## Step 5 — Add the AWS MCP Server
 
-## Step 3 — Add the AWS MCP Server URL
-
-In the connector URL field, paste the AWS MCP Server endpoint from the current AWS documentation.
-
-For the currently documented `us-east-1` endpoint:
+1. In the connector URL field, enter:
 
 ```text
 https://aws-mcp.us-east-1.api.aws/mcp
 ```
 
-If Claude offers optional OAuth Client ID/Secret fields, leave them empty for the normal AWS-managed discovery flow unless current AWS/Anthropic documentation specifically instructs otherwise.
-
-Name the connector something recognizable if Claude offers a name field:
+2. If Claude offers optional OAuth Client ID/Secret fields, leave them empty for the AWS-managed OAuth discovery flow unless current AWS/Anthropic documentation specifically requires values.
+3. Name the connector:
 
 ```text
 AWS MCP
 ```
 
-Select **Add**.
+4. Select **Add**.
 
-## Step 4 — Enable the connector in a High Director chat
+If the OAuth flow fails to start with the normal endpoint, AWS documents this compatibility endpoint for clients that need an explicit OAuth trigger:
 
-1. Open your **High Director** project.
+```text
+https://aws-mcp.us-east-1.api.aws/mcp?oauth=initialize
+```
+
+## Step 6 — Enable the connector in High Director
+
+1. Open the **High Director** Project in normal Claude.
 2. Start a new chat.
 3. Select the **+** button near the message field.
 4. Open **Connectors**.
 5. Enable **AWS MCP**.
 
-## Step 5 — Trigger the OAuth flow with a harmless request
+## Step 7 — Trigger AWS OAuth
 
 Ask:
 
 ```text
-Using the AWS connector, identify the AWS account/identity context available to you and tell me which AWS region I asked you to prefer.
+Using the AWS connector, identify the AWS account and IAM identity/role available to you, and tell me which AWS region I asked you to prefer.
 ```
 
-The first tool use should cause an AWS authorization/sign-in flow if the connector is not already authorized.
+The first AWS MCP tool use should open AWS Sign-in/authorization.
 
-## Step 6 — Complete AWS Sign-in
+## Step 8 — Complete AWS authorization
 
 When AWS opens:
 
-1. Confirm you are signing in to the intended AWS account.
-2. Authenticate normally.
-3. Review the consent/authorization screen.
-4. Authorize the connection only if it is clearly for the AWS MCP Server and the account is correct.
-5. Return to Claude.
+1. Confirm the AWS account is the one from Chapter 5.
+2. Confirm the active identity matches the path you chose:
 
-AWS states that OAuth tokens are short-lived and that the browser flow relies on your existing IAM identity and permissions.
+```text
+existing IAM identity
+or
+ClaudeHighDirectorRole
+```
 
-## Step 7 — If AWS reports missing OAuth-sign-in permission
+3. Authenticate if AWS requests it.
+4. Review the consent screen.
+5. Authorize the AWS MCP connection.
+6. Return to Claude.
 
-AWS currently documents these permissions as prerequisites for the OAuth connection:
+AWS issues short-lived OAuth tokens and continues to enforce the IAM permissions of the identity/role that authorized the session.
+
+## Step 9 — Test the initial permissions
+
+### If you used `ClaudeHighDirectorRole`
+
+The role was configured with `AmazonS3ReadOnlyAccess`, so ask:
+
+```text
+Using the AWS connector, list the S3 buckets visible to this AWS identity and identify the current AWS identity/role.
+```
+
+A result showing zero buckets is still a successful permission test when the account contains no buckets.
+
+### If you used an existing IAM identity
+
+Ask for a resource query that matches permissions the identity already has. For example:
+
+```text
+Using the AWS connector, list the S3 buckets visible to this AWS identity and identify the current AWS identity/role.
+```
+
+## Step 10 — Understand OAuth errors vs AWS-service errors
+
+### OAuth permission error
+
+If AWS reports that the identity lacks:
 
 ```text
 signin:AuthorizeOAuth2Access
 signin:CreateOAuth2Token
 ```
 
-AWS provides a managed policy named:
+verify that `AWSMCPSignInOAuthAccessPolicy` is attached to the active identity/role.
+
+### `AccessDenied` after OAuth succeeds
+
+OAuth is working. The active AWS identity/role is missing permission for the requested downstream AWS action.
+
+For a dedicated role:
+
+1. Open **IAM → Roles → ClaudeHighDirectorRole**.
+2. Open **Permissions**.
+3. Select **Add permissions → Attach policies**.
+4. Add the policy corresponding to the service Claude needs.
+5. Retry the original operation.
+
+Examples:
 
 ```text
-AWSMCPSignInOAuthAccessPolicy
+S3 operations          → AmazonS3FullAccess
+Lambda operations      → AWSLambda_FullAccess
+CloudWatch operations  → CloudWatchFullAccessV2
+Step Functions         → AWSStepFunctionsFullAccess
 ```
 
-If the exact AWS error says the identity lacks the OAuth-sign-in permission:
+For tighter control, replace broad service policies with customer-managed policies scoped to specific actions/resources once the required operation is known.
 
-1. preserve the exact error;
-2. open AWS IAM;
-3. identify the IAM user/role you are actually using;
-4. add the AWS-documented OAuth access policy if you are authorized to manage that identity and the permission is genuinely missing;
-5. retry the connection.
+## Step 11 — `iam:PassRole` when AWS services need execution roles
 
-## Step 8 — Test AWS documentation/knowledge access first
+Some AWS services create resources that run under their own IAM execution role. Lambda and Step Functions are common examples.
 
-Ask:
+In those cases the Claude identity may also need:
 
 ```text
-Using the AWS connector, explain what Amazon S3 is and identify the AWS region us-east-2.
+iam:PassRole
 ```
 
-The managed MCP Server includes AWS knowledge capabilities that can be used without creating resources.
+on the specific execution role being assigned to the AWS service.
 
-## Step 9 — Test an account/resource query
-
-Ask a query appropriate to resources you already have. For a new account, use something such as:
+Treat the **ClaudeHighDirectorRole** and a service's **execution role** as different roles:
 
 ```text
-Using the AWS connector, check whether I currently have any S3 buckets visible to this AWS identity.
+ClaudeHighDirectorRole
+→ what Claude itself may do through AWS MCP
+
+Lambda/Step Functions execution role
+→ what the deployed AWS workload may do while it runs
 ```
 
-If there are none, a result showing no buckets is a successful connection test.
+The relevant AWS service policy may already include appropriately scoped `iam:PassRole`; when an `AccessDenied` error names `iam:PassRole`, use the named execution role to scope the permission.
 
-## Step 10 — Verify the connection before resource creation
+## Step 12 — Verify the connection
 
 Confirm:
 
 ```text
 correct AWS account
-correct connector
-resource query works
-cost implications understood
-intended AWS region known
+correct IAM identity/role
+AWS MCP connector connected
+OAuth succeeds
+initial AWS resource query succeeds
+preferred workload region recorded as us-east-2
 ```
-
-The MCP Server can reach AWS APIs allowed by your IAM identity.
 
 ## What you should see
 
-You should have an **AWS MCP** custom connector in Claude, successfully authenticated through AWS Sign-in, with an AWS query working.
+Claude should be able to identify the AWS account and active identity/role and successfully perform an AWS query allowed by that identity.
+
+If you used the dedicated role, the identity should resolve to a session based on:
+
+```text
+ClaudeHighDirectorRole
+```
 
 ## If you do not see this
 
-Use the error layer:
+Use the failing layer:
 
-- Claude cannot add the URL → check custom connector support and the current endpoint.
-- OAuth never starts → check the MCP URL and current Claude connector behavior.
-- AWS returns authorization error for OAuth → check the two documented `signin:` permissions.
-- OAuth succeeds but AWS API calls return `AccessDenied` → investigate the specific downstream AWS permission.
-- AWS call works but returns no resources → that may simply be the correct state of the account.
+- connector URL rejected → check the current AWS MCP endpoint;
+- OAuth never starts → try AWS's documented `?oauth=initialize` compatibility endpoint;
+- OAuth permission denied → check `AWSMCPSignInOAuthAccessPolicy` on the active identity/role;
+- role switch denied → check role trust plus the user's `sts:AssumeRole` policy;
+- OAuth succeeds and service call returns `AccessDenied` → add the permission for the specific AWS action/service to the active identity/role;
+- correct query returns zero resources → verify account, region, and whether the resources exist.
 
 ## Ask ordinary Claude or ChatGPT this
 
 ```text
-I am connecting Claude Pro to the AWS managed MCP Server using a remote custom connector and browser OAuth.
+I am connecting Claude Pro to the AWS managed MCP Server using browser OAuth.
 
-Failing stage: [add connector / OAuth sign-in / OAuth permission / AWS API call]
-Exact sanitized error: [paste it]
+AWS identity path: [existing identity / ClaudeHighDirectorRole]
+Active identity/role: [name]
+Failing stage: [switch role / add connector / OAuth / AWS service call / iam:PassRole]
+Exact sanitized AWS error: [paste it]
 
-Distinguish connector/OAuth failure from downstream IAM AccessDenied. Use current AWS MCP Server and Claude custom connector documentation and give me the smallest browser-only fix first.
+Identify whether the failure is role assumption, AWS MCP OAuth, or downstream AWS service authorization. Give me exact AWS-console steps for the smallest required permission change.
 ```
 
 ## Next chapter
