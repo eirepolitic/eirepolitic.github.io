@@ -35,11 +35,11 @@ Claude Pro
  |     persistent High Director instructions
  |
  +-- Claude Code on the web
- |     GitHub repository work
+ |     primary repository modifier/operator
  |     file changes
  |     tests
- |     branches
- |     pull requests
+ |     branches / pull requests when useful
+ |     automated repository completion
  |
  +-- Custom connector
        |
@@ -53,6 +53,25 @@ Claude Pro
 ```
 
 This design intentionally avoids rebuilding the custom AWS Lambda GitHub gateway used by the ChatGPT edition.
+
+## Repository operating model
+
+The Claude edition assumes the agent is the primary modifier and operator of its connected repositories.
+
+Normal repository changes should not require the user to inspect or approve each pull request or merge.
+
+Claude may still use branches, pull requests, CI checks, and merges when they improve traceability, isolation, rollback, or automated verification. Those mechanisms are repository-control tools, not mandatory human approval gates.
+
+Where Claude Code web produces a pull request, the intended long-term repository workflow is:
+
+```text
+Claude implementation
+→ automated tests/checks
+→ automated merge/completion where supported
+→ Claude verifies final repository state
+```
+
+If a simpler supported direct-write path is appropriate for a repository, the agent may use that instead.
 
 ## Why this architecture was chosen
 
@@ -90,10 +109,11 @@ After the core guide is complete, you should be able to:
 
 - keep High Director-style instructions in a Claude Project;
 - ask Claude to plan technical work in beginner-friendly language;
-- use Claude Code on the web to work inside GitHub repositories;
+- use Claude Code on the web as the main operator of GitHub repositories;
 - create and edit code and documentation;
 - run tests in Claude Code's cloud environment;
-- push branches and create pull requests;
+- use branches and pull requests when useful without making the user a routine approval gate;
+- configure repository changes to complete automatically where supported;
 - create new GitHub repositories through the GitHub website and then hand them to Claude Code;
 - connect Claude to AWS through the managed AWS MCP Server;
 - let Claude inspect or operate AWS resources only within the permissions of the AWS identity you authorize.
