@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 03 — Create the High Director Project
-summary: Create the persistent Claude Project that carries High Director-style instructions across conversations.
+summary: Create the persistent Claude Project and add the High Director instructions.
 section: high-director
 doc_type: runbook
 status: active
@@ -11,63 +11,26 @@ order: 83
 permalink: /docs/high-director/build-your-own-claude/03-create-high-director-project/
 ---
 
-# Chapter 3 — Create the High Director Claude Project
+# Chapter 3 — Create the High Director Project
 
 ## Goal
 
-Create a Claude Project that acts as the persistent High Director workspace.
+Create the Claude Project that stores the High Director instructions.
 
-Claude Projects let you keep project instructions and project knowledge available across chats inside that project.
+## Complete this step
 
-Official reference: [Create and manage projects](https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects).
-
-## Important — Projects are not inside Claude Code
-
-Claude has two different browser surfaces in this guide:
-
-```text
-Normal Claude web app
-→ Projects, project instructions, planning, connectors, AWS work
-
-Claude Code on the web
-→ GitHub repositories, code changes, tests, branches, pull requests
-```
-
-If you are currently looking at **Claude Code** and do not see **Projects**, that is expected.
-
-For this chapter, leave Claude Code and return to the normal Claude web app at `claude.ai`.
-
-## Step 1 — Confirm you are in the normal Claude app
-
-1. Open a new browser tab.
-2. Go to `https://claude.ai/`.
-3. Confirm you are in the normal Claude chat interface, not the Claude Code repository workspace.
-4. Look at the left sidebar.
-5. Find **Projects**.
-
-If you only see repository/task controls, you are still in Claude Code. Return to the normal Claude interface before continuing.
-
-## Step 2 — Create the project
-
-1. In the normal Claude sidebar, select **Projects**.
-2. Select **Create project** or the current equivalent.
-3. Name it:
+1. Open [Claude](https://claude.ai/) in the normal Claude web app.
+2. In the left sidebar, select **Projects**.
+3. Select **Create project**.
+4. Name it:
 
 ```text
 High Director
 ```
 
-4. Add a description if Claude offers the field:
-
-```text
-Personal workspace for building, maintaining, and troubleshooting data pipelines, GitHub projects, automation, and AWS infrastructure.
-```
-
-## Step 3 — Open project instructions
-
-1. Open the new **High Director** project.
-2. Find **Set project instructions** or the current project-instructions control.
-3. Paste the following instructions.
+5. Open the new project.
+6. Open **Set project instructions**.
+7. Paste the following instructions:
 
 ```text
 Act as a concise coding and infrastructure assistant for designing and building data pipelines and related tools.
@@ -105,86 +68,43 @@ When troubleshooting, preserve the exact error and identify the failing layer be
 Never ask me to paste passwords, access keys, OAuth tokens, GitHub credentials, or other secrets into ordinary troubleshooting text.
 ```
 
-4. Select **Save instructions**.
-
-## Step 4 — Keep project knowledge simple initially
-
-For the first build, leave Project knowledge empty unless you have a specific non-secret reference document you want Claude to use.
-
-Later, useful knowledge can include:
-
-- architecture notes;
-- coding conventions;
-- non-secret data dictionaries;
-- deployment standards;
-- project requirements.
-
-## Step 5 — Test the instructions
-
-Start a new chat inside the High Director project.
-
-Ask:
-
-```text
-I want to build a small data pipeline but I have not decided where it should run. What should we decide before implementation?
-```
-
-Claude should identify relevant design/cost decisions rather than jumping directly into an arbitrary architecture.
-
-Then ask:
+8. Select **Save instructions**.
+9. Start a new chat inside **High Director**.
+10. Ask:
 
 ```text
 I have never used GitHub before. Explain how I would create a repository.
 ```
 
-The answer should be beginner-oriented and ordered.
-
-## Step 6 — Understand the division of work
-
-Use the **High Director Project in normal Claude** for:
-
-- planning;
-- architecture;
-- explanations;
-- deciding what to build;
-- AWS work through connectors;
-- troubleshooting and documentation.
-
-Use **Claude Code on the web** for repository implementation and operation.
-
-The repository workflow is autonomous by default: the agent should inspect, change, test, and finish the repository-side work without expecting the user to approve a PR or merge. Branches and PRs are workflow tools, not required human approval gates.
-
-They use the same Claude account, but they are different browser surfaces.
-
 ## What you should see
 
-In the normal Claude web app, you should have a project named **High Director** with saved project instructions and at least one successful test conversation.
+Claude should answer with ordered, beginner-friendly instructions.
 
-You should **not** expect this Project to appear inside the Claude Code repository interface.
+Continue to [Chapter 4 — Connect Claude Code to GitHub]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }}).
 
-## If you do not see this
+<details>
+<summary>Additional information</summary>
 
-First confirm which interface you are in:
+**Projects** are in the normal Claude web app. Claude Code is a separate browser surface used for repository work.
 
-- normal Claude chat interface → Projects should be available according to current account/product availability;
-- Claude Code repository interface → Projects are not expected there.
+Use the High Director Project for planning, AWS work, troubleshooting, and persistent instructions. Use Claude Code on the web for repository implementation.
 
-If Projects are still missing in the normal Claude app, verify the current Claude interface and account availability before changing anything else.
+Project knowledge can remain empty initially. Add non-secret reference material later only when useful.
 
-## Ask ordinary Claude or ChatGPT this
+</details>
+
+<details>
+<summary>Troubleshooting</summary>
+
+If you only see repository/task controls, you are probably in Claude Code rather than normal Claude. Return to `claude.ai` and open **Projects** there.
+
+Useful prompt:
 
 ```text
-I am creating a Claude Project to act as a persistent coding/infrastructure assistant and autonomous repository operator.
-
-I understand that Projects are in the normal Claude web app, not Claude Code on the web.
-I am currently in: [normal Claude / Claude Code / unsure]
-I am stuck at: [finding Projects / creating the project / project instructions / project knowledge / starting a project chat]
+I am setting up a Claude Project named High Director.
+I am stuck at: [finding Projects / creating project / project instructions / saving instructions]
 What I see: [describe it]
-Exact non-secret error: [paste it]
-
-Check current Claude Projects documentation and give me browser-only click-by-click steps.
+Give me current click-by-click Claude instructions.
 ```
 
-## Next chapter
-
-Continue to [Chapter 4 — Connect and use Claude Code on the web]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }}).
+</details>
