@@ -78,81 +78,254 @@ Workflows: Read and write
 15. Copy the token immediately.
 16. Put it temporarily in a private note. You will paste it into AWS once and then remove it from that note.
 
-## Step 2 — Create the Cognito login
+## Step 2 — Open Cognito for the first time
+
+This section assumes you have **never configured Amazon Cognito before**.
 
 1. Return to the AWS console.
-2. Confirm the region is:
+2. Confirm the region selector in the upper-right corner says:
 
 ```text
 US East (Ohio) — us-east-2
 ```
 
-3. Search for **Cognito**.
-4. Open **Amazon Cognito**.
-5. Open **User pools**.
-6. Select **Create user pool** or **Create application**, depending on the current console wording.
-7. For **Application type**, select:
+3. In the AWS search box at the top, enter:
+
+```text
+Cognito
+```
+
+4. Select **Amazon Cognito**.
+5. If AWS shows a welcome/getting-started page, select whichever first-time button is shown, such as:
+
+```text
+Get started
+```
+
+or:
+
+```text
+Create user pool
+```
+
+6. If AWS instead opens the normal Cognito console, select **User pools** in the left navigation, then select **Create user pool**.
+
+You should now be on a page titled similar to:
+
+```text
+Create user pool
+```
+
+or:
+
+```text
+Define your application
+```
+
+## Step 3 — Create the Cognito user pool and first application
+
+### 3A — Choose the application type
+
+1. Find **Application type**.
+2. Select:
 
 ```text
 Traditional web application
 ```
 
-8. For the application name, enter:
+Use **Traditional web application** because Claude will authenticate as an OAuth client and this Cognito application type creates a client secret.
+
+### 3B — Name the application
+
+1. Find **Name your application** or **Application name**.
+2. Enter:
 
 ```text
 SlyDirectorClaude
 ```
 
-9. Use **Email** as the sign-in identifier.
-10. For the return/callback URL, enter exactly:
+### 3C — Choose how you will sign in
+
+1. Find **Options for sign-in identifiers** or the equivalent sign-in setting.
+2. Select:
+
+```text
+Email
+```
+
+3. If AWS asks which attributes are required, keep **Email** as the required user attribute.
+
+The person connecting Claude will later sign into Cognito with this email address.
+
+### 3D — Add Claude's return URL
+
+1. Find **Add a return URL**, **Return URL**, or **Callback URL**.
+2. Enter exactly:
 
 ```text
 https://claude.ai/api/mcp/auth_callback
 ```
 
-11. Create the application/user pool.
-12. Open the new user pool.
-13. Record the **User pool ID** in your private setup note.
-14. Open **Applications → App clients**.
-15. Open **SlyDirectorClaude**.
-16. Record the **Client ID**.
-17. Find **Client secret** and select **Show client secret**.
-18. Record the **Client secret** in your private setup note.
-19. In the app client's managed-login/OAuth settings, confirm:
+3. Confirm there are no spaces before or after the URL.
+
+This is where Cognito sends your browser after Claude authentication succeeds.
+
+### 3E — Create the application
+
+1. Review the page.
+2. Confirm it shows approximately:
 
 ```text
-OAuth flow: Authorization code grant
-Allowed scope: openid
-Callback URL: https://claude.ai/api/mcp/auth_callback
+Application type: Traditional web application
+Application name: SlyDirectorClaude
+Sign-in identifier: Email
+Return URL: https://claude.ai/api/mcp/auth_callback
 ```
 
-20. Save any changes.
+3. Select **Create** or **Create application**.
 
-## Step 3 — Create the Cognito web domain
+Cognito now creates both:
 
-1. Inside the same Cognito user pool, open **Branding → Domain**.
-2. Select **Actions → Create Cognito domain**.
+```text
+User pool
+App client: SlyDirectorClaude
+```
+
+4. If AWS shows a setup/code-example page after creation, scroll down and select **Go to overview**.
+
+## Step 4 — Record the Cognito IDs Claude and Lambda will need
+
+### 4A — Record the User pool ID
+
+1. In Cognito, open **User pools** if you are not already inside the new pool.
+2. Open the user pool that was just created.
+3. On the **Overview** page, find **User pool ID**.
+4. Copy it into your private setup note.
+
+It looks similar to:
+
+```text
+us-east-2_AbCdEf123
+```
+
+### 4B — Record the Client ID
+
+1. Inside the same user pool, open:
+
+```text
+Applications → App clients
+```
+
+2. Select:
+
+```text
+SlyDirectorClaude
+```
+
+3. Find **Client ID**.
+4. Copy it into your private setup note.
+
+### 4C — Record the Client secret
+
+1. Stay on the `SlyDirectorClaude` app-client page.
+2. Find **Client secret**.
+3. Select **Show client secret** if AWS hides it.
+4. Copy the client secret into your private setup note.
+
+Keep the client secret private. You will enter it into Claude later; do not put it into GitHub or the documentation repository.
+
+### 4D — Verify the OAuth settings
+
+1. In the app-client page, find the **Login pages**, **Managed login**, or OAuth settings area.
+2. Confirm the callback/return URL includes:
+
+```text
+https://claude.ai/api/mcp/auth_callback
+```
+
+3. Confirm **Authorization code grant** is enabled.
+4. Confirm this scope is enabled:
+
+```text
+openid
+```
+
+5. Save changes if you changed anything.
+
+## Step 5 — Create the Cognito managed-login domain
+
+Cognito needs a web address where it can show the sign-in page.
+
+1. Inside the same Cognito user pool, open:
+
+```text
+Branding → Domain
+```
+
+2. If no domain exists yet, select:
+
+```text
+Actions → Create Cognito domain
+```
+
+or the current **Create domain** equivalent.
+
 3. Enter a unique domain prefix. For example:
 
 ```text
 sly-director-yourname
 ```
 
-4. Use the available AWS-hosted login branding option.
-5. Create the domain.
-6. Record the resulting Cognito domain in your private setup note.
+4. If AWS asks for **Branding version**, choose:
 
-## Step 4 — Create your Cognito user
+```text
+Managed login
+```
 
-1. In the Cognito user pool, open **Users**.
+5. Select **Create**.
+6. Wait until the domain shows as active.
+7. Record the resulting Cognito domain in your private setup note.
+
+It will look similar to:
+
+```text
+https://sly-director-yourname.auth.us-east-2.amazoncognito.com
+```
+
+<details>
+<summary>Optional: test that Cognito created a login page</summary>
+
+1. Inside the user pool, open:
+
+```text
+Applications → App clients → SlyDirectorClaude
+```
+
+2. Open the **Login pages** section.
+3. Select **View login page** if AWS shows that button.
+4. A Cognito sign-in page should open in a new browser tab.
+
+At this stage you may not yet have a user who can sign in. Step 6 creates that user.
+
+</details>
+
+## Step 6 — Create your first Cognito user
+
+This is the account you will use when Claude opens the Cognito sign-in page.
+
+1. Inside the same Cognito user pool, open **Users**.
 2. Select **Create user**.
-3. Enter the email address you want to use when Claude asks you to sign in.
-4. Create the user with a temporary password.
-5. Record the temporary password privately.
+3. For the user's sign-in value/email, enter the email address you want to use with Sly Director.
+4. If AWS asks whether Cognito should send an invitation, either:
+   - allow Cognito to send it, or
+   - choose the option to create the user without sending an email and record the temporary password yourself.
+5. Create the user.
+6. If AWS generated or asked you to set a temporary password, record it privately.
+7. Confirm the new user appears in the **Users** list.
 
-You will be asked to replace it with your own password during the first browser sign-in.
+During the first successful Cognito sign-in, AWS may require you to replace the temporary password with your own permanent password.
 
-## Step 5 — Create the Lambda function
+## Step 7 — Create the Lambda function
 
 1. In the AWS search box, enter **Lambda**.
 2. Open **Lambda**.
@@ -179,7 +352,7 @@ x86_64
 8. Under permissions, use the option that creates a new basic Lambda execution role.
 9. Select **Create function**.
 
-## Step 6 — Set the Lambda runtime configuration
+## Step 8 — Set the Lambda runtime configuration
 
 1. Open the new `sly-director-github-mcp` function.
 2. Open **Configuration → General configuration**.
@@ -207,7 +380,7 @@ src.app.handler
 
 10. Save.
 
-## Step 7 — Add the Lambda environment variables
+## Step 9 — Add the Lambda environment variables
 
 1. Open **Configuration → Environment variables**.
 2. Select **Edit**.
@@ -228,7 +401,7 @@ BRANCH_PREFIX = sly/
 
 The placeholder URL is temporary. You replace it after AWS creates the real Function URL.
 
-## Step 8 — Build the deployment zip in CloudShell
+## Step 10 — Build the deployment zip in CloudShell
 
 1. Select the **CloudShell** icon in the AWS top navigation.
 2. Wait until the terminal prompt appears.
@@ -261,7 +434,7 @@ aws lambda update-function-code \
 7. Press **Enter**.
 8. The command should return JSON describing the updated Lambda function.
 
-## Step 9 — Create the Function URL
+## Step 11 — Create the Function URL
 
 1. Return to the Lambda browser tab.
 2. Open `sly-director-github-mcp`.
@@ -291,15 +464,15 @@ https://abc123example.lambda-url.us-east-2.on.aws/mcp
 
 The Function URL itself is public so Claude can reach the OAuth discovery and MCP endpoints. The MCP tools remain protected by Cognito OAuth inside the application.
 
-## Step 10 — Replace the placeholder MCP URL
+## Step 12 — Replace the placeholder MCP URL
 
 1. In the Lambda function, open **Configuration → Environment variables**.
 2. Select **Edit**.
-3. Replace `PUBLIC_MCP_URL` with the complete URL from Step 9, including `/mcp`.
+3. Replace `PUBLIC_MCP_URL` with the complete URL from Step 11, including `/mcp`.
 4. Select **Save**.
 5. Wait until Lambda shows the configuration update as complete.
 
-## Step 11 — Check the Lambda health page
+## Step 13 — Check the Lambda health page
 
 1. Copy the Function URL without `/mcp`.
 2. Add:
@@ -326,7 +499,7 @@ You should see JSON similar to:
 }
 ```
 
-## Step 12 — Add the custom connector to Claude
+## Step 14 — Add the custom connector to Claude
 
 1. Open [Claude](https://claude.ai/).
 2. Open **Customize → Connectors**.
@@ -345,16 +518,16 @@ Authentication type: OAuth
 OAuth client: Use your own OAuth client
 ```
 
-7. Enter the **Cognito Client ID** from Step 2.
-8. Enter the **Cognito Client secret** from Step 2.
+7. Enter the **Cognito Client ID** from Step 4.
+8. Enter the **Cognito Client secret** from Step 4.
 9. Select **Add** or **Save**.
 10. Select **Connect** when Claude offers the connection.
 11. Cognito should open in the browser.
-12. Sign in with the Cognito user from Step 4.
+12. Sign in with the Cognito user from Step 6.
 13. If Cognito asks you to replace the temporary password, create your permanent password.
 14. Complete the authorization flow and return to Claude.
 
-## Step 13 — Enable the connector in Sly Director
+## Step 15 — Enable the connector in Sly Director
 
 1. Open **Projects → Sly Director**.
 2. Start a new chat.
@@ -365,7 +538,7 @@ OAuth client: Use your own OAuth client
 Sly Director GitHub
 ```
 
-## Step 14 — Test repository reading
+## Step 16 — Test repository reading
 
 Send:
 
@@ -375,7 +548,7 @@ Using the Sly Director GitHub connector, inspect the repository claude-director-
 
 Claude should return the repository contents without asking you to open Claude Code.
 
-## Step 15 — Test branch, file, pull request, Actions, and merge
+## Step 17 — Test branch, file, pull request, Actions, and merge
 
 Send this as one task:
 
@@ -417,6 +590,8 @@ At the end of this chapter:
 
 ```text
 Cognito user pool: working
+Cognito managed-login domain: working
+Cognito user: created
 Lambda: sly-director-github-mcp
 Function URL: working
 Claude connector: Sly Director GitHub
@@ -429,6 +604,26 @@ Merge: working
 ```
 
 Continue to [Chapter 6 — Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }}).
+
+<details>
+<summary>What did Cognito just create?</summary>
+
+For this guide, Cognito has three important pieces:
+
+```text
+User pool
+→ stores the person allowed to sign in
+
+App client: SlyDirectorClaude
+→ identifies Claude as the OAuth client
+
+Managed-login domain
+→ provides the web sign-in page
+```
+
+You do not need to understand Cognito programming to continue with the guide.
+
+</details>
 
 <details>
 <summary>What the Lambda source contains</summary>
@@ -485,6 +680,12 @@ Start with access only to `claude-director-test`. After the full test succeeds, 
 
 <details>
 <summary>Troubleshooting</summary>
+
+**Cognito first-run screen looks different:** look for **User pools**, **Create user pool**, or **Get started**. AWS changes the landing-page wording periodically, but the target is a new user pool with a **Traditional web application** app client.
+
+**No Client secret appears:** confirm the app client was created as **Traditional web application**. Cognito creates a client secret for this application type.
+
+**No login page exists:** open **Branding → Domain** and create a Cognito domain, then return to **Applications → App clients → SlyDirectorClaude → Login pages**.
 
 **Health page fails:** open **Lambda → Monitor → View CloudWatch logs** and inspect the newest error.
 
