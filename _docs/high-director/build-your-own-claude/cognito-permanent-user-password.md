@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director — Confirm the Cognito User
-summary: Set the Sly Director Cognito user's password permanently and verify its email so Claude can sign in normally.
+summary: Set the Sly Director Cognito user's password permanently so Claude can sign in normally.
 section: high-director
 doc_type: runbook
 status: active
@@ -17,7 +17,7 @@ permalink: /docs/high-director/build-your-own-claude/cognito-permanent-user-pass
 
 Make the Sly Director Cognito user ready for normal sign-in before connecting Claude.
 
-An administrator-created Cognito user can start with a temporary password and an unverified email. For this personal Sly Director setup, set a permanent password and mark the configured email as verified before attempting the Claude OAuth login.
+An administrator-created Cognito user can start with a temporary password. For this personal Sly Director setup, set a permanent password before attempting the Claude OAuth login.
 
 ## Complete this step
 
@@ -39,41 +39,31 @@ USERNAME=$(aws cognito-idp list-users \
 echo "Found Cognito user: $USERNAME"
 ```
 
-The final line should show a real Cognito username, for example:
+The final line should show a real Cognito username.
 
-```text
-Found Cognito user: 411bc5c0-10a1-700f-b8c3-0e40cb28c6be
-```
-
-Set the permanent password:
+Set and confirm the permanent password without displaying it:
 
 ```bash
 read -s -p "New permanent Cognito password: " COGNITO_PASSWORD
 echo
+read -s -p "Type it again: " COGNITO_PASSWORD_CONFIRM
+echo
 
-aws cognito-idp admin-set-user-password \
-  --user-pool-id "$POOL_ID" \
-  --username "$USERNAME" \
-  --password "$COGNITO_PASSWORD" \
-  --permanent \
-  --region us-east-2
-
-unset COGNITO_PASSWORD
+if [ "$COGNITO_PASSWORD" != "$COGNITO_PASSWORD_CONFIRM" ]; then
+  echo "Passwords do not match. Run this password block again."
+  unset COGNITO_PASSWORD COGNITO_PASSWORD_CONFIRM
+else
+  aws cognito-idp admin-set-user-password \
+    --user-pool-id "$POOL_ID" \
+    --username "$USERNAME" \
+    --password "$COGNITO_PASSWORD" \
+    --permanent \
+    --region us-east-2
+  unset COGNITO_PASSWORD COGNITO_PASSWORD_CONFIRM
+fi
 ```
 
-The password prompt does not display the password while you type it.
-
-Mark the user's existing email as verified:
-
-```bash
-aws cognito-idp admin-update-user-attributes \
-  --user-pool-id "$POOL_ID" \
-  --username "$USERNAME" \
-  --user-attributes Name=email_verified,Value=true \
-  --region us-east-2
-```
-
-Verify both the account and email state:
+Verify the account state:
 
 ```bash
 aws cognito-idp admin-get-user \
@@ -84,15 +74,13 @@ aws cognito-idp admin-get-user \
   --output json
 ```
 
-The result should show:
+The important result is:
 
-```json
-{
-  "Status": "CONFIRMED",
-  "Email": "your-email@example.com",
-  "EmailVerified": "true"
-}
+```text
+Status: CONFIRMED
 ```
+
+If this user pool was created with `UsernameAttributes: ["email"]`, the email address is the sign-in identifier. Email verification is not required merely to use an email username, although marking the email verified is useful for account-recovery and verification workflows.
 
 ## Continue the Claude connection
 
@@ -100,9 +88,8 @@ The result should show:
 2. Return to Claude.
 3. Open the **Sly Director GitHub** connector.
 4. Select **Connect** again.
-5. Enter the Cognito email address shown in the verification output.
-6. Enter the permanent Cognito password.
-7. Cognito should proceed through the OAuth login without the first-login password-change challenge.
+5. Enter the Cognito email address.
+6. Enter the permanent Cognito password you just confirmed twice.
 
 <details>
 <summary>If you saw `Invalid challenge transition`</summary>
@@ -112,16 +99,9 @@ An administrator-created user with a temporary password can be left in the `FORC
 </details>
 
 <details>
-<summary>If Cognito says `Incorrect username or password`</summary>
+<summary>If Cognito still says `Incorrect username or password`</summary>
 
-First confirm the verification output shows both:
-
-```text
-Status: CONFIRMED
-EmailVerified: true
-```
-
-If both are correct, set the permanent password again with the secure password prompt above, then restart the Claude connector login from a new Cognito login page.
+Confirm the user pool uses email as its username attribute and that the displayed user email is the address you are entering. Then reset the permanent password again with the two-entry password block above and restart the Claude connector login from a new Cognito login page.
 
 </details>
 
