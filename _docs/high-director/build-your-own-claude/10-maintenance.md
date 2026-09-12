@@ -1,12 +1,12 @@
 ---
 title: Build Your Own High Director — Claude Edition 10 — Maintenance
-summary: Keep the Claude, GitHub, and AWS setup working after initial setup.
+summary: Maintain the single-chat High Director Project, GitHub MCP, AWS MCP, and optional enhancements.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-11
+last_verified: 2026-09-11
 order: 90
 permalink: /docs/high-director/build-your-own-claude/10-maintenance/
 ---
@@ -15,29 +15,30 @@ permalink: /docs/high-director/build-your-own-claude/10-maintenance/
 
 ## Goal
 
-Keep access, costs, and repository state under control.
+Keep the High Director Project and its connectors working with controlled access and cost.
 
 ## Complete this step
 
 Once a month:
 
-1. Open Claude **Settings** and review plan/usage.
-2. Open GitHub settings and review repositories available to the Claude/Anthropic GitHub App.
-3. Review open Claude-created pull requests and old branches.
-4. Open AWS **Billing and Cost Management**.
-5. Review current charges and budget alerts.
-6. Check for AWS resources from old tests that are still running.
-7. Confirm the AWS MCP connector still works with a simple query.
+1. Open **Projects → High Director** and confirm the current instructions are still saved.
+2. Open **Customize → Connectors** and confirm **GitHub MCP** and **AWS MCP** are connected.
+3. In a High Director chat, run one harmless GitHub read and one harmless AWS query.
+4. Review GitHub repository access granted to the GitHub connector.
+5. Review open branches/pull requests and GitHub Actions failures created by recent work.
+6. Open AWS **Billing and Cost Management** and review charges/budget alerts.
+7. Check for AWS resources from old tests that are still running.
+8. Review optional Skills, Cowork schedules, or Plugins you have added and remove anything you no longer use.
 
 ## What you should see
 
-You should know:
-
 ```text
-which repositories Claude can access
-what AWS is currently costing
-which test resources are still active
-whether the AWS MCP connection still works
+High Director Project: working
+GitHub MCP: working
+AWS MCP: working
+GitHub access: intentional
+AWS cost: understood
+Optional automation: intentional
 ```
 
 The core guide is complete.
@@ -45,13 +46,11 @@ The core guide is complete.
 <details>
 <summary>Additional information</summary>
 
-If you use the optional IAM-role path, periodically review the policies attached to `ClaudeHighDirectorRole` and remove permissions that are no longer needed.
+The most important maintenance rule is to preserve the single-chat architecture. A connector authorization problem should be fixed at the connector/permission layer rather than redesigning normal operation around Claude Code.
 
-If a new GitHub repository does not appear in Claude Code, add it to the Claude/Anthropic GitHub App's allowed repositories.
+Claude Code remains an optional specialist tool.
 
-If you stop using AWS MCP, remove or disable the connector in Claude. If you used a dedicated IAM role, you can also remove MCP-specific IAM permissions when they are no longer needed.
-
-If you stop using this setup entirely, remove Claude's GitHub access, delete obsolete test repositories/branches, review AWS resources and billing, then downgrade Claude Pro if desired.
+Cowork scheduled tasks should be reviewed periodically because they can continue running in the cloud on their configured schedule.
 
 </details>
 
@@ -59,10 +58,8 @@ If you stop using this setup entirely, remove Claude's GitHub access, delete obs
 <summary>Maintenance prompt</summary>
 
 ```text
-I maintain a Claude High Director setup using Claude Pro, Claude Code, GitHub, and AWS MCP.
-Maintenance task: [review access / remove repository / review AWS cost / retire setup]
-Current state: [describe]
-Give me the shortest click-by-click procedure.
+Review this High Director setup for maintenance.
+Check the connected GitHub and AWS capabilities, identify stale repository work or AWS resources, and report any connector, cost, or automation issues that need attention.
 ```
 
 </details>
