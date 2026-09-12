@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 02 — GitHub and First Repository
-summary: Create the GitHub test repository used to verify GitHub MCP from the High Director Project chat.
+title: Build Your Own Sly Director — 02 — GitHub and First Repository
+summary: Create the GitHub test repository used to verify GitHub MCP from the Sly Director Project.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/02-github-and-first-reposit
 
 ## Goal
 
-Create one private repository High Director can use to test GitHub MCP safely.
+Create one private repository Sly Director can use to test GitHub MCP safely.
 
 ## Complete this step
 
@@ -42,7 +42,7 @@ claude-test.txt
 11. Enter:
 
 ```text
-Claude High Director connection test.
+Sly Director connection test.
 ```
 
 12. Commit the file to `main`.
@@ -56,12 +56,12 @@ README.md
 claude-test.txt
 ```
 
-Continue to [Chapter 3 — Create the High Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }}).
+Continue to [Chapter 3 — Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }}).
 
 <details>
 <summary>Additional information</summary>
 
-The repository is intentionally small and disposable. Chapter 4 will access it directly from the High Director Project chat through GitHub MCP.
+The repository name remains `claude-director-test` so anyone who already followed the earlier guide does not need to rename or recreate it. Chapter 4 will access it directly from the Sly Director Project through GitHub MCP.
 
 If your default branch has a name other than `main`, use that branch name throughout the guide.
 
