@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 10 — Maintenance
-summary: Maintain the single-chat High Director Project, GitHub MCP, AWS MCP, and optional enhancements.
+summary: Maintain the High Director Project, Cowork tasks, schedules, GitHub MCP, and AWS MCP.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,42 +15,56 @@ permalink: /docs/high-director/build-your-own-claude/10-maintenance/
 
 ## Goal
 
-Keep the High Director Project and its connectors working with controlled access and cost.
+Keep the High Director Project, autonomous Cowork execution, connectors, schedules, access, and costs under control.
 
 ## Complete this step
 
 Once a month:
 
 1. Open **Projects → High Director** and confirm the current instructions are still saved.
-2. Open **Customize → Connectors** and confirm **GitHub MCP** and **AWS MCP** are connected.
-3. In a High Director chat, run one harmless GitHub read and one harmless AWS query.
-4. Review GitHub repository access granted to the GitHub connector.
-5. Review open branches/pull requests and GitHub Actions failures created by recent work.
-6. Open AWS **Billing and Cost Management** and review charges/budget alerts.
-7. Check for AWS resources from old tests that are still running.
-8. Review optional Skills, Cowork schedules, or Plugins you have added and remove anything you no longer use.
+2. Open the High Director **Cowork** Project and confirm it still has the intended Project context/instructions.
+3. Open **Customize → Connectors** and confirm **GitHub MCP** and **AWS MCP** are connected.
+4. Run one harmless GitHub read and one harmless AWS query.
+5. Review recent Cowork tasks for recurring failures or unnecessary interruptions.
+6. Open **Scheduled** and review every recurring task.
+7. Pause or remove scheduled tasks you no longer want.
+8. Review GitHub repository access granted to the GitHub connector.
+9. Review open branches/pull requests and GitHub Actions failures created by recent work.
+10. Open AWS **Billing and Cost Management** and review charges/budget alerts.
+11. Check for AWS resources from old tests that are still running.
+12. Review any High Director Skills or Plugins and remove obsolete ones.
 
 ## What you should see
 
 ```text
 High Director Project: working
+Cowork autonomous execution: working
 GitHub MCP: working
 AWS MCP: working
+scheduled tasks: intentional
 GitHub access: intentional
 AWS cost: understood
-Optional automation: intentional
 ```
 
 The core guide is complete.
 
 <details>
-<summary>Additional information</summary>
+<summary>What to learn from Cowork interruptions</summary>
 
-The most important maintenance rule is to preserve the single-chat architecture. A connector authorization problem should be fixed at the connector/permission layer rather than redesigning normal operation around Claude Code.
+If Cowork repeatedly stops for the same kind of question, treat that as feedback on the High Director design.
 
-Claude Code remains an optional specialist tool.
+Depending on the cause, improve:
 
-Cowork scheduled tasks should be reviewed periodically because they can continue running in the cloud on their configured schedule.
+```text
+Project instructions
+High Director Operator Skill
+connector permissions
+repository validation
+acceptance criteria
+scheduled-task instructions
+```
+
+The goal is to progressively reduce unnecessary owner intervention while preserving genuine decision points.
 
 </details>
 
@@ -59,7 +73,7 @@ Cowork scheduled tasks should be reviewed periodically because they can continue
 
 ```text
 Review this High Director setup for maintenance.
-Check the connected GitHub and AWS capabilities, identify stale repository work or AWS resources, and report any connector, cost, or automation issues that need attention.
+Check recent Cowork work, connected GitHub and AWS capabilities, recurring interruptions, scheduled tasks, stale repository work, and AWS resources. Identify anything that should be corrected so substantial tasks can continue independently until completion or a genuine blocker.
 ```
 
 </details>
