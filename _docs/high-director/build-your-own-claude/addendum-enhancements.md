@@ -19,31 +19,33 @@ The core system is already:
 Sly Director Project
 ├─ normal chat
 ├─ Cowork
-├─ GitHub MCP
+├─ Sly Director GitHub
 └─ AWS MCP
 ```
 
-Everything below is optional.
+Everything below is optional after the core guide works.
 
 ## 1 — Sly Director Operator Skill
 
-This is the next useful upgrade after the core setup works.
+This is the next useful upgrade after real Sly Director/Cowork use shows which operating rules need to be more consistent.
 
-The Skill would store Sly Director's detailed operating procedure:
+The Skill can store Sly Director's detailed operating procedure:
 
 ```text
 inspect
+→ define completion criteria
 → plan
-→ split work into tasks
-→ execute
+→ split work into dependent tasks
+→ execute / parallelize independent work
 → validate
 → diagnose failures
-→ retry/recover
+→ retry or recover
+→ preserve progress
 → verify final state
 → return only when complete or genuinely blocked
 ```
 
-It also teaches Claude that progress updates are informational rather than requests for permission to continue.
+It can also reinforce that progress updates are informational rather than requests for permission to continue.
 
 ## 2 — Scheduled Cowork work
 
@@ -57,7 +59,7 @@ stale branch / pull-request review
 documentation verification
 ```
 
-Create these from **Cowork → Scheduled → New task**.
+Create these from **Cowork → Scheduled → New task** and give the task access only to the connectors it needs.
 
 ## 3 — Sly Director Plugin
 
@@ -74,10 +76,11 @@ Use Claude Code only when a task genuinely needs its specialist repository devel
 ## Recommended order
 
 ```text
-1. Sly Director Project + GitHub MCP + AWS MCP
+1. Sly Director Project + Sly Director GitHub + AWS MCP
 2. Cowork + Automatically approve
-3. Sly Director Operator Skill
-4. Scheduled Cowork routines
-5. Plugin packaging / specialist sub-agents
-6. Claude Code when technically required
+3. Use the system on real work
+4. Sly Director Operator Skill based on observed behavior
+5. Scheduled Cowork routines
+6. Plugin packaging / specialist sub-agents
+7. Claude Code when technically required
 ```
