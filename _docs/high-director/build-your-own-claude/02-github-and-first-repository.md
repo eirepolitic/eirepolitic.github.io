@@ -1,12 +1,12 @@
 ---
 title: Build Your Own High Director — Claude Edition 02 — GitHub and First Repository
-summary: Create the GitHub test repository used to verify Claude Code.
+summary: Create the GitHub test repository used to verify GitHub MCP from the High Director Project chat.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-11
+last_verified: 2026-09-11
 order: 82
 permalink: /docs/high-director/build-your-own-claude/02-github-and-first-repository/
 ---
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/02-github-and-first-reposit
 
 ## Goal
 
-Create one private repository Claude Code can use for testing.
+Create one private repository High Director can use to test GitHub MCP safely.
 
 ## Complete this step
 
@@ -61,7 +61,7 @@ Continue to [Chapter 3 — Create the High Director Project]({{ '/docs/high-dire
 <details>
 <summary>Additional information</summary>
 
-The repository is intentionally small and disposable. It gives Claude Code a safe place to prove repository access before you connect important repositories.
+The repository is intentionally small and disposable. Chapter 4 will access it directly from the High Director Project chat through GitHub MCP.
 
 If your default branch has a name other than `main`, use that branch name throughout the guide.
 
@@ -71,14 +71,5 @@ If your default branch has a name other than `main`, use that branch name throug
 <summary>Troubleshooting</summary>
 
 If the files are missing, confirm you are in `claude-director-test` and that the new file was committed.
-
-Useful prompt:
-
-```text
-I am creating the GitHub test repository claude-director-test.
-I am stuck at: [repository creation / README / file creation / commit]
-What I see: [describe it]
-Give me current click-by-click GitHub instructions.
-```
 
 </details>
