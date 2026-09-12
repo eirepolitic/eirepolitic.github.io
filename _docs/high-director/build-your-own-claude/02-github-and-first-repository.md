@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 02 — GitHub and First Repository
-summary: Create the GitHub test repository used to verify GitHub MCP from the High Director Project chat.
+title: Build Your Own Sly Director — 02 — GitHub Test Repository
+summary: Create the GitHub test repository used to verify GitHub MCP from the Sly Director Project.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,9 +15,13 @@ permalink: /docs/high-director/build-your-own-claude/02-github-and-first-reposit
 
 ## Goal
 
-Create one private repository High Director can use to test GitHub MCP safely.
+Create one private repository Sly Director can use to test GitHub MCP safely.
 
 ## Complete this step
+
+If you already created `claude-director-test`, keep using it and continue to Chapter 3.
+
+Otherwise:
 
 1. Open [GitHub](https://github.com/).
 2. Select the **+** menu in the upper-right corner.
@@ -32,7 +36,7 @@ claude-director-test
 6. Select **Private**.
 7. Turn on **Add a README file**.
 8. Select **Create repository**.
-9. In the repository, select **Add file → Create new file**.
+9. Select **Add file → Create new file**.
 10. Set the filename to:
 
 ```text
@@ -42,34 +46,23 @@ claude-test.txt
 11. Enter:
 
 ```text
-Claude High Director connection test.
+Sly Director connection test.
 ```
 
 12. Commit the file to `main`.
 
 ## What you should see
 
-The repository should contain:
-
 ```text
 README.md
 claude-test.txt
 ```
 
-Continue to [Chapter 3 — Create the High Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }}).
+Continue to [Chapter 3 — Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }}).
 
 <details>
 <summary>Additional information</summary>
 
-The repository is intentionally small and disposable. Chapter 4 will access it directly from the High Director Project chat through GitHub MCP.
-
-If your default branch has a name other than `main`, use that branch name throughout the guide.
-
-</details>
-
-<details>
-<summary>Troubleshooting</summary>
-
-If the files are missing, confirm you are in `claude-director-test` and that the new file was committed.
+The test repository keeps its existing technical name so anyone already following the guide does not need to recreate it because the product was renamed.
 
 </details>
