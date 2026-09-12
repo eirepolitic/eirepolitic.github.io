@@ -41,57 +41,71 @@ echo "Found Cognito user: $USERNAME"
 
 The final line should show a real Cognito username.
 
-Paste this whole password block into CloudShell:
+### Set the permanent password
+
+Run the following commands **one at a time**. Do not paste the whole sequence at once because CloudShell can consume later pasted lines as hidden password input.
+
+First run:
 
 ```bash
 read -s -p "New permanent Cognito password: " P1
+```
+
+Press **Enter**. CloudShell now waits for the password. Type a new password and press **Enter**. Nothing appears while you type.
+
+When the normal `~ $` prompt returns, run:
+
+```bash
 echo
 read -s -p "Type it again: " P2
+```
+
+Press **Enter**, type the same password again, and press **Enter**.
+
+When the normal prompt returns, run:
+
+```bash
 echo
+if [ "$P1" = "$P2" ]; then echo "MATCH"; else echo "NO MATCH"; fi
+```
 
-if [ "$P1" != "$P2" ]; then
-  echo "PASSWORDS DO NOT MATCH"
-else
-  aws cognito-idp admin-set-user-password \
-    --user-pool-id "$POOL_ID" \
-    --username "$USERNAME" \
-    --password "$P1" \
-    --permanent \
-    --region us-east-2 && echo "PASSWORD SET"
-fi
+Continue only if the result is:
 
+```text
+MATCH
+```
+
+Then run:
+
+```bash
+aws cognito-idp admin-set-user-password \
+  --user-pool-id "$POOL_ID" \
+  --username "$USERNAME" \
+  --password "$P1" \
+  --permanent \
+  --region us-east-2
+```
+
+If that command returns without an error, run:
+
+```bash
 unset P1 P2
+echo "PASSWORD SET"
 ```
-
-CloudShell will pause at:
-
-```text
-New permanent Cognito password:
-```
-
-Type the new password and press **Enter**. Nothing appears while you type.
-
-It will then pause at:
-
-```text
-Type it again:
-```
-
-Type the same password again and press **Enter**.
-
-Do not type or paste the password when the normal CloudShell prompt looks like:
-
-```text
-~ $
-```
-
-If you type a password at `~ $`, Bash treats the password as a command instead of sending it to Cognito.
 
 The successful result is:
 
 ```text
 PASSWORD SET
 ```
+
+Do not type or paste a password at the normal prompt:
+
+```text
+~ $
+```
+
+If you type a password there, Bash treats the password as a command instead of sending it to Cognito.
 
 Verify the account state:
 
@@ -119,7 +133,7 @@ If this user pool was created with `UsernameAttributes: ["email"]`, the email ad
 3. Open the **Sly Director GitHub** connector.
 4. Select **Connect** again.
 5. Enter the Cognito email address.
-6. Enter the permanent Cognito password you just confirmed twice.
+6. Enter the permanent Cognito password you just set.
 
 <details>
 <summary>If you saw `Invalid challenge transition`</summary>
@@ -131,7 +145,7 @@ An administrator-created user with a temporary password can be left in the `FORC
 <details>
 <summary>If Cognito still says `Incorrect username or password`</summary>
 
-Confirm the user pool uses email as its username attribute and that the displayed user email is the address you are entering. Then reset the permanent password again with the two-entry password block above and restart the Claude connector login from a new Cognito login page.
+Confirm the user pool uses email as its username attribute and that the displayed user email is the address you are entering. Then reset the permanent password again with the one-command-at-a-time flow above and restart the Claude connector login from a new Cognito login page.
 
 </details>
 
