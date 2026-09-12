@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 08 — Daily Operation
-summary: Use normal High Director chat for quick work and Cowork for substantial autonomous execution.
+title: Build Your Own Sly Director — 08 — Daily Operation
+summary: Use normal Sly Director chat for quick work and Cowork for substantial autonomous execution.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,9 +15,9 @@ permalink: /docs/high-director/build-your-own-claude/08-daily-operation/
 
 ## Goal
 
-Use one High Director identity while choosing the execution mode that matches the size of the task.
+Use one Sly Director identity while choosing the execution mode that matches the size of the task.
 
-## Use normal High Director chat for quick work
+## Use normal Sly Director chat for quick work
 
 Use normal Project chat when you want:
 
@@ -32,9 +32,9 @@ interactive troubleshooting
 
 ### Complete a normal chat task
 
-1. Open **Projects → High Director**.
+1. Open **Projects → Sly Director**.
 2. Enable the connectors needed for the task.
-3. Give High Director the request.
+3. Give Sly Director the request.
 4. Continue interacting normally.
 
 ## Use Cowork for substantial work
@@ -52,10 +52,10 @@ should keep running while you are away
 
 ### Complete a substantial task
 
-1. Open the **High Director** Cowork Project.
+1. Open the **Sly Director** Cowork Project.
 2. Enable **GitHub MCP** and/or **AWS MCP**.
 3. Select **Automatically approve**.
-4. Give High Director the final objective and constraints.
+4. Give Sly Director the final objective and constraints.
 5. Tell it to continue through the approved plan until the outcome is complete or a genuine blocker requires you.
 6. Let Cowork run independently.
 7. Return later to the same task to review the completed result or answer a genuine question.
@@ -75,7 +75,7 @@ Use parallel workstreams where useful. Progress reports are informational; conti
 Your operating model should be:
 
 ```text
-High Director
+Sly Director
 ├─ normal chat → quick/interactively supervised work
 └─ Cowork → substantial autonomous work
 ```
@@ -87,9 +87,9 @@ Continue to [Chapter 9 — Troubleshooting]({{ '/docs/high-director/build-your-o
 <details>
 <summary>How this replaces the manual multi-chat delegation pattern</summary>
 
-Earlier High Director instructions suggested manually opening several chat instances for large plans and later returning to the original chat to reconcile their work.
+Earlier Sly Director instructions suggested manually opening several chat instances for large plans and later returning to the original chat to reconcile their work.
 
-Cowork can coordinate parallel sub-agents internally. The user should normally give the substantial task to one High Director Cowork task and let Cowork decide whether parallel workstreams are useful.
+Cowork can coordinate parallel sub-agents internally. The user should normally give the substantial task to one Sly Director Cowork task and let Cowork decide whether parallel workstreams are useful.
 
 </details>
 
