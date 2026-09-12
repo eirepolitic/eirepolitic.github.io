@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director
-summary: Browser-only setup guide for Sly Director using one Claude Project, GitHub MCP, AWS MCP, and Cowork for long-running autonomous execution.
+summary: Browser-only setup guide for Sly Director using one Claude Project, a custom GitHub MCP service, AWS MCP, and Cowork for long-running autonomous execution.
 section: high-director
 doc_type: runbook
 status: active
@@ -26,8 +26,8 @@ Sly Director
 ├─ Normal chat → quick questions, planning, small changes
 └─ Cowork → substantial jobs that should keep working without you
 
-Both use:
-├─ GitHub MCP → repositories, files, branches, PRs, Actions
+Both can use:
+├─ Sly Director GitHub → repositories, files, branches, PRs, Actions
 └─ AWS MCP → AWS resources and operations
 ```
 
@@ -37,15 +37,33 @@ For a small job, talk to **Sly Director** normally.
 
 For a large job, open **Sly Director in Cowork**, give it the final objective, select **Automatically approve**, and let it continue through planning, implementation, validation, corrections, and final verification until the work is finished or it genuinely needs you.
 
-The later **Sly Director Operator Skill** is an improvement to this same setup. It is a later implementation step in this guide, not something you need to build separately before continuing.
+## What you will build
+
+The GitHub connector is a small serverless service because Claude's normal GitHub integration does not provide the full write/branch/PR/Actions toolset this design requires.
+
+```text
+Claude / Cowork
+     ↓
+Sly Director GitHub custom connector
+     ↓
+Amazon Cognito OAuth
+     ↓
+AWS Lambda Function URL
+     ↓
+sly-director-github-mcp
+     ↓
+GitHub API
+```
+
+AWS access uses the managed AWS MCP Server separately.
 
 ## Build it in this order
 
 1. [Confirm Claude, Cowork, GitHub, and AWS access]({{ '/docs/high-director/build-your-own-claude/01-accounts-and-prerequisites/' | relative_url }})
 2. [Create a GitHub test repository]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }})
 3. [Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
-4. [Connect GitHub MCP]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
-5. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
+4. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
+5. [Build and connect Sly Director GitHub]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
 6. [Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
 7. [Configure Cowork for autonomous Sly Director work]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
 8. [Use Sly Director day to day]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }})

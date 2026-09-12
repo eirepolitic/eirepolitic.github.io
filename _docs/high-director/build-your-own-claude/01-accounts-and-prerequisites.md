@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director — 01 — Accounts and Prerequisites
-summary: Confirm Claude Pro, Cowork, GitHub MCP, GitHub, and AWS are available for the Sly Director build.
+summary: Confirm Claude, Cowork, GitHub, and AWS are available for the Sly Director build.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/01-accounts-and-prerequisit
 
 ## Goal
 
-Confirm you can access the features required for Sly Director.
+Confirm you can access the accounts and Claude features required for Sly Director.
 
 ## Complete this step
 
@@ -28,14 +28,7 @@ Confirm you can access the features required for Sly Director.
 5. Confirm you can access **Projects**.
 6. Confirm **Cowork** is available as a mode.
 7. Open **Customize → Connectors**.
-8. Confirm you can browse/add connectors.
-9. Search for:
-
-```text
-GitHub MCP
-```
-
-10. Confirm **GitHub MCP — The Official GitHub MCP Server** is available.
+8. Confirm you can select **Add custom connector**.
 
 ### GitHub
 
@@ -55,8 +48,7 @@ GitHub MCP
 Claude paid plan: yes
 Projects: available
 Cowork: available
-Connectors: available
-GitHub MCP: available
+Custom connectors: available
 GitHub account: working
 AWS account: working
 ```
@@ -66,8 +58,8 @@ Continue to [Chapter 2 — Create the GitHub test repository]({{ '/docs/high-dir
 <details>
 <summary>Additional information</summary>
 
-Cowork is the key feature used to remove the repeated `continue` loop from substantial Sly Director work. Cloud Cowork sessions can continue while you step away and can be reopened from another supported device.
+Cowork is the feature used to remove the repeated `continue` loop from substantial Sly Director work. Cloud Cowork sessions can continue while you step away and can be reopened later.
 
-Normal Claude Project chat remains part of Sly Director for quick work and discussion.
+Sly Director does not depend on finding a prebuilt GitHub MCP connector in Claude's connector directory. Chapter 5 builds its own remote **Sly Director GitHub** connector.
 
 </details>

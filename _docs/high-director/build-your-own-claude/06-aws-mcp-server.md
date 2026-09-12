@@ -15,11 +15,11 @@ permalink: /docs/high-director/build-your-own-claude/06-aws-mcp-server/
 
 ## Goal
 
-Give the **Sly Director Project** direct AWS tools.
+Give the **Sly Director Project** direct AWS tools in addition to the **Sly Director GitHub** connector built in Chapter 5.
 
 ## Complete this step
 
-1. Keep the AWS session from Chapter 5 open.
+1. Keep the AWS session from Chapter 4 available.
 2. Open Claude.
 3. Open **Customize → Connectors**.
 4. Select **Add custom connector**.
@@ -65,18 +65,43 @@ Using AWS MCP, list the S3 buckets visible to this AWS identity and tell me whic
 
 Sly Director should identify the AWS account/identity and return the visible S3 buckets. An empty list is still a successful connection.
 
+At this point Sly Director has both primary tool connections:
+
+```text
+Sly Director GitHub: connected
+AWS MCP: connected
+```
+
 Continue to [Chapter 7 — Configure Cowork]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }}).
 
 <details>
 <summary>Additional information</summary>
 
-Use these settings exactly:
+Use these AWS connector settings exactly:
 
 ```text
 Authentication type: OAuth
 OAuth client: Register automatically
 ```
 
-If you already use the optional `ClaudeHighDirectorRole`, keep that technical role name. Renaming the product does not require recreating IAM resources.
+The AWS MCP endpoint uses `us-east-1`, while this guide's normal AWS workload region is `us-east-2`. Those are separate choices.
+
+</details>
+
+<details>
+<summary>If the AWS authorization page does not open</summary>
+
+Edit/re-add the connector using:
+
+```text
+https://aws-mcp.us-east-1.api.aws/mcp?oauth=initialize
+```
+
+Keep:
+
+```text
+Authentication type: OAuth
+OAuth client: Register automatically
+```
 
 </details>

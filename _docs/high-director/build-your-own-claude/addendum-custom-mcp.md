@@ -1,6 +1,6 @@
 ---
 title: "Build Your Own Sly Director — Custom MCP Servers"
-summary: Build a custom remote MCP server only when Sly Director needs a capability not provided by existing connectors.
+summary: Build another custom remote MCP server only when Sly Director needs a capability not provided by the connectors already in the core setup.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/addendum-custom-mcp/
 
 ## Goal
 
-Extend Sly Director only when an existing connector cannot provide the capability you need.
+Extend Sly Director only when the core connectors cannot provide the capability you need.
 
 ## Complete this step
 
@@ -23,7 +23,7 @@ Extend Sly Director only when an existing connector cannot provide the capabilit
 2. Check whether it already exists through:
 
 ```text
-GitHub MCP
+Sly Director GitHub
 AWS MCP
 an official Claude connector
 an existing remote MCP connector
@@ -37,10 +37,12 @@ a Sly Director Skill or Plugin
 
 ## What you should see
 
-The custom MCP server should become another tool available to Sly Director without creating a separate operating interface.
+The new MCP server should become another tool available to Sly Director without creating a separate operating interface.
 
 <details>
 <summary>Additional information</summary>
+
+Chapter 5 already builds one custom MCP service: **Sly Director GitHub**. Use that implementation as a reference if a future capability also needs a custom cloud-hosted MCP endpoint.
 
 A custom MCP server adds hosting, authentication, permissions, network exposure, monitoring, and maintenance. Prefer an existing connector whenever it satisfies the requirement.
 
