@@ -5,8 +5,8 @@ section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-11
-last_verified: 2026-09-11
+updated: 2026-09-12
+last_verified: 2026-09-12
 order: 80
 permalink: /docs/high-director/build-your-own-claude/
 ---
@@ -65,6 +65,7 @@ AWS access uses the managed AWS MCP Server separately.
 4. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
 5. [Build and connect Sly Director GitHub]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
    - [Create the AWS-hosted Cognito domain]({{ '/docs/high-director/build-your-own-claude/cognito-domain-setup/' | relative_url }})
+   - [Confirm the Cognito user with a permanent password]({{ '/docs/high-director/build-your-own-claude/cognito-permanent-user-password/' | relative_url }})
    - [Keep the Cognito login long-lived]({{ '/docs/high-director/build-your-own-claude/cognito-login-persistence/' | relative_url }})
 6. [Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
 7. [Configure Cowork for autonomous Sly Director work]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
