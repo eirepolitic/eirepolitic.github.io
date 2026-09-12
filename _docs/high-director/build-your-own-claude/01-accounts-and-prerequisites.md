@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 01 — Accounts and Prerequisites
-summary: Confirm the Claude, GitHub, and AWS accounts needed for the single-chat browser setup.
+summary: Confirm Claude Pro, Cowork, GitHub MCP, GitHub, and AWS are available for the High Director build.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/01-accounts-and-prerequisit
 
 ## Goal
 
-Confirm you can access Claude Pro, GitHub, AWS, Projects, and connectors.
+Confirm you can access the features required for the Cowork-first High Director setup.
 
 ## Complete this step
 
@@ -24,17 +24,18 @@ Confirm you can access Claude Pro, GitHub, AWS, Projects, and connectors.
 1. Open [Claude](https://claude.ai/).
 2. Sign in or create an account.
 3. Open **Settings → Billing**.
-4. Confirm your plan is **Pro**.
+4. Confirm your plan is **Pro** or another paid plan that includes Cowork.
 5. Confirm you can access **Projects**.
-6. Open **Customize → Connectors**.
-7. Confirm you can browse/add connectors.
-8. Search the connector directory for:
+6. In the Claude message box, confirm **Cowork** is available as a mode.
+7. Open **Customize → Connectors**.
+8. Confirm you can browse/add connectors.
+9. Search for:
 
 ```text
 GitHub MCP
 ```
 
-9. Confirm **GitHub MCP — The Official GitHub MCP Server** is available.
+10. Confirm **GitHub MCP — The Official GitHub MCP Server** is available.
 
 ### GitHub
 
@@ -51,8 +52,9 @@ GitHub MCP
 ## What you should see
 
 ```text
-Claude Pro: yes
+Claude paid plan: yes
 Projects: available
+Cowork: available
 Connectors: available
 GitHub MCP: available
 GitHub account: working
@@ -64,21 +66,17 @@ Continue to [Chapter 2 — Create the GitHub test repository]({{ '/docs/high-dir
 <details>
 <summary>Additional information</summary>
 
-Claude Code and Cowork are useful optional capabilities, but neither is required for the core one-chat High Director setup.
+Cowork is the key feature used to remove the repeated `continue` loop from substantial High Director work. Cloud Cowork sessions can continue while you step away and can be reopened from another supported device.
 
-The core design uses remote MCP connectors inside normal Claude chat:
-
-```text
-High Director Project
-├─ GitHub MCP
-└─ AWS MCP
-```
+Normal Claude Project chat remains part of the system for quick work and discussion.
 
 </details>
 
 <details>
 <summary>Troubleshooting</summary>
 
-If **GitHub MCP** is missing from the connector directory, verify current Claude connector availability before continuing because Chapter 4 depends on that connector for the single-chat interaction model.
+If Cowork is missing, verify the current Claude plan/product availability before continuing because Chapter 7 depends on Cowork for long-running autonomous execution.
+
+If GitHub MCP is missing, verify current connector availability before Chapter 4.
 
 </details>

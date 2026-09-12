@@ -1,6 +1,6 @@
 ---
 title: Build Your Own High Director — Claude Edition 08 — Daily Operation
-summary: Operate GitHub and AWS from the same High Director Project chat during normal use.
+summary: Use normal High Director chat for quick work and Cowork for substantial autonomous execution.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,72 +15,89 @@ permalink: /docs/high-director/build-your-own-claude/08-daily-operation/
 
 ## Goal
 
-Use one High Director Project chat as the normal interface for repository, AWS, planning, investigation, and troubleshooting work.
+Use one High Director identity while choosing the execution mode that matches the size of the task.
 
-## Complete this step
+## Use normal High Director chat for quick work
+
+Use normal Project chat when you want:
+
+```text
+questions
+planning/discussion
+small investigations
+small repository changes
+quick AWS queries or changes
+interactive troubleshooting
+```
+
+### Complete a normal chat task
 
 1. Open **Projects → High Director**.
-2. Start or continue a High Director chat.
-3. Enable the connectors needed for the task:
+2. Enable the connectors needed for the task.
+3. Give High Director the request.
+4. Continue interacting normally.
+
+## Use Cowork for substantial work
+
+Use Cowork when the task:
 
 ```text
-GitHub MCP
-AWS MCP
+has many implementation steps
+may take an extended period
+requires investigation + implementation + validation loops
+can benefit from parallel workstreams
+would otherwise require repeated "continue" prompts
+should keep running while you are away
 ```
 
-4. Give High Director the complete task.
+### Complete a substantial task
 
-Example:
+1. Open the **High Director** Cowork Project.
+2. Enable **GitHub MCP** and/or **AWS MCP**.
+3. Select **Automatically approve**.
+4. Give High Director the final objective and constraints.
+5. Tell it to continue through the approved plan until the outcome is complete or a genuine blocker requires you.
+6. Let Cowork run independently.
+7. Return later to the same task to review the completed result or answer a genuine question.
+
+A useful task format is:
 
 ```text
-Investigate repository [repository name], determine the cause of [problem], implement the best practical solution, run or inspect the relevant GitHub validation, correct failures where practical, complete the repository workflow, and make any required AWS changes. Report the final state when finished.
-```
+Complete this objective independently: [objective].
 
-5. Let High Director inspect and operate GitHub/AWS directly from that conversation.
-6. Continue follow-up work in the same Project/chat when useful.
+Inspect the existing repository/infrastructure first. Form the plan, execute it, validate the result, diagnose and correct recoverable failures, and verify the final state.
+
+Use parallel workstreams where useful. Progress reports are informational; continue working after them. Return to me when the requested outcome is complete or when a genuine decision, unavailable permission, unavailable capability, or unrecoverable blocker requires me.
+```
 
 ## What you should see
 
-Normal use should look like:
+Your operating model should be:
 
 ```text
-You
-↓
-High Director Project chat
-├─ GitHub MCP
-└─ AWS MCP
+High Director
+├─ normal chat → quick/interactively supervised work
+└─ Cowork → substantial autonomous work
 ```
 
-The normal workflow should not require copying a plan into Claude Code.
+You should no longer need to manually coordinate multiple chat instances or type `continue` throughout an already-approved implementation plan.
 
 Continue to [Chapter 9 — Troubleshooting]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }}).
 
 <details>
-<summary>Optional: use Cowork for a larger task</summary>
+<summary>How this replaces the manual multi-chat delegation pattern</summary>
 
-Cowork is an optional agentic execution mode for longer or more complex work. It can use Projects, connectors, skills, plugins, cloud sessions, sub-agent coordination, and scheduled tasks.
+Earlier High Director instructions suggested manually opening several chat instances for large plans and later returning to the original chat to reconcile their work.
 
-Use it when the task benefits from extended execution or parallel workstreams.
-
-From the same High Director Project, start a **Cowork** task rather than a normal chat task when available. The Project provides the instructions/context and the same connectors can be used in Cowork.
-
-Cowork is an enhancement to High Director, not a replacement for the Project architecture.
+Cowork can coordinate parallel sub-agents internally. The user should normally give the substantial task to one High Director Cowork task and let Cowork decide whether parallel workstreams are useful.
 
 </details>
 
 <details>
-<summary>Optional: use Claude Code</summary>
+<summary>When Claude Code is still useful</summary>
 
-Use Claude Code only when a repository task requires capabilities GitHub MCP cannot provide, such as:
+Claude Code remains a specialist fallback if a task specifically requires repository-development capabilities that the Cowork + MCP toolset cannot provide.
 
-```text
-full repository clone
-arbitrary shell commands
-local build toolchains
-local test execution not available through GitHub Actions
-interactive development environment work
-```
-
-Return the result to High Director afterward if the broader task also involves AWS or other connected systems.
+It is no longer the standard implementation path or the normal solution to long-running work.
 
 </details>

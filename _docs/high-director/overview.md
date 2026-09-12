@@ -23,9 +23,9 @@ The documentation initiative established authoritative records for the GPT confi
 
 For the browser-only ChatGPT/custom-GPT implementation, see [Build Your Own High Director]({{ '/docs/high-director/build-your-own/' | relative_url }}). It walks a personal user from account setup and a first GitHub repository through the existing Lambda-backed GitHub architecture, custom GPT Action configuration, end-to-end testing, troubleshooting, credential rotation, and optional extensions.
 
-For the Claude/Anthropic implementation, see [Build Your Own High Director — Claude Edition]({{ '/docs/high-director/build-your-own-claude/' | relative_url }}). Its primary interface is one persistent High Director Project chat with the official GitHub MCP connector for repository operations and the managed AWS MCP Server for AWS access. Claude Code is an optional specialist environment rather than the normal GitHub path. Optional Claude enhancements include Skills, Plugins, Cowork, and scheduled tasks.
+For the Claude/Anthropic implementation, see [Build Your Own High Director — Claude Edition]({{ '/docs/high-director/build-your-own-claude/' | relative_url }}). It uses one persistent High Director Project with GitHub MCP and AWS MCP. Normal Project chat handles quick interactive work; Cowork is the primary mode for substantial long-running work so implementation plans can continue independently without repeated `continue` prompts. Cowork provides cloud execution, subtask decomposition, parallel workstreams, isolated code/shell execution, and scheduled tasks. Skills and Plugins are planned as reusable operating-procedure/packaging upgrades, while Claude Code remains a specialist fallback.
 
-Both guides are written for browser-first setup with zero assumed technical knowledge. Google Workspace is optional in both versions, and new/custom integrations are kept separate from the proven primary path unless they are genuinely required.
+Both guides are written for zero assumed technical knowledge and browser-first operation where the product supports it. Google Workspace is optional in both versions, and new/custom integrations are kept separate from the proven primary path unless genuinely required.
 
 ## Authoritative GPT configuration
 
