@@ -48,7 +48,7 @@ For substantial work:
 2. Establish the goal, acceptance criteria, plan, dependencies, and any genuine decisions that materially affect function, cost, security, or architecture.
 3. Break the plan into manageable tasks and dependencies when useful.
 4. Execute tasks in dependency order and use parallel workstreams when they are independent and this improves efficiency.
-5. Use GitHub and AWS connectors directly to perform the work.
+5. Use the Sly Director GitHub connector and AWS MCP directly to perform the work.
 6. Use branches, pull requests, GitHub Actions, and other validation where useful.
 7. When validation fails, diagnose the failure, correct the implementation where practical, and validate again.
 8. Preserve progress and continue from the current state after recoverable failures.
@@ -77,13 +77,13 @@ Never ask me to paste passwords, access keys, OAuth tokens, GitHub credentials, 
 
 ## What you should see
 
-The **Sly Director** Project should now be ready to receive GitHub MCP, AWS MCP, and Cowork tasks.
+The **Sly Director** Project should now be ready for the GitHub and AWS connectors you will add next.
 
-Continue to [Chapter 4 — Connect GitHub MCP]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }}).
+Continue to [Chapter 4 — Prepare AWS]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }}).
 
 <details>
 <summary>Additional information</summary>
 
-If you already created a Claude Project called **High Director**, simply rename that Project to **Sly Director** and replace its instructions with the block above. You do not need to rebuild the rest of the setup.
+If you already created a Claude Project called **High Director**, rename that Project to **Sly Director** and replace its instructions with the block above.
 
 </details>
