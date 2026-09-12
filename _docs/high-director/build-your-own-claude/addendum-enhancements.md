@@ -1,6 +1,6 @@
 ---
 title: "Build Your Own High Director — Claude Edition — Addendum: Enhancements"
-summary: Optional Claude features that strengthen High Director while preserving the normal single-chat interaction model.
+summary: Extend the Cowork-first High Director with reusable Skills, Plugins, scheduled autonomous tasks, and specialist execution tools.
 section: high-director
 doc_type: runbook
 status: active
@@ -11,173 +11,161 @@ order: 91
 permalink: /docs/high-director/build-your-own-claude/addendum-enhancements/
 ---
 
-# Optional Enhancements — Skills, Cowork, Plugins, and Claude Code
+# Optional Enhancements — Skills, Plugins, Scheduling, and Specialist Tools
 
-## Rule
-
-The core High Director interaction stays:
+The core system is already:
 
 ```text
-You → one High Director Project chat → connected tools
+High Director Project
+├─ normal chat
+├─ Cowork
+├─ GitHub MCP
+└─ AWS MCP
 ```
 
-Optional features should improve that model, not replace it.
+The enhancements below improve consistency and autonomy without changing that operating model.
 
-## Recommended upgrade 1 — High Director Skill
+## Recommended upgrade 1 — High Director Operator Skill
 
-This is the best next enhancement.
+This is the best next upgrade after the Cowork-first core is working.
 
-A Skill gives Claude a reusable procedure that loads when relevant. MCP connectors provide the tools; the Skill teaches Claude how to use them consistently.
+A Skill can hold the detailed High Director execution procedure so the Project instructions remain shorter.
 
-A future **High Director Operator** Skill can encode this workflow:
+The Skill should teach this operating loop:
 
 ```text
-inspect repository and infrastructure
-→ investigate the problem
-→ form the plan
+inspect evidence
+→ define goal and acceptance criteria
+→ identify dependencies and genuine decisions
+→ build task plan
+→ execute independent work in parallel when useful
 → implement through GitHub/AWS connectors
-→ inspect GitHub Actions or other validation
-→ correct failures
-→ complete repository workflow
+→ inspect validation
+→ diagnose and correct recoverable failures
+→ resume from preserved state
 → verify final state
-→ report result
+→ return only when complete or genuinely blocked
 ```
+
+It should also teach Claude that progress updates are informational, not requests for permission to continue.
 
 ### Enable Skills
 
 1. Open **Settings → Capabilities**.
-2. Enable **Code execution and file creation** if it is not already enabled.
+2. Enable **Code execution and file creation** if required by the current Claude interface.
 3. Open **Customize → Skills**.
-4. Confirm Skills are available.
+4. Confirm custom Skills are available.
 
-### Why this helps
+<details>
+<summary>Why this matches Overlord</summary>
 
-Project instructions remain the broad High Director rules. The Skill can hold the detailed repository-operation procedure and only load when a relevant engineering task appears, reducing clutter in every conversation.
+Overlord encoded durable planning and execution rules in application code. A High Director Skill can encode many of those same operating rules declaratively while Cowork supplies the actual long-running runtime.
 
-Official references:
-
-- [What are Skills?](https://support.claude.com/en/articles/12512176-what-are-skills)
-- [Use Skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
-
-## Recommended upgrade 2 — Package High Director as a Plugin
-
-Plugins can bundle:
+Useful Overlord concepts to preserve in the Skill include:
 
 ```text
-Skills
-Connectors
-Sub-agents for Cowork
+task dependencies
+bounded task decomposition
+validation before completion
+retry/recovery after failures
+preserving prior work instead of restarting
+clear completion criteria
+owner interruption only for real decisions/blockers
 ```
 
-The useful long-term design is a **High Director plugin** that packages the High Director Skill and required connector definitions together.
+</details>
 
-Plugins work in normal Claude chat and Cowork. In normal chat, the bundled Skills and connectors are the important parts. Cowork-only hooks/sub-agents should remain optional.
+## Recommended upgrade 2 — Scheduled High Director work
 
-This can make rebuilding High Director on another Claude account/device simpler later.
+Cowork can run recurring tasks remotely even when your computer is asleep.
 
-Official reference: [Use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude).
-
-## Optional upgrade 3 — Cowork
-
-### What Cowork is
-
-Cowork is Claude's more agentic task-execution mode. It is designed for longer, multi-step work and can use:
-
-```text
-Projects
-connectors
-Skills
-plugins
-cloud execution
-sub-agent coordination
-scheduled tasks
-files and generated artifacts
-```
-
-### Where it helps High Director
-
-Use Cowork when a task is unusually large, long-running, parallel, or recurring.
-
-Examples:
-
-```text
-investigate several repositories in parallel
-prepare a large technical migration report
-run a recurring weekly infrastructure review
-coordinate multiple research/work streams
-produce documents/spreadsheets alongside repository work
-```
-
-### Important interaction difference
-
-Cowork starts a Cowork task/session. It can use the same High Director Project context and connectors, but it is not the exact same ordinary chat thread.
-
-Therefore Cowork is **optional**. Normal High Director work remains in the standard Project chat so your day-to-day interaction stays equivalent to the OpenAI High Director model.
-
-Official references:
-
-- [Get started with Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
-- [Projects in Cowork](https://support.claude.com/en/articles/14116274-organize-your-tasks-with-projects-in-claude-cowork)
-
-## Optional upgrade 4 — Scheduled High Director tasks
-
-Cowork can run scheduled cloud tasks with connectors and Skills.
-
-Potential future High Director routines:
+Useful High Director schedules could include:
 
 ```text
 daily failed GitHub Actions review
-weekly stale pull-request review
+weekly repository health review
 weekly AWS cost/resource summary
-scheduled documentation health check
-periodic repository dependency review
+weekly stale branch / pull-request review
+periodic documentation verification
+periodic dependency/update review
 ```
 
-These are background automations, not replacements for the main High Director chat.
+### Create a scheduled task
 
-Official reference: [Schedule recurring tasks in Cowork](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork).
+1. Open Cowork.
+2. Select **Scheduled** in the left sidebar.
+3. Select **New task**.
+4. Choose **Create with Claude** for the easiest setup.
+5. Describe the recurring job.
+6. Review the name, instructions, cadence, connectors, and approval mode Claude proposes.
+7. Select **Schedule**.
+
+Each scheduled run becomes its own Cowork session whose result you can inspect later.
+
+### Example
+
+```text
+Every weekday morning, use GitHub MCP to inspect my repositories for failed GitHub Actions runs from the previous 24 hours. Investigate each failure, identify whether it is actionable, and produce a concise report. For failures that are clearly repository defects and can be corrected safely using the established repository workflow, implement and validate the correction. Escalate only genuine design decisions or blockers.
+```
+
+## Optional upgrade 3 — High Director Plugin
+
+A Plugin can package High Director components together, including Skills, connectors, and Cowork sub-agents.
+
+A future High Director Plugin could package:
+
+```text
+High Director Operator Skill
+GitHub connector definition
+AWS connector definition
+specialist Cowork sub-agents
+supporting commands/workflows
+```
+
+This becomes useful when you want the High Director configuration to be portable and easier to recreate.
+
+## Optional upgrade 4 — Cowork sub-agent specialization
+
+Cowork can coordinate parallel workstreams itself. A Plugin can later provide specialist sub-agents if repeatable specialization becomes useful.
+
+Possible roles:
+
+```text
+repository investigator
+implementation worker
+GitHub Actions / validation investigator
+AWS investigator
+final reconciliation / verification worker
+```
+
+Start with Cowork's built-in parallel coordination. Add named specialist sub-agents only if repeated real work shows a benefit.
 
 ## Optional upgrade 5 — Claude Code
 
-Claude Code remains useful as a specialist execution environment.
+Claude Code remains a specialist repository-development environment.
 
-Use it when GitHub MCP cannot supply a required capability, such as:
+Use it when a task genuinely requires capabilities unavailable through Cowork plus GitHub MCP, such as a specific repository-local development workflow or toolchain.
 
-```text
-cloning the full repository
-running arbitrary shell commands
-running a local development server
-executing local test/build toolchains
-performing changes that require a working tree rather than GitHub API operations
-```
-
-It is an escalation path, not the primary High Director interface.
+It is not the solution to the `continue` problem; Cowork is.
 
 ## Recommended priority
 
 ```text
-1. Core single-chat High Director + GitHub MCP + AWS MCP
-2. High Director Skill
-3. High Director Plugin packaging
-4. Cowork for large/parallel work
-5. Scheduled Cowork routines
-6. Claude Code only when a task needs its execution environment
+1. High Director Project + GitHub MCP + AWS MCP
+2. Cowork + Automatically approve for substantial tasks
+3. High Director Operator Skill
+4. Scheduled Cowork routines
+5. Plugin packaging / specialist sub-agents
+6. Claude Code only when technically required
 ```
 
 <details>
-<summary>Why Skills are better than putting everything in Project instructions</summary>
+<summary>Official references</summary>
 
-Project instructions are always part of the Project context. Skills use progressive disclosure: Claude loads the procedure when it is relevant.
-
-That lets the Project instructions remain short while a High Director Skill carries detailed procedures for repository investigation, GitHub Actions validation, AWS operations, troubleshooting, and completion criteria.
-
-</details>
-
-<details>
-<summary>Why Cowork is not the primary interface</summary>
-
-Cowork adds capabilities such as long-running execution, sub-agent coordination, schedules, files, and computer/browser use. Those capabilities are valuable, but requiring Cowork for normal work would reintroduce a second operating surface.
-
-The redesigned core therefore keeps standard Project chat as the default and treats Cowork as an optional execution mode for exceptional tasks.
+- [Get started with Claude Cowork](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)
+- [Schedule recurring tasks in Cowork](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork)
+- [What are Skills?](https://support.claude.com/en/articles/12512176-what-are-skills)
+- [Use Skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude)
+- [Use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude)
 
 </details>
