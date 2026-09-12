@@ -2,7 +2,7 @@
 title: Sly Director — Direct Cognito OAuth Known Issue
 summary: Current Claude.ai web connector authorization can fail after successful Cognito login before the MCP server receives a bearer token.
 section: high-director
-doc_type: troubleshooting
+doc_type: reference
 status: active
 created: 2026-09-12
 updated: 2026-09-12
