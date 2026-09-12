@@ -31,7 +31,7 @@ CONFIRMED
 
 ## Complete this step
 
-Open AWS CloudShell and run:
+This guide creates one Cognito user for Sly Director. Open AWS CloudShell and run:
 
 ```bash
 POOL_ID=$(aws lambda get-function-configuration \
@@ -40,17 +40,24 @@ POOL_ID=$(aws lambda get-function-configuration \
   --query 'Environment.Variables.COGNITO_USER_POOL_ID' \
   --output text)
 
-read -p "Cognito login email: " EMAIL
-
 USERNAME=$(aws cognito-idp list-users \
   --user-pool-id "$POOL_ID" \
-  --filter "email = \"$EMAIL\"" \
   --region us-east-2 \
   --query 'Users[0].Username' \
   --output text)
 
 echo "Found Cognito user: $USERNAME"
+```
 
+The final line should show a real Cognito username, for example:
+
+```text
+Found Cognito user: 411bc5c0-10a1-700f-b8c3-0e40cb28c6be
+```
+
+Then set the permanent password:
+
+```bash
 read -s -p "New permanent Cognito password: " COGNITO_PASSWORD
 echo
 
@@ -62,7 +69,13 @@ aws cognito-idp admin-set-user-password \
   --region us-east-2
 
 unset COGNITO_PASSWORD
+```
 
+The password prompt does not display the password while you type it.
+
+Verify the Cognito user status:
+
+```bash
 aws cognito-idp admin-get-user \
   --user-pool-id "$POOL_ID" \
   --username "$USERNAME" \
@@ -77,22 +90,28 @@ The final line should show:
 CONFIRMED
 ```
 
-The password prompt does not display the password while you type it.
-
 ## Continue the Claude connection
 
-1. Return to Claude.
-2. Open the **Sly Director GitHub** connector.
-3. Select **Connect** again.
-4. Enter the Cognito email address.
-5. Enter the new permanent Cognito password.
-6. Cognito should proceed directly through the OAuth login instead of opening the first-login **Change password** challenge.
+1. Close any old Cognito **Change password** page.
+2. Return to Claude.
+3. Open the **Sly Director GitHub** connector.
+4. Select **Connect** again.
+5. Enter the Cognito email address.
+6. Enter the new permanent Cognito password.
+7. Cognito should proceed directly through the OAuth login instead of opening the first-login **Change password** challenge.
 
 ## If you saw `Invalid challenge transition`
 
 That error can occur while the user is still going through Cognito's temporary-password `NEW_PASSWORD_REQUIRED` challenge.
 
 After the user status is `CONFIRMED`, restart the connector login from Claude rather than continuing the old password-change browser page.
+
+<details>
+<summary>If this Cognito pool contains more than one user</summary>
+
+Do not use the first-user shortcut. Open **Amazon Cognito → User pools → your Sly Director pool → User management → Users**, select the intended user, and copy that user's Cognito username before running `admin-set-user-password`.
+
+</details>
 
 <details>
 <summary>Why this works</summary>
