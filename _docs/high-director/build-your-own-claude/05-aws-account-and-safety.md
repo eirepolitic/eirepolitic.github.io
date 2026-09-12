@@ -236,21 +236,45 @@ Keep the client secret private. You will enter it into Claude later; do not put 
 
 ### 4D — Verify the OAuth settings
 
-1. In the app-client page, find the **Login pages**, **Managed login**, or OAuth settings area.
-2. Confirm the callback/return URL includes:
+The callback URL is not shown prominently on the app-client overview page. Open the app client's **Login pages** tab.
+
+1. Inside the same user pool, open:
+
+```text
+Applications → App clients
+```
+
+2. Select:
+
+```text
+SlyDirectorClaude
+```
+
+3. Near the top of the app-client page, select the tab:
+
+```text
+Login pages
+```
+
+4. Find the section that contains **Allowed callback URLs** or **Callback URLs**.
+5. Confirm this URL is listed:
 
 ```text
 https://claude.ai/api/mcp/auth_callback
 ```
 
-3. Confirm **Authorization code grant** is enabled.
-4. Confirm this scope is enabled:
+6. On the same **Login pages** tab, confirm **Authorization code grant** is enabled.
+7. Confirm the allowed OAuth scopes include:
 
 ```text
 openid
 ```
 
-5. Save changes if you changed anything.
+8. If the callback URL or OAuth settings are missing, select **Edit** on the Login pages tab.
+9. Add the callback URL and enable the settings above.
+10. Select **Save changes**.
+
+AWS documentation also refers to these values as the app client's **Allowed callback URLs**. The **View login page** button on this tab uses the first callback URL in this list.
 
 ## Step 5 — Create the Cognito managed-login domain
 
@@ -301,7 +325,7 @@ https://sly-director-yourname.auth.us-east-2.amazoncognito.com
 Applications → App clients → SlyDirectorClaude
 ```
 
-2. Open the **Login pages** section.
+2. Open the **Login pages** tab.
 3. Select **View login page** if AWS shows that button.
 4. A Cognito sign-in page should open in a new browser tab.
 
@@ -683,13 +707,15 @@ Start with access only to `claude-director-test`. After the full test succeeds, 
 
 **Cognito first-run screen looks different:** look for **User pools**, **Create user pool**, or **Get started**. AWS changes the landing-page wording periodically, but the target is a new user pool with a **Traditional web application** app client.
 
+**Can't find the callback URL:** open **Applications → App clients → SlyDirectorClaude → Login pages**. The callback URL is listed there as **Allowed callback URLs**. Select **Edit** on that tab if you need to add or change it.
+
 **No Client secret appears:** confirm the app client was created as **Traditional web application**. Cognito creates a client secret for this application type.
 
 **No login page exists:** open **Branding → Domain** and create a Cognito domain, then return to **Applications → App clients → SlyDirectorClaude → Login pages**.
 
 **Health page fails:** open **Lambda → Monitor → View CloudWatch logs** and inspect the newest error.
 
-**Claude cannot authenticate:** confirm the Cognito app client uses `https://claude.ai/api/mcp/auth_callback`, authorization-code grant, `openid`, and the same Client ID/secret entered in Claude.
+**Claude cannot authenticate:** confirm the Cognito app client's **Login pages** tab contains `https://claude.ai/api/mcp/auth_callback`, authorization-code grant, `openid`, and the same Client ID/secret entered in Claude.
 
 **Claude gets HTTP 421:** confirm `PUBLIC_MCP_URL` exactly matches the Function URL plus `/mcp`.
 
