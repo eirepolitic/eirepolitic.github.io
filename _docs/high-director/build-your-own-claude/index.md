@@ -15,23 +15,29 @@ permalink: /docs/high-director/build-your-own-claude/
 
 Sly Director is the Claude-based counterpart to the OpenAI High Director.
 
-The plan is simple:
+## The whole plan
+
+Build **one Claude Project called Sly Director**.
+
+Use it in two ways:
 
 ```text
-Sly Director Project
-├─ Normal chat → quick, interactive work
-├─ Cowork → substantial autonomous work
-├─ GitHub MCP → repository access and operation
-└─ AWS MCP → AWS access and operation
+Sly Director
+├─ Normal chat → quick questions, planning, small changes
+└─ Cowork → substantial jobs that should keep working without you
+
+Both use:
+├─ GitHub MCP → repositories, files, branches, PRs, Actions
+└─ AWS MCP → AWS resources and operations
 ```
 
-Use the **Sly Director Project** as the persistent identity and context.
-
-Use **normal chat** when the job is small or you want to work interactively.
-
-Use **Cowork** when the job is substantial and should keep progressing without repeated `continue` prompts. Cowork can work in the cloud, break work into subtasks, coordinate parallel workstreams, run code/shell commands in its isolated environment, use the connected GitHub/AWS tools, and continue after you step away.
-
 That is the entire operating model.
+
+For a small job, talk to **Sly Director** normally.
+
+For a large job, open **Sly Director in Cowork**, give it the final objective, select **Automatically approve**, and let it continue through planning, implementation, validation, corrections, and final verification until the work is finished or it genuinely needs you.
+
+The later **Sly Director Operator Skill** is an improvement to this same setup. It is a later implementation step in this guide, not something you need to build separately before continuing.
 
 ## Build it in this order
 
@@ -46,11 +52,21 @@ That is the entire operating model.
 9. [Troubleshoot]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }})
 10. [Maintain the setup]({{ '/docs/high-director/build-your-own-claude/10-maintenance/' | relative_url }})
 
-Optional upgrades:
+Optional later:
 
 - [Skills, Plugins, scheduling, and specialist tools]({{ '/docs/high-director/build-your-own-claude/addendum-enhancements/' | relative_url }})
 - [Google Workspace and other connectors]({{ '/docs/high-director/build-your-own-claude/addendum-connectors/' | relative_url }})
 - [Custom MCP servers]({{ '/docs/high-director/build-your-own-claude/addendum-custom-mcp/' | relative_url }})
+
+## What success looks like
+
+For a substantial job, you should be able to give Sly Director one objective such as:
+
+```text
+Investigate this repository and the related AWS infrastructure. Find the cause of the problem, implement the best practical fix, validate it, correct recoverable failures, finish the repository workflow, verify the final state, and return to me when the job is complete or you genuinely need a decision from me.
+```
+
+Sly Director should then continue working in Cowork instead of repeatedly stopping just to make you type `continue`.
 
 <details>
 <summary>How this relates to Overlord</summary>
