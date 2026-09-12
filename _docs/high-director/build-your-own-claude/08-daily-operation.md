@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 08 — Daily Operation
-summary: Use normal High Director chat for quick work and Cowork for substantial autonomous execution.
+title: Build Your Own Sly Director — 08 — Daily Operation
+summary: Use Sly Director normal chat for quick work and Cowork for substantial autonomous execution.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,52 +15,45 @@ permalink: /docs/high-director/build-your-own-claude/08-daily-operation/
 
 ## Goal
 
-Use one High Director identity while choosing the execution mode that matches the size of the task.
+Use one Sly Director identity and choose the right mode for the size of the task.
 
-## Use normal High Director chat for quick work
+## Quick work
 
-Use normal Project chat when you want:
+Use normal **Sly Director** Project chat for:
 
 ```text
 questions
-planning/discussion
-small investigations
-small repository changes
-quick AWS queries or changes
+planning
+a small investigation
+a small repository change
+a quick AWS task
 interactive troubleshooting
 ```
 
-### Complete a normal chat task
+## Substantial work
 
-1. Open **Projects → High Director**.
-2. Enable the connectors needed for the task.
-3. Give High Director the request.
-4. Continue interacting normally.
-
-## Use Cowork for substantial work
-
-Use Cowork when the task:
+Use **Sly Director in Cowork** when the task:
 
 ```text
-has many implementation steps
-may take an extended period
-requires investigation + implementation + validation loops
-can benefit from parallel workstreams
+has many steps
+may run for a long time
+requires investigation + implementation + validation
+can benefit from parallel work
 would otherwise require repeated "continue" prompts
 should keep running while you are away
 ```
 
-### Complete a substantial task
+### Start a substantial task
 
-1. Open the **High Director** Cowork Project.
+1. Open the **Sly Director** Cowork Project.
 2. Enable **GitHub MCP** and/or **AWS MCP**.
 3. Select **Automatically approve**.
-4. Give High Director the final objective and constraints.
-5. Tell it to continue through the approved plan until the outcome is complete or a genuine blocker requires you.
+4. Give Sly Director the final objective and constraints.
+5. Tell it to continue until complete or genuinely blocked.
 6. Let Cowork run independently.
-7. Return later to the same task to review the completed result or answer a genuine question.
+7. Return later to review the result or answer a genuine question.
 
-A useful task format is:
+Use this pattern:
 
 ```text
 Complete this objective independently: [objective].
@@ -72,32 +65,10 @@ Use parallel workstreams where useful. Progress reports are informational; conti
 
 ## What you should see
 
-Your operating model should be:
-
 ```text
-High Director
+Sly Director
 ├─ normal chat → quick/interactively supervised work
 └─ Cowork → substantial autonomous work
 ```
 
-You should no longer need to manually coordinate multiple chat instances or type `continue` throughout an already-approved implementation plan.
-
 Continue to [Chapter 9 — Troubleshooting]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }}).
-
-<details>
-<summary>How this replaces the manual multi-chat delegation pattern</summary>
-
-Earlier High Director instructions suggested manually opening several chat instances for large plans and later returning to the original chat to reconcile their work.
-
-Cowork can coordinate parallel sub-agents internally. The user should normally give the substantial task to one High Director Cowork task and let Cowork decide whether parallel workstreams are useful.
-
-</details>
-
-<details>
-<summary>When Claude Code is still useful</summary>
-
-Claude Code remains a specialist fallback if a task specifically requires repository-development capabilities that the Cowork + MCP toolset cannot provide.
-
-It is no longer the standard implementation path or the normal solution to long-running work.
-
-</details>
