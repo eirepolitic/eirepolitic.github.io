@@ -41,26 +41,56 @@ echo "Found Cognito user: $USERNAME"
 
 The final line should show a real Cognito username.
 
-Set and confirm the permanent password without displaying it:
+Paste this whole password block into CloudShell:
 
 ```bash
-read -s -p "New permanent Cognito password: " COGNITO_PASSWORD
+read -s -p "New permanent Cognito password: " P1
 echo
-read -s -p "Type it again: " COGNITO_PASSWORD_CONFIRM
+read -s -p "Type it again: " P2
 echo
 
-if [ "$COGNITO_PASSWORD" != "$COGNITO_PASSWORD_CONFIRM" ]; then
-  echo "Passwords do not match. Run this password block again."
-  unset COGNITO_PASSWORD COGNITO_PASSWORD_CONFIRM
+if [ "$P1" != "$P2" ]; then
+  echo "PASSWORDS DO NOT MATCH"
 else
   aws cognito-idp admin-set-user-password \
     --user-pool-id "$POOL_ID" \
     --username "$USERNAME" \
-    --password "$COGNITO_PASSWORD" \
+    --password "$P1" \
     --permanent \
-    --region us-east-2
-  unset COGNITO_PASSWORD COGNITO_PASSWORD_CONFIRM
+    --region us-east-2 && echo "PASSWORD SET"
 fi
+
+unset P1 P2
+```
+
+CloudShell will pause at:
+
+```text
+New permanent Cognito password:
+```
+
+Type the new password and press **Enter**. Nothing appears while you type.
+
+It will then pause at:
+
+```text
+Type it again:
+```
+
+Type the same password again and press **Enter**.
+
+Do not type or paste the password when the normal CloudShell prompt looks like:
+
+```text
+~ $
+```
+
+If you type a password at `~ $`, Bash treats the password as a command instead of sending it to Cognito.
+
+The successful result is:
+
+```text
+PASSWORD SET
 ```
 
 Verify the account state:
