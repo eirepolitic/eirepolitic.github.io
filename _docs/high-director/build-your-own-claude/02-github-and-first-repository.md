@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director — 02 — GitHub Test Repository
-summary: Create the GitHub test repository used to verify GitHub MCP from the Sly Director Project.
+summary: Create the GitHub test repository used to verify the Sly Director GitHub connector.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/02-github-and-first-reposit
 
 ## Goal
 
-Create one private repository Sly Director can use to test GitHub MCP safely.
+Create one private repository Sly Director can use to test its GitHub connector safely.
 
 ## Complete this step
 
@@ -64,5 +64,7 @@ Continue to [Chapter 3 — Create the Sly Director Project]({{ '/docs/high-direc
 <summary>Additional information</summary>
 
 The test repository keeps its existing technical name so anyone already following the guide does not need to recreate it because the product was renamed.
+
+Chapter 5 will create the **Sly Director GitHub** custom connector and initially give its GitHub token access only to this test repository.
 
 </details>
