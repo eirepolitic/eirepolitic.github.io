@@ -30,6 +30,13 @@ a quick AWS task
 interactive troubleshooting
 ```
 
+Enable whichever connector the task needs:
+
+```text
+Sly Director GitHub
+AWS MCP
+```
+
 ## Substantial work
 
 Use **Sly Director in Cowork** when the task:
@@ -46,7 +53,7 @@ should keep running while you are away
 ### Start a substantial task
 
 1. Open the **Sly Director** Cowork Project.
-2. Enable **GitHub MCP** and/or **AWS MCP**.
+2. Enable **Sly Director GitHub** and/or **AWS MCP**.
 3. Select **Automatically approve**.
 4. Give Sly Director the final objective and constraints.
 5. Tell it to continue until complete or genuinely blocked.
@@ -69,6 +76,10 @@ Use parallel workstreams where useful. Progress reports are informational; conti
 Sly Director
 ├─ normal chat → quick/interactively supervised work
 └─ Cowork → substantial autonomous work
+
+Tools
+├─ Sly Director GitHub
+└─ AWS MCP
 ```
 
 Continue to [Chapter 9 — Troubleshooting]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }}).
