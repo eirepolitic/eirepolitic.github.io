@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director — Cognito Domain Setup
-summary: Choose the AWS-hosted Cognito domain for Sly Director and avoid the custom-domain ACM certificate path.
+summary: Confirm the AWS-hosted Cognito domain for Sly Director and avoid the custom-domain ACM certificate path.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/cognito-domain-setup/
 
 ## Goal
 
-Create the AWS-hosted Cognito login domain without needing your own domain name or an ACM certificate.
+Confirm that the AWS-hosted Cognito login domain exists. You do not need your own domain name or an ACM certificate.
 
 ## Complete this step
 
@@ -29,54 +29,88 @@ Create the AWS-hosted Cognito login domain without needing your own domain name 
 Branding → Domain
 ```
 
-6. Next to **Domain**, select **Actions**.
-7. Select:
+6. Look at the top card labeled:
 
 ```text
-Create Cognito domain
+Cognito domain
 ```
 
-Do **not** select:
+### If a domain is already shown
+
+If the top **Cognito domain** card already contains a URL such as:
 
 ```text
-Create custom domain
+https://us-east-2xxxxxxxx.auth.us-east-2.amazoncognito.com
 ```
 
-8. Enter a unique prefix only, for example:
+then this step is already complete.
+
+1. Copy or record that existing URL.
+2. Confirm **Branding version** says:
+
+```text
+Managed login
+```
+
+3. Ignore the entire **Custom domain** section below it.
+4. Return to Chapter 5 and continue with **Step 6 — Create your first Cognito user**.
+
+### If the Cognito domain card is empty
+
+Only if no AWS-hosted Cognito domain exists:
+
+1. In the **Cognito domain** section, select the available create/edit action.
+2. Choose the AWS-hosted **Cognito domain** option.
+3. Enter a unique prefix if AWS asks for one, for example:
 
 ```text
 sly-director-yourname
 ```
 
-9. For **Branding version**, choose **Managed login** if AWS asks.
-10. Select **Create**.
-11. Wait until the domain becomes available.
-
-The resulting domain should use Amazon Cognito's hosted domain and look similar to:
+4. For **Branding version**, choose:
 
 ```text
-https://sly-director-yourname.auth.us-east-2.amazoncognito.com
+Managed login
 ```
+
+5. Save/create the domain.
+6. Wait until the domain appears in the top **Cognito domain** card.
+7. Record the URL.
+
+## Ignore the Custom domain section
+
+The lower card labeled:
+
+```text
+Custom domain
+```
+
+is not used by this guide.
+
+Do not select its **Create domain** button.
+
+That path is only for a domain you own, such as:
+
+```text
+auth.example.com
+```
+
+and AWS requires an ACM certificate for it.
 
 ## If AWS asks for an ACM certificate
 
-You are on the **Custom domain** path.
+You are in the **Custom domain** workflow.
 
-Back out of that screen and return to:
-
-```text
-Branding → Domain → Actions → Create Cognito domain
-```
-
-A custom domain is only needed when you want to use a domain name that you own, such as `auth.example.com`. AWS requires an ACM certificate for that path. Sly Director does not need a custom domain.
+Cancel or go back to the main **Branding → Domain** page. Then use the existing top **Cognito domain** card instead.
 
 ## What you should see
 
 ```text
-Domain type: Amazon Cognito domain / Cognito domain
+Top card: Cognito domain
+Domain: an amazoncognito.com URL
+Branding version: Managed login
+Custom domain: unused
 ACM certificate: not required
-Custom DNS: not required
-Managed login: available
 ```
 
-After this succeeds, return to Chapter 5 and continue with the first Cognito user.
+After this is confirmed, return to Chapter 5 and continue with the first Cognito user.
