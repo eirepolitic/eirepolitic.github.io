@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 04 — Connect GitHub MCP
-summary: Connect the official GitHub MCP connector directly to the High Director Project so repository work can stay in one chat.
+title: Build Your Own Sly Director — 04 — Connect GitHub MCP
+summary: Connect the official GitHub MCP connector directly to the Sly Director Project so repository work can stay in one place.
 section: high-director
 doc_type: runbook
 status: active
@@ -11,11 +11,11 @@ order: 84
 permalink: /docs/high-director/build-your-own-claude/04-claude-code-web/
 ---
 
-# Chapter 4 — Connect GitHub MCP to High Director
+# Chapter 4 — Connect GitHub MCP to Sly Director
 
 ## Goal
 
-Give the **High Director Project chat** direct GitHub tools so it can investigate and modify repositories without switching to Claude Code.
+Give the **Sly Director Project** direct GitHub tools so it can investigate and modify repositories without switching to Claude Code.
 
 ## Complete this step
 
@@ -30,9 +30,9 @@ GitHub MCP
 4. Select **GitHub MCP — The Official GitHub MCP Server**.
 5. Select **Connect**, **Add**, or the current equivalent.
 6. Complete the GitHub sign-in/authorization flow Claude opens.
-7. Grant access to the GitHub account and repositories you want High Director to operate.
+7. Grant access to the GitHub account and repositories you want Sly Director to operate.
 8. Return to Claude.
-9. Open **Projects → High Director**.
+9. Open **Projects → Sly Director**.
 10. Start a new chat.
 11. Select the **+** button near the message box.
 12. Open **Connectors**.
@@ -49,7 +49,7 @@ Using GitHub MCP, inspect the repository claude-director-test. List the files in
 Using GitHub MCP, create a new file named github-mcp-test.md containing:
 
 # GitHub MCP test
-This file was created from the High Director Project chat through GitHub MCP.
+This file was created from the Sly Director Project through GitHub MCP.
 
 Use the repository workflow that gives the clearest history with the least unnecessary overhead. Complete the change without waiting for my approval where the available GitHub tools and repository permissions allow it.
 ```
@@ -58,7 +58,7 @@ Use the repository workflow that gives the clearest history with the least unnec
 
 ## What you should see
 
-The same **High Director Project chat** should be able to:
+The **Sly Director Project** should be able to:
 
 ```text
 read repository files
@@ -110,14 +110,14 @@ GitHub notes that OAuth support depends on the MCP host's GitHub OAuth/GitHub Ap
 <details>
 <summary>Troubleshooting</summary>
 
-If High Director can read but cannot write, preserve the exact GitHub MCP error and check the GitHub authorization/repository permissions.
+If Sly Director can read but cannot write, preserve the exact GitHub MCP error and check the GitHub authorization/repository permissions.
 
-If a particular GitHub operation is unavailable, ask High Director which GitHub MCP tools are currently exposed before changing the architecture.
+If a particular GitHub operation is unavailable, ask Sly Director which GitHub MCP tools are currently exposed before changing the architecture.
 
 Useful prompt:
 
 ```text
-I am using the official GitHub MCP connector inside my Claude High Director Project.
+I am using the official GitHub MCP connector inside my Claude Sly Director Project.
 Repository: claude-director-test
 Failing operation: [read / search / create file / branch / PR / merge / workflow]
 Exact non-secret error: [paste it]
