@@ -28,13 +28,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Install validator dependency
         run: python -m pip install --disable-pip-version-check PyYAML==6.0.2
 
       - name: Validate documentation
         run: python scripts/validate_docs.py
+
+      - name: Install Sly Director GitHub MCP dependencies
+        run: python -m pip install --disable-pip-version-check -r assets/sly-director/github-mcp-source/requirements.txt
+
+      - name: Import-check Sly Director GitHub MCP dependencies
+        run: python -c "import mcp, mangum, httpx, jwt, nacl, pydantic"
 
       - name: Syntax-check Sly Director GitHub MCP source
         run: python -m compileall -q assets/sly-director/github-mcp-source/src
