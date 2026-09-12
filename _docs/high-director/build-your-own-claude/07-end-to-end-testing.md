@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director — 07 — Configure Cowork
-summary: Configure Cowork as Sly Director's long-running autonomous execution mode.
+summary: Configure Cowork as Sly Director's long-running autonomous execution mode and test both primary connectors together.
 section: high-director
 doc_type: runbook
 status: active
@@ -27,7 +27,7 @@ Make Cowork the mode Sly Director uses for substantial work that should continue
 6. Enable:
 
 ```text
-GitHub MCP
+Sly Director GitHub
 AWS MCP
 ```
 
@@ -42,15 +42,17 @@ Automatically approve
 ```text
 Act as Sly Director and complete this task independently.
 
-Using GitHub MCP and AWS MCP:
+Using Sly Director GitHub and AWS MCP:
 1. inspect the repository claude-director-test;
 2. summarize its current state;
-3. create a file named cowork-autonomy-test.md confirming that the Sly Director Cowork workflow is operational;
-4. complete the repository-side workflow as far as the connected GitHub tools and repository permissions allow;
-5. inspect relevant validation and correct recoverable failures if needed;
-6. list the S3 buckets visible to the connected AWS identity;
-7. verify the final repository and AWS state;
-8. return to me when the requested outcome is complete or when a genuine blocker requires my decision.
+3. create a working branch and add a file named cowork-autonomy-test.md confirming that the Sly Director Cowork workflow is operational;
+4. create a non-draft pull request into main;
+5. inspect relevant GitHub Actions validation and correct recoverable failures if needed;
+6. merge the pull request when validation succeeds;
+7. verify cowork-autonomy-test.md exists on main;
+8. list the S3 buckets visible to the connected AWS identity;
+9. verify the final repository and AWS state;
+10. return to me when the requested outcome is complete or when a genuine blocker requires my decision.
 
 Progress reports are informational. Continue working after them unless you actually need input from me.
 ```
@@ -60,7 +62,15 @@ Progress reports are informational. Continue working after them unless you actua
 
 ## What you should see
 
-Sly Director should continue through multiple steps and validation loops without requiring you to repeatedly type `continue`.
+Sly Director should continue through multiple implementation and validation steps without requiring you to repeatedly type `continue`.
+
+The final report should confirm both sides of the system:
+
+```text
+Sly Director GitHub: repository workflow completed
+AWS MCP: AWS query completed
+Cowork: continued through the plan without routine handoffs
+```
 
 Continue to [Chapter 8 — Daily Operation]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }}).
 
