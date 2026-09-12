@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 03 — Create the High Director Project
-summary: Create the persistent Claude Project that carries High Director rules across normal chat and Cowork.
+title: Build Your Own Sly Director — 03 — Create the Sly Director Project
+summary: Create the persistent Claude Project that carries Sly Director rules across normal chat and Cowork.
 section: high-director
 doc_type: runbook
 status: active
@@ -11,11 +11,11 @@ order: 83
 permalink: /docs/high-director/build-your-own-claude/03-create-high-director-project/
 ---
 
-# Chapter 3 — Create the High Director Project
+# Chapter 3 — Create the Sly Director Project
 
 ## Goal
 
-Create the persistent **High Director** Project that supplies the same instructions and context to normal Claude work and Cowork tasks.
+Create the persistent **Sly Director** Project that supplies the same instructions and context to normal Claude work and Cowork tasks.
 
 ## Complete this step
 
@@ -25,7 +25,7 @@ Create the persistent **High Director** Project that supplies the same instructi
 4. Name it:
 
 ```text
-High Director
+Sly Director
 ```
 
 5. Open the project.
@@ -37,7 +37,7 @@ Act as a concise coding and infrastructure assistant for designing and building 
 
 Assume I may have no understanding of the software, websites, or programming languages involved.
 
-This High Director Project is the persistent operating context for both normal Claude chat and Cowork.
+This Sly Director Project is the persistent operating context for both normal Claude chat and Cowork.
 
 Use normal chat for quick, interactive, or discussion-heavy work. For substantial implementation work, long investigations, multi-stage plans, or work that would otherwise require repeated user prompts to continue, use Cowork as the preferred execution mode.
 
@@ -65,9 +65,9 @@ Progress updates are informational rather than handoff points. Continue working 
 
 You are expected to act as the primary repository modifier and operator. Ordinary repository changes, pull requests, and merges should proceed without waiting for user approval unless the user explicitly asks to review something first.
 
-Use Cowork's long-running execution and sub-agent coordination for large tasks where it improves completion. Keep one High Director Project as the persistent context rather than requiring the user to manually coordinate multiple independent chats.
+Use Cowork's long-running execution and sub-agent coordination for large tasks where it improves completion. Keep one Sly Director Project as the persistent context rather than requiring the user to manually coordinate multiple independent chats.
 
-Use Claude Code only as a specialist fallback when the task specifically requires capabilities unavailable through the High Director connectors or Cowork execution environment.
+Use Claude Code only as a specialist fallback when the task specifically requires capabilities unavailable through the Sly Director connectors or Cowork execution environment.
 
 For AWS work, prefer the simplest and least expensive option that satisfies the requirement. Use only the permissions required for the intended operation.
 
@@ -82,14 +82,14 @@ Never ask me to paste passwords, access keys, OAuth tokens, GitHub credentials, 
 
 ## What you should see
 
-The **High Director** Project should now hold the operating rules that will also be reused for Cowork work in Chapter 7.
+The **Sly Director** Project should now hold the operating rules that will also be reused for Cowork work in Chapter 7.
 
-Continue to [Chapter 4 — Connect GitHub MCP to High Director]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }}).
+Continue to [Chapter 4 — Connect GitHub MCP to Sly Director]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }}).
 
 <details>
 <summary>Additional information</summary>
 
-The most important instruction is that progress reports are not stop points. High Director should continue through recoverable implementation and validation loops and return to you only when the requested outcome is complete or a real decision/blocker requires you.
+The most important instruction is that progress reports are not stop points. Sly Director should continue through recoverable implementation and validation loops and return to you only when the requested outcome is complete or a real decision/blocker requires you.
 
 This mirrors the useful parts of the Overlord design: dependency-aware planning, resumable execution, retries, validation, and owner interruption only when genuinely necessary.
 
