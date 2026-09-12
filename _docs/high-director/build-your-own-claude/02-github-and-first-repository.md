@@ -19,6 +19,10 @@ Create one private repository Sly Director can use to test GitHub MCP safely.
 
 ## Complete this step
 
+If you already created `claude-director-test`, keep using it and continue to Chapter 3.
+
+Otherwise:
+
 1. Open [GitHub](https://github.com/).
 2. Select the **+** menu in the upper-right corner.
 3. Select **New repository**.
@@ -26,17 +30,17 @@ Create one private repository Sly Director can use to test GitHub MCP safely.
 5. Set **Repository name** to:
 
 ```text
-sly-director-test
+claude-director-test
 ```
 
 6. Select **Private**.
 7. Turn on **Add a README file**.
 8. Select **Create repository**.
-9. In the repository, select **Add file → Create new file**.
+9. Select **Add file → Create new file**.
 10. Set the filename to:
 
 ```text
-sly-test.txt
+claude-test.txt
 ```
 
 11. Enter:
@@ -51,7 +55,7 @@ Sly Director connection test.
 
 ```text
 README.md
-sly-test.txt
+claude-test.txt
 ```
 
 Continue to [Chapter 3 — Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }}).
@@ -59,6 +63,6 @@ Continue to [Chapter 3 — Create the Sly Director Project]({{ '/docs/high-direc
 <details>
 <summary>Additional information</summary>
 
-This repository is intentionally small and disposable. Chapter 4 will access it directly from the Sly Director Project through GitHub MCP.
+The test repository keeps its existing technical name so anyone already following the guide does not need to recreate it because the product was renamed.
 
 </details>
