@@ -15,6 +15,14 @@ permalink: /docs/high-director/build-your-own-claude/
 
 Sly Director is the Claude-based counterpart to the OpenAI High Director.
 
+## Current authorization warning
+
+The direct **Amazon Cognito → Claude.ai web custom connector** OAuth path is currently blocked by a known post-login token-exchange failure pattern. If Cognito login succeeds but Claude reports **Authorization with the MCP server failed**, stop at the connector authorization step and read:
+
+[Direct Cognito OAuth — Claude.ai Web Known Issue]({{ '/docs/high-director/build-your-own-claude/cognito-claude-web-known-issue/' | relative_url }})
+
+Do not keep changing passwords, callback URLs, GitHub permissions, or the Lambda once that failure pattern is confirmed. The replacement MCP-compatible authorization design is being selected before this guide continues past that point.
+
 ## The whole plan
 
 Build **one Claude Project called Sly Director**.
@@ -41,21 +49,7 @@ For a large job, open **Sly Director in Cowork**, give it the final objective, s
 
 The GitHub connector is a small serverless service because Claude's normal GitHub integration does not provide the full write/branch/PR/Actions toolset this design requires.
 
-```text
-Claude / Cowork
-     ↓
-Sly Director GitHub custom connector
-     ↓
-Amazon Cognito OAuth
-     ↓
-AWS Lambda Function URL
-     ↓
-sly-director-github-mcp
-     ↓
-GitHub API
-```
-
-AWS access uses the managed AWS MCP Server separately.
+The GitHub MCP remains hosted in AWS Lambda. The authorization layer is being revised because direct Cognito authorization is not currently reliable with Claude.ai web.
 
 ## Build it in this order
 
@@ -64,9 +58,7 @@ AWS access uses the managed AWS MCP Server separately.
 3. [Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
 4. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
 5. [Build and connect Sly Director GitHub]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
-   - [Create the AWS-hosted Cognito domain]({{ '/docs/high-director/build-your-own-claude/cognito-domain-setup/' | relative_url }})
-   - [Confirm the Cognito user with a permanent password]({{ '/docs/high-director/build-your-own-claude/cognito-permanent-user-password/' | relative_url }})
-   - [Keep the Cognito login long-lived]({{ '/docs/high-director/build-your-own-claude/cognito-login-persistence/' | relative_url }})
+   - [Direct Cognito OAuth known issue]({{ '/docs/high-director/build-your-own-claude/cognito-claude-web-known-issue/' | relative_url }})
 6. [Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
 7. [Configure Cowork for autonomous Sly Director work]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
 8. [Use Sly Director day to day]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }})
