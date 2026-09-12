@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 01 — Accounts and Prerequisites
-summary: Confirm Claude Pro, Cowork, GitHub MCP, GitHub, and AWS are available for the High Director build.
+title: Build Your Own Sly Director — 01 — Accounts and Prerequisites
+summary: Confirm Claude Pro, Cowork, GitHub MCP, GitHub, and AWS are available for the Sly Director build.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/01-accounts-and-prerequisit
 
 ## Goal
 
-Confirm you can access the features required for the Cowork-first High Director setup.
+Confirm you can access the features required for the Cowork-first Sly Director setup.
 
 ## Complete this step
 
@@ -66,7 +66,7 @@ Continue to [Chapter 2 — Create the GitHub test repository]({{ '/docs/high-dir
 <details>
 <summary>Additional information</summary>
 
-Cowork is the key feature used to remove the repeated `continue` loop from substantial High Director work. Cloud Cowork sessions can continue while you step away and can be reopened from another supported device.
+Cowork is the key feature used to remove the repeated `continue` loop from substantial Sly Director work. Cloud Cowork sessions can continue while you step away and can be reopened from another supported device.
 
 Normal Claude Project chat remains part of the system for quick work and discussion.
 
