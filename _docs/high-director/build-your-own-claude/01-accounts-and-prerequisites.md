@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 01 — Accounts and Prerequisites
-summary: Confirm Claude Pro, Cowork, GitHub MCP, GitHub, and AWS are available for the High Director build.
+title: Build Your Own Sly Director — 01 — Accounts and Prerequisites
+summary: Confirm Claude Pro, Cowork, GitHub MCP, GitHub, and AWS are available for the Sly Director build.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,7 +15,7 @@ permalink: /docs/high-director/build-your-own-claude/01-accounts-and-prerequisit
 
 ## Goal
 
-Confirm you can access the features required for the Cowork-first High Director setup.
+Confirm you can access the features required for Sly Director.
 
 ## Complete this step
 
@@ -26,7 +26,7 @@ Confirm you can access the features required for the Cowork-first High Director 
 3. Open **Settings → Billing**.
 4. Confirm your plan is **Pro** or another paid plan that includes Cowork.
 5. Confirm you can access **Projects**.
-6. In the Claude message box, confirm **Cowork** is available as a mode.
+6. Confirm **Cowork** is available as a mode.
 7. Open **Customize → Connectors**.
 8. Confirm you can browse/add connectors.
 9. Search for:
@@ -66,17 +66,8 @@ Continue to [Chapter 2 — Create the GitHub test repository]({{ '/docs/high-dir
 <details>
 <summary>Additional information</summary>
 
-Cowork is the key feature used to remove the repeated `continue` loop from substantial High Director work. Cloud Cowork sessions can continue while you step away and can be reopened from another supported device.
+Cowork is the key feature used to remove the repeated `continue` loop from substantial Sly Director work. Cloud Cowork sessions can continue while you step away and can be reopened from another supported device.
 
-Normal Claude Project chat remains part of the system for quick work and discussion.
-
-</details>
-
-<details>
-<summary>Troubleshooting</summary>
-
-If Cowork is missing, verify the current Claude plan/product availability before continuing because Chapter 7 depends on Cowork for long-running autonomous execution.
-
-If GitHub MCP is missing, verify current connector availability before Chapter 4.
+Normal Claude Project chat remains part of Sly Director for quick work and discussion.
 
 </details>
