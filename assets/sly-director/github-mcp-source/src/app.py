@@ -466,4 +466,4 @@ app = mcp.streamable_http_app(
     transport_security=transport_security,
 )
 
-handler = Mangum(app, lifespan="auto")
+handler = Mangum(app, lifespan="off")
