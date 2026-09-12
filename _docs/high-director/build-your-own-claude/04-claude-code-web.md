@@ -1,91 +1,127 @@
 ---
-title: Build Your Own High Director — Claude Edition 04 — Claude Code on the Web
-summary: Connect Claude Code on the web to GitHub and verify repository access.
+title: Build Your Own High Director — Claude Edition 04 — Connect GitHub MCP
+summary: Connect the official GitHub MCP connector directly to the High Director Project so repository work can stay in one chat.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-11
+last_verified: 2026-09-11
 order: 84
 permalink: /docs/high-director/build-your-own-claude/04-claude-code-web/
 ---
 
-# Chapter 4 — Connect Claude Code to GitHub
+# Chapter 4 — Connect GitHub MCP to High Director
 
 ## Goal
 
-Give Claude Code access to `claude-director-test` and verify it can modify the repository.
+Give the **High Director Project chat** direct GitHub tools so it can investigate and modify repositories without switching to Claude Code.
 
 ## Complete this step
 
-1. Open Claude Code on the web from your Claude account.
-2. Select **Connect GitHub**, **Install GitHub App**, or the current equivalent.
-3. GitHub will open.
-4. Select your personal GitHub account.
-5. Choose **Only select repositories**.
-6. Select:
+1. Open normal Claude.
+2. Open **Customize → Connectors**.
+3. Search the connector directory for:
 
 ```text
-claude-director-test
+GitHub MCP
 ```
 
-7. Select **Install**, **Authorize**, or **Save**.
-8. Return to Claude Code.
-9. Select `claude-director-test`.
-10. Start a task and enter:
+4. Select **GitHub MCP — The Official GitHub MCP Server**.
+5. Select **Connect**, **Add**, or the current equivalent.
+6. Complete the GitHub sign-in/authorization flow Claude opens.
+7. Grant access to the GitHub account and repositories you want High Director to operate.
+8. Return to Claude.
+9. Open **Projects → High Director**.
+10. Start a new chat.
+11. Select the **+** button near the message box.
+12. Open **Connectors**.
+13. Enable **GitHub MCP**.
+14. Ask:
 
 ```text
-Inspect this repository. Read README.md and claude-test.txt and tell me what is in the repository.
+Using GitHub MCP, inspect the repository claude-director-test. List the files in the default branch and read README.md and claude-test.txt.
 ```
 
-11. After that succeeds, enter:
+15. After that succeeds, ask in the **same chat**:
 
 ```text
-Create a file named claude-code-test.md containing:
+Using GitHub MCP, create a new file named github-mcp-test.md containing:
 
-# Claude Code test
-This file was created through Claude Code on the web.
+# GitHub MCP test
+This file was created from the High Director Project chat through GitHub MCP.
 
-Verify the change, run relevant checks, and complete the repository-side workflow as far as the available tooling permits. Proceed without waiting for my approval.
+Use the repository workflow that gives the clearest history with the least unnecessary overhead. Complete the change without waiting for my approval where the available GitHub tools and repository permissions allow it.
 ```
 
-12. Open GitHub and confirm `claude-code-test.md` was created through Claude's repository workflow.
+16. Open GitHub and confirm the change reached the repository.
 
 ## What you should see
 
-Claude Code should be able to read the repository and create a repository change.
+The same **High Director Project chat** should be able to:
+
+```text
+read repository files
+investigate repository contents
+create or update repository content
+use branches / pull requests where appropriate
+```
 
 Continue to [Chapter 5 — Prepare AWS]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }}).
 
 <details>
 <summary>Additional information</summary>
 
-Claude Code uses the Claude/Anthropic GitHub App. The primary path does not require a GitHub personal access token.
+The official GitHub MCP Server is designed for multi-step GitHub workflows and exposes repository, pull-request, issue, workflow/Actions, and other GitHub capabilities.
 
-Claude is the intended repository operator. Branches and pull requests may be used when useful for checks and history. Routine user approval is not part of the intended workflow.
+The hosted GitHub MCP endpoint is:
 
-If Claude Code creates a pull request but the repository requires a merge step, repository automation or auto-merge can be configured later so qualifying changes complete without routine manual approval.
+```text
+https://api.githubcopilot.com/mcp/
+```
 
-To add another repository later, open the Claude/Anthropic GitHub App configuration in GitHub and add that repository to its allowed repositories.
+Using the connector-directory entry is preferred because Claude handles the host-side connector configuration and authentication flow.
+
+Claude Code is no longer required for normal repository operation in this guide.
+
+Use Claude Code only when a task specifically needs a cloned repository, shell commands, local build tools, or tests that cannot be run through GitHub Actions or other connected services.
+
+Official reference: [GitHub MCP Server](https://github.com/github/github-mcp-server).
+
+</details>
+
+<details>
+<summary>If GitHub MCP is missing from the connector directory</summary>
+
+Claude currently lists **GitHub MCP — The Official GitHub MCP Server** as compatible with Claude and Claude Code.
+
+If it is unavailable in your account, check current connector availability before falling back to a custom connector.
+
+For a custom remote setup, the official hosted endpoint is:
+
+```text
+https://api.githubcopilot.com/mcp/
+```
+
+GitHub notes that OAuth support depends on the MCP host's GitHub OAuth/GitHub App integration. Prefer Claude's published connector-directory entry when available.
 
 </details>
 
 <details>
 <summary>Troubleshooting</summary>
 
-If the repository is missing, check the Claude GitHub App's repository access in GitHub settings.
+If High Director can read but cannot write, preserve the exact GitHub MCP error and check the GitHub authorization/repository permissions.
 
-If Claude can read but cannot write, inspect the exact Claude Code error and the repository rules/permissions.
+If a particular GitHub operation is unavailable, ask High Director which GitHub MCP tools are currently exposed before changing the architecture.
 
 Useful prompt:
 
 ```text
-I am connecting Claude Code on the web to GitHub.
+I am using the official GitHub MCP connector inside my Claude High Director Project.
 Repository: claude-director-test
-I am stuck at: [GitHub App / repository selection / read / write / branch / PR]
+Failing operation: [read / search / create file / branch / PR / merge / workflow]
 Exact non-secret error: [paste it]
-Give me the simplest browser-based fix.
+Identify whether this is connector authorization, repository permissions, repository rules, or a missing GitHub MCP tool.
 ```
 
 </details>

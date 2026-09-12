@@ -1,12 +1,12 @@
 ---
 title: Build Your Own High Director — Claude Edition 08 — Daily Operation
-summary: Use the High Director Project, Claude Code, GitHub, and AWS MCP together after setup.
+summary: Operate GitHub and AWS from the same High Director Project chat during normal use.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-11
+last_verified: 2026-09-11
 order: 88
 permalink: /docs/high-director/build-your-own-claude/08-daily-operation/
 ---
@@ -15,64 +15,72 @@ permalink: /docs/high-director/build-your-own-claude/08-daily-operation/
 
 ## Goal
 
-Use the correct Claude surface for each type of work.
+Use one High Director Project chat as the normal interface for repository, AWS, planning, investigation, and troubleshooting work.
 
 ## Complete this step
 
-### For planning or AWS work
-
 1. Open **Projects → High Director**.
-2. Describe what you want built or changed.
-3. Let Claude identify any required architecture, cost, or permission decisions.
-4. Enable **AWS MCP** when AWS access is needed.
-5. Let Claude perform the requested AWS work.
-6. Verify the result in the AWS console when appropriate.
+2. Start or continue a High Director chat.
+3. Enable the connectors needed for the task:
 
-### For repository work
+```text
+GitHub MCP
+AWS MCP
+```
 
-1. Open Claude Code on the web.
-2. Select the repository.
-3. Give Claude the task and acceptance criteria.
-4. Let Claude inspect, edit, test, and complete the repository workflow.
-5. Verify the final repository state in GitHub.
+4. Give High Director the complete task.
+
+Example:
+
+```text
+Investigate repository [repository name], determine the cause of [problem], implement the best practical solution, run or inspect the relevant GitHub validation, correct failures where practical, complete the repository workflow, and make any required AWS changes. Report the final state when finished.
+```
+
+5. Let High Director inspect and operate GitHub/AWS directly from that conversation.
+6. Continue follow-up work in the same Project/chat when useful.
 
 ## What you should see
 
-Normal operation should look like:
+Normal use should look like:
 
 ```text
-Planning/AWS → High Director Project
-Repository implementation → Claude Code
+You
+↓
+High Director Project chat
+├─ GitHub MCP
+└─ AWS MCP
 ```
+
+The normal workflow should not require copying a plan into Claude Code.
 
 Continue to [Chapter 9 — Troubleshooting]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }}).
 
 <details>
-<summary>Additional information</summary>
+<summary>Optional: use Cowork for a larger task</summary>
 
-Claude is the intended primary repository operator. Routine user approval of pull requests or merges is not part of the normal workflow.
+Cowork is an optional agentic execution mode for longer or more complex work. It can use Projects, connectors, skills, plugins, cloud sessions, sub-agent coordination, and scheduled tasks.
 
-Branches and pull requests may still be useful for automated checks, history, rollback, or repository rules.
+Use it when the task benefits from extended execution or parallel workstreams.
 
-For new repositories, create the repository in GitHub first, make sure the Claude GitHub App can access it, then open it in Claude Code.
+From the same High Director Project, start a **Cowork** task rather than a normal chat task when available. The Project provides the instructions/context and the same connectors can be used in Cowork.
 
-Claude Pro and Claude Code share plan usage. A usage-limit message is a Claude-plan issue, not a GitHub or AWS authentication failure.
+Cowork is an enhancement to High Director, not a replacement for the Project architecture.
 
 </details>
 
 <details>
-<summary>Useful prompts</summary>
+<summary>Optional: use Claude Code</summary>
 
-Repository task:
-
-```text
-Inspect this repository and implement the following requirement: [requirement]. Run the relevant checks and complete the repository workflow as far as the available tooling permits.
-```
-
-AWS task:
+Use Claude Code only when a repository task requires capabilities GitHub MCP cannot provide, such as:
 
 ```text
-Using AWS MCP, complete this task: [task]. Use us-east-2 for new workload resources unless the service or requirement needs another region.
+full repository clone
+arbitrary shell commands
+local build toolchains
+local test execution not available through GitHub Actions
+interactive development environment work
 ```
+
+Return the result to High Director afterward if the broader task also involves AWS or other connected systems.
 
 </details>
