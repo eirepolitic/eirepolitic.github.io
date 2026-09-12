@@ -1,12 +1,12 @@
 ---
-title: Build Your Own High Director — Claude Edition 05 — Prepare AWS
-summary: Prepare the AWS account for the browser-only Claude AWS MCP connection.
+title: Build Your Own Sly Director — 05 — Prepare AWS
+summary: Prepare the AWS account for the Sly Director AWS MCP connection.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-10
-last_verified: 2026-09-10
+updated: 2026-09-11
+last_verified: 2026-09-11
 order: 85
 permalink: /docs/high-director/build-your-own-claude/05-aws-account-and-safety/
 ---
@@ -15,12 +15,12 @@ permalink: /docs/high-director/build-your-own-claude/05-aws-account-and-safety/
 
 ## Goal
 
-Prepare your AWS account before connecting Claude.
+Prepare your AWS account before connecting Sly Director.
 
 ## Complete this step
 
 1. Open the [AWS Management Console](https://console.aws.amazon.com/).
-2. Sign in with the AWS account you want Claude to operate.
+2. Sign in with the AWS account you want Sly Director to operate.
 3. For this guide's simplest path, sign in as the **root user**.
 4. In the region selector, choose:
 
@@ -44,33 +44,31 @@ claude-high-director-budget
 
 ## What you should see
 
-You should now have:
-
 ```text
 AWS account: signed in as root
 Preferred workload region: us-east-2
 Budget alert: created
 ```
 
-Continue to [Chapter 6 — Connect Claude to AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }}).
+Continue to [Chapter 6 — Connect Sly Director to AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }}).
 
 <details>
 <summary>Additional information</summary>
 
 The root-user path is intentionally the simplest path in this guide. AWS MCP can use AWS Sign-in OAuth with the active AWS identity.
 
-The High Director Project instructions already state that root-authenticated AWS MCP access is an intentional choice for this environment, so Claude should not repeatedly add generic root-account warnings unless root use is directly relevant to a problem.
+The Sly Director Project instructions already state that root-authenticated AWS MCP access is an intentional choice for this environment, so Claude should not repeatedly add generic root-account warnings unless root use is directly relevant to a problem.
 
-`us-east-2` is the preferred region for workloads in this guide. The managed AWS MCP endpoint itself currently uses a separate AWS endpoint region in Chapter 6.
+`us-east-2` is the preferred region for workloads in this guide. A budget sends alerts; it does not automatically stop AWS spending.
 
-A budget sends alerts; it does not automatically stop AWS spending.
+The existing budget name `claude-high-director-budget` is kept as a stable resource identifier so an already-configured account does not need to recreate it.
 
 </details>
 
 <details>
 <summary>Optional: use a dedicated IAM role instead of root</summary>
 
-Use this only if you want Claude's permissions separated from root.
+Use this only if you want Sly Director's permissions separated from root.
 
 ### Create the role
 
@@ -137,11 +135,7 @@ ClaudeHighDirectorRole
 5. Select **Switch Role**.
 6. Keep that role session active when you complete Chapter 6.
 
-### Add more AWS permissions later
-
-Open **IAM → Roles → ClaudeHighDirectorRole → Permissions → Add permissions** and attach only the service permissions needed by the project.
-
-Some AWS deployments also require `iam:PassRole` when Claude assigns an execution role to services such as Lambda or Step Functions.
+The role name remains unchanged as a stable legacy identifier. You do not need to recreate it just because the product is now named Sly Director.
 
 </details>
 
@@ -155,16 +149,6 @@ If the optional IAM role cannot be assumed, verify both:
 ```text
 role trust permits the AWS account
 IAM user has sts:AssumeRole for ClaudeHighDirectorRole
-```
-
-Useful prompt:
-
-```text
-I am preparing AWS for a Claude AWS MCP connection.
-AWS identity: [root / ClaudeHighDirectorRole / other]
-I am stuck at: [sign-in / budget / role creation / switch role]
-Exact non-secret error: [paste it]
-Give me exact AWS-console click-by-click steps.
 ```
 
 </details>
