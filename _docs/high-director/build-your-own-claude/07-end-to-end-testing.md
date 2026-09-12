@@ -1,6 +1,6 @@
 ---
-title: Build Your Own High Director — Claude Edition 07 — Configure Cowork
-summary: Configure Cowork as the long-running autonomous execution mode for substantial High Director work.
+title: Build Your Own Sly Director — 07 — Configure Cowork
+summary: Configure Cowork as the long-running autonomous execution mode for substantial Sly Director work.
 section: high-director
 doc_type: runbook
 status: active
@@ -11,11 +11,11 @@ order: 87
 permalink: /docs/high-director/build-your-own-claude/07-end-to-end-testing/
 ---
 
-# Chapter 7 — Configure Cowork for Autonomous High Director Work
+# Chapter 7 — Configure Cowork for Autonomous Sly Director Work
 
 ## Goal
 
-Use the **High Director Project in Cowork** so substantial plans can continue for extended periods without requiring repeated `continue` prompts.
+Use the **Sly Director Project in Cowork** so substantial plans can continue for extended periods without requiring repeated `continue` prompts.
 
 ## Complete this step
 
@@ -28,9 +28,9 @@ Use the **High Director Project in Cowork** so substantial plans can continue fo
 Cowork
 ```
 
-### 2 — Create the Cowork version of the High Director Project
+### 2 — Create the Cowork version of the Sly Director Project
 
-If your existing **High Director** Project is already available in Cowork, open it and continue to Step 3.
+If your existing **Sly Director** Project is already available in Cowork, open it and continue to Step 3.
 
 If Cowork asks you to create/import a project:
 
@@ -45,23 +45,23 @@ Import from project
 4. Search for:
 
 ```text
-High Director
+Sly Director
 ```
 
-5. Select the existing High Director Claude Project.
+5. Select the existing Sly Director Claude Project.
 6. Name the Cowork project:
 
 ```text
-High Director
+Sly Director
 ```
 
 7. Select **Create**.
 
 The imported Cowork Project carries the existing Project instructions and files/context into Cowork.
 
-### 3 — Enable the High Director connectors
+### 3 — Enable the Sly Director connectors
 
-1. Start a task inside the **High Director** Cowork Project.
+1. Start a task inside the **Sly Director** Cowork Project.
 2. Select the **+** button near the message box.
 3. Enable:
 
@@ -79,19 +79,19 @@ AWS MCP
 Automatically approve
 ```
 
-This is the recommended High Director mode for substantial work. Claude can keep working instead of stopping for every connector action, while still reviewing actions and pausing when it cannot find a safe path forward.
+This is the recommended Sly Director mode for substantial work. Claude can keep working instead of stopping for every connector action, while still reviewing actions and pausing when it cannot find a safe path forward.
 
 ### 5 — Run the autonomous test
 
 Send:
 
 ```text
-Act as High Director and complete this task independently.
+Act as Sly Director and complete this task independently.
 
 Using GitHub MCP and AWS MCP:
 1. inspect the repository claude-director-test;
 2. summarize its current state;
-3. create a file named cowork-autonomy-test.md containing a short note that the Cowork High Director workflow is operational;
+3. create a file named cowork-autonomy-test.md containing a short note that the Cowork Sly Director workflow is operational;
 4. complete the repository-side workflow as far as the connected GitHub tools and repository permissions allow;
 5. inspect any relevant GitHub validation or workflow result and correct recoverable failures if needed;
 6. list the S3 buckets visible to the connected AWS identity;
@@ -133,11 +133,11 @@ Automatically approve
 Skip all approvals
 ```
 
-**Automatically approve** is the default recommendation for High Director because Claude keeps working without asking about every action, while still reviewing connector/tool actions and blocking or escalating when necessary.
+**Automatically approve** is the default recommendation for Sly Director because Claude keeps working without asking about every action, while still reviewing connector/tool actions and blocking or escalating when necessary.
 
 **Manually approve** creates more interruptions and is better for work where you want to inspect each action.
 
-**Skip all approvals** removes Cowork's automatic action review and is therefore not the default High Director mode.
+**Skip all approvals** removes Cowork's automatic action review and is therefore not the default Sly Director mode.
 
 </details>
 
