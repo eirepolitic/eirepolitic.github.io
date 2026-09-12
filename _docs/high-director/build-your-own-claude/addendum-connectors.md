@@ -1,64 +1,44 @@
 ---
-title: "Build Your Own High Director — Claude Edition — Addendum A: Connectors"
-summary: Add optional Claude connectors after the core GitHub and AWS setup works.
+title: "Build Your Own Sly Director — Optional Connectors"
+summary: Add optional services such as Google Workspace to Sly Director after GitHub and AWS are working.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-10
-last_verified: 2026-09-10
-order: 91
+updated: 2026-09-11
+last_verified: 2026-09-11
+order: 92
 permalink: /docs/high-director/build-your-own-claude/addendum-connectors/
 ---
 
-# Addendum A — Google Workspace and Other Connectors
+# Optional Connectors
 
 ## Goal
 
-Add another service to Claude using an existing connector.
+Add another service to the same Sly Director Project.
 
 ## Complete this step
 
 1. Open Claude.
 2. Open **Customize → Connectors**.
-3. Find the service you want to connect.
+3. Find the service you want.
 4. Select **Connect**.
-5. Sign in to the service account you want Claude to use.
-6. Complete the service's authorization screen.
-7. Open a High Director chat.
-8. Enable the connector from the **+ → Connectors** menu.
-9. Ask Claude for one simple query to verify the connection.
+5. Sign in and complete the service's authorization flow.
+6. Open **Projects → Sly Director**.
+7. Enable the connector from **+ → Connectors**.
+8. Ask Sly Director for one simple query to verify the connection.
 
 ## What you should see
 
-The service should appear in Claude's connectors and respond to a simple request.
+The new service should be available as another tool to Sly Director in normal chat and, where supported, Cowork.
 
 <details>
-<summary>Additional information</summary>
-
-Preferred order:
+<summary>Preferred order</summary>
 
 ```text
 official Claude connector
 → established remote MCP connector
 → custom MCP server
-```
-
-For Google Workspace, connector availability can vary by product/account. Use the official connector when it provides the capability you need.
-
-Start with a simple read/query before relying on a connector for more complex actions.
-
-</details>
-
-<details>
-<summary>Troubleshooting</summary>
-
-Useful prompt:
-
-```text
-I want to connect [service] to Claude using the simplest browser-only method.
-Current screen/error: [describe]
-Give me the shortest current click-by-click setup steps.
 ```
 
 </details>
