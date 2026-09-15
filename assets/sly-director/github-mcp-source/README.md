@@ -7,7 +7,7 @@ This directory contains the reference source used by the Sly Director build guid
 - AWS Lambda
 - Python 3.13
 - x86_64
-- handler: `src.app.handler`
+- handler: `src.lambda_entry.handler`
 - MCP Python SDK 2.0
 - Streamable HTTP endpoint: `/mcp`
 - WorkOS AuthKit OAuth bearer-token validation
@@ -30,7 +30,19 @@ The script creates:
 function.zip
 ```
 
-Deploy it without printing the Lambda environment variables:
+Set the Lambda handler to the lifecycle-safe entrypoint:
+
+```bash
+AWS_PAGER="" aws lambda update-function-configuration \
+  --function-name sly-director-github-mcp \
+  --handler src.lambda_entry.handler \
+  --region us-east-2 \
+  --query '{FunctionName:FunctionName,Handler:Handler,LastUpdateStatus:LastUpdateStatus}' \
+  --output table \
+  --no-cli-pager
+```
+
+Deploy the zip without printing Lambda environment variables:
 
 ```bash
 AWS_PAGER="" aws lambda update-function-code \
@@ -48,18 +60,24 @@ Then confirm the update completed:
 AWS_PAGER="" aws lambda get-function-configuration \
   --function-name sly-director-github-mcp \
   --region us-east-2 \
-  --query '{State:State,LastUpdateStatus:LastUpdateStatus,Reason:LastUpdateStatusReason}' \
+  --query '{State:State,Handler:Handler,LastUpdateStatus:LastUpdateStatus,Reason:LastUpdateStatusReason}' \
   --output table \
   --no-cli-pager
 ```
 
-Avoid running `update-function-code` without a `--query` filter because its full response can include Lambda environment variables such as `GITHUB_TOKEN`.
-
-## Lambda handler
+The expected handler is:
 
 ```text
-src.app.handler
+src.lambda_entry.handler
 ```
+
+Avoid running `update-function-code` without a `--query` filter because its full response can include Lambda environment variables such as `GITHUB_TOKEN`.
+
+## Why the Lambda entrypoint is separate
+
+The MCP Python SDK's Streamable HTTP session manager is single-use and must run inside the ASGI lifespan. AWS Lambda can reuse a Python execution environment across invocations, so a single global MCP ASGI app cannot safely be started and stopped repeatedly.
+
+`src.lambda_entry.handler` creates a fresh Streamable HTTP app and session manager for each Lambda invocation, runs its lifespan through Mangum, and then disposes it. The MCP transport is configured as stateless, so requests do not depend on an in-memory session surviving between Lambda invocations.
 
 ## Required environment variables
 
