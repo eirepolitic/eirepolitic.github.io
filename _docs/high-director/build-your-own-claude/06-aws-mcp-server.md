@@ -49,11 +49,19 @@ AWS MCP
 https://aws-mcp.us-east-1.api.aws/mcp
 ```
 
-5. Save/add the connector.
-6. Select **Connect**.
-7. When AWS opens, confirm you are signing in as `sly-director-admin`.
-8. Approve the AWS authorization.
-9. Return to Claude.
+5. If Claude shows authentication choices, use:
+
+```text
+Authentication: OAuth
+OAuth client: Register automatically
+```
+
+6. Leave optional OAuth Client ID and Client Secret fields empty.
+7. Save/add the connector.
+8. Select **Connect**.
+9. When AWS opens, confirm you are signing in as `sly-director-admin`.
+10. Approve the AWS authorization.
+11. Return to Claude.
 
 The AWS MCP server itself is in `us-east-1`. That does not move your resources; your Lambda can remain in `us-east-2`.
 
