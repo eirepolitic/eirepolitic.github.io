@@ -29,6 +29,9 @@ class AuthKitTokenVerifier(TokenVerifier):
             return None
 
         scopes = str(claims.get("scope", "")).split()
+        if "openid" not in scopes:
+            scopes.append("openid")
+
         client_id = str(claims.get("client_id") or claims.get("azp") or "authkit-mcp-client")
 
         return AccessToken(
@@ -40,3 +43,7 @@ class AuthKitTokenVerifier(TokenVerifier):
             subject=str(claims["sub"]),
             claims=claims,
         )
+
+
+# Compatibility alias while app.py is kept otherwise unchanged.
+CognitoTokenVerifier = AuthKitTokenVerifier
