@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director — 06 — Connect AWS MCP
-summary: Connect Sly Director to the managed AWS MCP Server using a dedicated administrator IAM identity and browser OAuth.
+summary: Connect Claude to AWS using the dedicated sly-director-admin identity.
 section: high-director
 doc_type: runbook
 status: active
@@ -15,102 +15,54 @@ permalink: /docs/high-director/build-your-own-claude/06-aws-mcp-server/
 
 ## Goal
 
-Give the **Sly Director Project** direct AWS tools in addition to the **Sly Director GitHub** connector built in Chapter 5.
+Give Sly Director direct AWS tools.
 
-This guide uses a dedicated IAM user with administrator permissions rather than authorizing Cowork as the AWS account root user.
+AWS MCP is a managed AWS service that lets Claude call AWS APIs using the permissions of the AWS identity you sign in with.
 
-## Step 1 — Check which AWS identity you are using now
+This guide uses the `sly-director-admin` user created in Chapter 4.
 
-Open AWS CloudShell and run:
+## Step 1 — Make sure you are signed in as the right AWS user
 
-```bash
-aws sts get-caller-identity \
-  --query Arn \
-  --output text \
-  --no-cli-pager
-```
-
-If this reports the AWS account root user, continue to Step 2 and create the dedicated Sly Director administrator identity.
-
-## Step 2 — Create the Sly Director administrator IAM user
-
-1. In the AWS console, search for **IAM** and open it.
-2. Select **Users**.
-3. Select **Create user**.
-4. For **User name**, enter:
+1. Sign out of any AWS root session.
+2. Open the IAM sign-in URL you saved in Chapter 4.
+3. Sign in as:
 
 ```text
 sly-director-admin
 ```
 
-5. Select **Provide user access to the AWS Management Console — optional**.
-6. Select **I want to create an IAM user**.
-7. Create or generate a console password and store it privately. Do not paste the password into Claude, ChatGPT, GitHub, or the documentation.
-8. On **Set permissions**, choose **Attach policies directly**.
-9. Select:
+4. Leave that AWS tab open.
+
+## Step 2 — Add AWS MCP to Claude
+
+1. Open **Claude → Customize → Connectors**.
+2. Select **Add custom connector**.
+3. Name it:
 
 ```text
-AdministratorAccess
-AWSMCPSignInOAuthAccessPolicy
+AWS MCP
 ```
 
-10. Continue to **Review and create**.
-11. Select **Create user**.
-12. Save the IAM user's sign-in URL, username, and password privately.
-
-`AdministratorAccess` grants full IAM-authorized access to AWS services and resources. Some account actions remain root-only by AWS design, so this identity is not literally the root user.
-
-`AWSMCPSignInOAuthAccessPolicy` grants the OAuth authorization/token actions used by AWS MCP. No access keys are required for this browser OAuth setup.
-
-## Step 3 — Add the AWS MCP connector
-
-1. Open Claude.
-2. Open **Customize → Connectors**.
-3. Select **Add custom connector**.
-4. Enter:
+4. For the remote MCP server URL, enter:
 
 ```text
-Name: AWS MCP
-Remote MCP server URL: https://aws-mcp.us-east-1.api.aws/mcp
+https://aws-mcp.us-east-1.api.aws/mcp
 ```
 
-5. Set **Authentication type** to:
+5. Save/add the connector.
+6. Select **Connect**.
+7. When AWS opens, confirm you are signing in as `sly-director-admin`.
+8. Approve the AWS authorization.
+9. Return to Claude.
 
-```text
-OAuth
-```
+The AWS MCP server itself is in `us-east-1`. That does not move your resources; your Lambda can remain in `us-east-2`.
 
-6. Set **OAuth client** to:
+## Step 3 — Verify the AWS identity
 
-```text
-Register automatically
-```
-
-7. Leave optional Client ID/Secret fields empty.
-8. Save the connector.
-9. Open **Projects → Sly Director**.
-10. Start a new chat.
-11. Select **+ → Connectors**.
-12. Enable **AWS MCP**.
-13. Ask:
-
-```text
-Using the AWS connector, identify the AWS account and AWS identity available to you.
-```
-
-14. When AWS authorization opens, sign in as the IAM user:
-
-```text
-sly-director-admin
-```
-
-Do not authorize the connector using the root user.
-
-15. Complete the AWS authorization flow.
-
-## Step 4 — Verify the AWS identity and read access
-
-Ask Sly Director:
+1. Open **Projects → Sly Director**.
+2. Start a normal chat.
+3. Enable **AWS MCP** from the connector menu.
+4. Send:
 
 ```text
 Using AWS MCP, inspect the AWS account without making any changes.
@@ -126,100 +78,50 @@ Report:
 Do not create, update, or delete anything.
 ```
 
-Confirm the identity ARN contains:
+5. Confirm the identity ARN contains:
 
 ```text
 user/sly-director-admin
 ```
 
-and not `root`.
+It should not say `root`.
 
-A successful read test should also confirm the existing Sly Director Lambda is active and uses:
+6. Confirm the `sly-director-github-mcp` Lambda is **Active** and uses:
 
 ```text
 src.lambda_entry.handler
 ```
 
-## Step 5 — Clean up the old Cognito variables
+## Step 4 — Check that the GitHub connector requires login
 
-After the WorkOS AuthKit connector is fully working, remove the obsolete Lambda environment variables left over from the abandoned Cognito design:
+The Lambda Function URL is public so Claude can discover the OAuth information, but the actual `/mcp` endpoint must reject requests that are not signed in.
 
-```text
-COGNITO_REGION
-COGNITO_USER_POOL_ID
-COGNITO_APP_CLIENT_ID
-```
-
-Keep:
-
-```text
-AUTHKIT_ISSUER
-PUBLIC_MCP_URL
-GITHUB_OWNER
-GITHUB_TOKEN
-DEFAULT_BASE_BRANCH
-BRANCH_PREFIX
-```
-
-## Step 6 — Confirm unauthenticated MCP calls are rejected
-
-The Lambda Function URL intentionally uses AWS Function URL auth type `NONE` so Claude can reach OAuth metadata. The application itself must protect `/mcp` with AuthKit bearer-token validation.
-
-From CloudShell, run:
+1. Open AWS CloudShell.
+2. Paste:
 
 ```bash
 curl -i \
   -X POST \
   -H 'content-type: application/json' \
   --data '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"unauthenticated-check","version":"1"}}}' \
-  'https://YOUR-FUNCTION-URL/mcp'
+  "$(aws lambda get-function-url-config --function-name sly-director-github-mcp --region us-east-2 --query FunctionUrl --output text --no-cli-pager)mcp"
 ```
 
-An unauthenticated request should be rejected rather than returning a successful MCP initialize response.
+3. Confirm the response begins with:
 
-## What you should see
+```text
+HTTP/1.1 401 Unauthorized
+```
 
-At this point Sly Director has both primary tool connections:
+and includes an authentication-required message.
+
+That confirms AuthKit is protecting the GitHub connector.
+
+You now have both primary connections:
 
 ```text
 Sly Director GitHub: connected
 AWS MCP: connected
 ```
 
-Continue to [Chapter 7 — Configure Cowork]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }}).
-
-<details>
-<summary>Why the AWS MCP endpoint is us-east-1</summary>
-
-AWS currently publishes the managed AWS MCP Server in US East (N. Virginia), `us-east-1`, and Europe (Frankfurt), `eu-central-1`.
-
-The MCP server endpoint region is separate from the region where your normal AWS resources run. This guide's existing Lambda workload can remain in `us-east-2`.
-
-</details>
-
-<details>
-<summary>If the AWS authorization page does not open</summary>
-
-Edit/re-add the connector using:
-
-```text
-https://aws-mcp.us-east-1.api.aws/mcp?oauth=initialize
-```
-
-Keep:
-
-```text
-Authentication type: OAuth
-OAuth client: Register automatically
-```
-
-</details>
-
-<details>
-<summary>Why use an administrator IAM user instead of root</summary>
-
-`AdministratorAccess` grants all IAM-authorized actions on all AWS services and resources. AWS still reserves a small set of account-level actions for the root user.
-
-Using a dedicated IAM identity prevents the connector from authenticating as root while still providing the broad AWS API authority required by this Sly Director configuration.
-
-</details>
+Continue to [Chapter 7 — Test Sly Director in Cowork]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }}).
