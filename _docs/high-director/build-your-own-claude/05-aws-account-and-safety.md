@@ -211,22 +211,52 @@ Record both values.
 
 Do not change `AUTHKIT_ISSUER` yet. WorkOS supplies that in a later step.
 
-## Step 8 — Create the WorkOS account and activate Production
+## Step 8 — Activate WorkOS Production
 
-1. Open the WorkOS Dashboard.
-2. Create an account or sign in.
-3. Open **Settings → Billing**.
-4. In **Payment information**, add a payment method.
-5. Return to the project/environment area.
-6. Select the environment labeled:
+If you are on the WorkOS **Get started** screen and there is no **Settings** item in the left sidebar, use Dashboard Search instead.
+
+1. Stay on the WorkOS Dashboard for your `Overlord` team.
+2. Press:
+
+```text
+Ctrl+K
+```
+
+On macOS, press:
+
+```text
+Command+K
+```
+
+3. In the command palette, type:
+
+```text
+Billing
+```
+
+4. Open the **Billing** result.
+5. Find the **Payment information** card.
+6. Add your payment method and billing information.
+7. Save it.
+8. Return to the main WorkOS Dashboard.
+9. Use the environment selector near the top of the dashboard to switch to:
 
 ```text
 Production
 ```
 
-7. Keep **Production** selected for every remaining WorkOS step in this chapter.
+10. Keep **Production** selected for every remaining WorkOS step in this chapter.
 
 A payment method is required to activate WorkOS Production. AuthKit username/password authentication is free below WorkOS's current free MAU threshold, but Production still requires billing information.
+
+<details>
+<summary>If Billing does not appear in Dashboard Search</summary>
+
+Confirm you are signed into the `Overlord` team with an **Admin**, **Developer**, or **Sandbox Developer** role. WorkOS hides Billing from Support roles.
+
+If you created the team yourself, you should normally be its Admin.
+
+</details>
 
 ## Step 9 — Record the Production AuthKit domain
 
