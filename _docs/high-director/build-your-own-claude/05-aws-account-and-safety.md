@@ -1,12 +1,12 @@
 ---
 title: Build Your Own Sly Director — 05 — Build GitHub MCP
-summary: Build and connect the complete Sly Director GitHub MCP service using GitHub, Amazon Cognito, AWS Lambda, and Claude custom connectors.
+summary: Build and connect the Sly Director GitHub MCP service using GitHub, AWS Lambda, WorkOS AuthKit Production, and Claude custom connectors.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-11
-last_verified: 2026-09-11
+updated: 2026-09-14
+last_verified: 2026-09-14
 order: 85
 permalink: /docs/high-director/build-your-own-claude/05-aws-account-and-safety/
 ---
@@ -15,16 +15,16 @@ permalink: /docs/high-director/build-your-own-claude/05-aws-account-and-safety/
 
 ## Goal
 
-Give Sly Director and Cowork direct GitHub tools for reading repositories, changing files, branches, pull requests, merges, and GitHub Actions.
+Give Sly Director and Cowork direct GitHub tools for repository reads, file changes, branches, pull requests, merges, and GitHub Actions.
 
-You will build:
+This guide uses **WorkOS AuthKit Production only**. It does not use a WorkOS staging or development environment.
 
 ```text
 Sly Director / Cowork
         ↓
 Claude custom connector
         ↓
-Cognito OAuth login
+WorkOS AuthKit Production OAuth
         ↓
 AWS Lambda Function URL
         ↓
@@ -33,7 +33,7 @@ sly-director-github-mcp
 GitHub API
 ```
 
-The source code used by this chapter is published in:
+The deployable source is published under:
 
 ```text
 assets/sly-director/github-mcp-source/
@@ -41,29 +41,27 @@ assets/sly-director/github-mcp-source/
 
 ## Step 1 — Create the GitHub token
 
-1. Open [GitHub](https://github.com/).
-2. Select your profile picture in the upper-right corner.
+1. Open GitHub.
+2. Select your profile picture.
 3. Select **Settings**.
-4. In the left navigation, select **Developer settings**.
-5. Select **Personal access tokens**.
-6. Select **Fine-grained tokens**.
-7. Select **Generate new token**.
-8. For **Token name**, enter:
+4. Select **Developer settings**.
+5. Select **Personal access tokens → Fine-grained tokens**.
+6. Select **Generate new token**.
+7. For **Token name**, enter:
 
 ```text
 Sly Director GitHub MCP
 ```
 
-9. Choose an expiration period. For the first build, choose **90 days**.
-10. Under **Resource owner**, select your GitHub account.
-11. Under **Repository access**, choose **Only select repositories**.
-12. Select:
+8. For the first build, choose a 90-day expiration.
+9. Under **Repository access**, choose **Only select repositories**.
+10. Select:
 
 ```text
 claude-director-test
 ```
 
-13. Under **Repository permissions**, set:
+11. Set these repository permissions:
 
 ```text
 Actions: Read and write
@@ -74,364 +72,86 @@ Variables: Read and write
 Workflows: Read and write
 ```
 
-14. Select **Generate token**.
-15. Copy the token immediately.
-16. Put it temporarily in a private note. You will paste it into AWS once and then remove it from that note.
+12. Generate the token.
+13. Copy it into a private temporary note.
 
-## Step 2 — Open Cognito for the first time
+## Step 2 — Create the Lambda function
 
-This section assumes you have **never configured Amazon Cognito before**.
-
-1. Return to the AWS console.
-2. Confirm the region selector in the upper-right corner says:
+1. Open the AWS console.
+2. Confirm the region is:
 
 ```text
 US East (Ohio) — us-east-2
 ```
 
-3. In the AWS search box at the top, enter:
-
-```text
-Cognito
-```
-
-4. Select **Amazon Cognito**.
-5. If AWS shows a welcome/getting-started page, select whichever first-time button is shown, such as:
-
-```text
-Get started
-```
-
-or:
-
-```text
-Create user pool
-```
-
-6. If AWS instead opens the normal Cognito console, select **User pools** in the left navigation, then select **Create user pool**.
-
-You should now be on a page titled similar to:
-
-```text
-Create user pool
-```
-
-or:
-
-```text
-Define your application
-```
-
-## Step 3 — Create the Cognito user pool and first application
-
-### 3A — Choose the application type
-
-1. Find **Application type**.
-2. Select:
-
-```text
-Traditional web application
-```
-
-Use **Traditional web application** because Claude will authenticate as an OAuth client and this Cognito application type creates a client secret.
-
-### 3B — Name the application
-
-1. Find **Name your application** or **Application name**.
-2. Enter:
-
-```text
-SlyDirectorClaude
-```
-
-### 3C — Choose how you will sign in
-
-1. Find **Options for sign-in identifiers** or the equivalent sign-in setting.
-2. Select:
-
-```text
-Email
-```
-
-3. If AWS asks which attributes are required, keep **Email** as the required user attribute.
-
-The person connecting Claude will later sign into Cognito with this email address.
-
-### 3D — Add Claude's return URL
-
-1. Find **Add a return URL**, **Return URL**, or **Callback URL**.
-2. Enter exactly:
-
-```text
-https://claude.ai/api/mcp/auth_callback
-```
-
-3. Confirm there are no spaces before or after the URL.
-
-This is where Cognito sends your browser after Claude authentication succeeds.
-
-### 3E — Create the application
-
-1. Review the page.
-2. Confirm it shows approximately:
-
-```text
-Application type: Traditional web application
-Application name: SlyDirectorClaude
-Sign-in identifier: Email
-Return URL: https://claude.ai/api/mcp/auth_callback
-```
-
-3. Select **Create** or **Create application**.
-
-Cognito now creates both:
-
-```text
-User pool
-App client: SlyDirectorClaude
-```
-
-4. If AWS shows a setup/code-example page after creation, scroll down and select **Go to overview**.
-
-## Step 4 — Record the Cognito IDs Claude and Lambda will need
-
-### 4A — Record the User pool ID
-
-1. In Cognito, open **User pools** if you are not already inside the new pool.
-2. Open the user pool that was just created.
-3. On the **Overview** page, find **User pool ID**.
-4. Copy it into your private setup note.
-
-It looks similar to:
-
-```text
-us-east-2_AbCdEf123
-```
-
-### 4B — Record the Client ID
-
-1. Inside the same user pool, open:
-
-```text
-Applications → App clients
-```
-
-2. Select:
-
-```text
-SlyDirectorClaude
-```
-
-3. Find **Client ID**.
-4. Copy it into your private setup note.
-
-### 4C — Record the Client secret
-
-1. Stay on the `SlyDirectorClaude` app-client page.
-2. Find **Client secret**.
-3. Select **Show client secret** if AWS hides it.
-4. Copy the client secret into your private setup note.
-
-Keep the client secret private. You will enter it into Claude later; do not put it into GitHub or the documentation repository.
-
-### 4D — Verify the OAuth settings
-
-The callback URL is not shown prominently on the app-client overview page. Open the app client's **Login pages** tab.
-
-1. Inside the same user pool, open:
-
-```text
-Applications → App clients
-```
-
-2. Select:
-
-```text
-SlyDirectorClaude
-```
-
-3. Near the top of the app-client page, select the tab:
-
-```text
-Login pages
-```
-
-4. Find the section that contains **Allowed callback URLs** or **Callback URLs**.
-5. Confirm this URL is listed:
-
-```text
-https://claude.ai/api/mcp/auth_callback
-```
-
-6. On the same **Login pages** tab, confirm **Authorization code grant** is enabled.
-7. Confirm the allowed OAuth scopes include:
-
-```text
-openid
-```
-
-8. If the callback URL or OAuth settings are missing, select **Edit** on the Login pages tab.
-9. Add the callback URL and enable the settings above.
-10. Select **Save changes**.
-
-AWS documentation also refers to these values as the app client's **Allowed callback URLs**. The **View login page** button on this tab uses the first callback URL in this list.
-
-## Step 5 — Create the Cognito managed-login domain
-
-Cognito needs a web address where it can show the sign-in page.
-
-1. Inside the same Cognito user pool, open:
-
-```text
-Branding → Domain
-```
-
-2. If no domain exists yet, select:
-
-```text
-Actions → Create Cognito domain
-```
-
-or the current **Create domain** equivalent.
-
-3. Enter a unique domain prefix. For example:
-
-```text
-sly-director-yourname
-```
-
-4. If AWS asks for **Branding version**, choose:
-
-```text
-Managed login
-```
-
-5. Select **Create**.
-6. Wait until the domain shows as active.
-7. Record the resulting Cognito domain in your private setup note.
-
-It will look similar to:
-
-```text
-https://sly-director-yourname.auth.us-east-2.amazoncognito.com
-```
-
-<details>
-<summary>Optional: test that Cognito created a login page</summary>
-
-1. Inside the user pool, open:
-
-```text
-Applications → App clients → SlyDirectorClaude
-```
-
-2. Open the **Login pages** tab.
-3. Select **View login page** if AWS shows that button.
-4. A Cognito sign-in page should open in a new browser tab.
-
-At this stage you may not yet have a user who can sign in. Step 6 creates that user.
-
-</details>
-
-## Step 6 — Create your first Cognito user
-
-This is the account you will use when Claude opens the Cognito sign-in page.
-
-1. Inside the same Cognito user pool, open **Users**.
-2. Select **Create user**.
-3. For the user's sign-in value/email, enter the email address you want to use with Sly Director.
-4. If AWS asks whether Cognito should send an invitation, either:
-   - allow Cognito to send it, or
-   - choose the option to create the user without sending an email and record the temporary password yourself.
-5. Create the user.
-6. If AWS generated or asked you to set a temporary password, record it privately.
-7. Confirm the new user appears in the **Users** list.
-
-During the first successful Cognito sign-in, AWS may require you to replace the temporary password with your own permanent password.
-
-## Step 7 — Create the Lambda function
-
-1. In the AWS search box, enter **Lambda**.
-2. Open **Lambda**.
-3. Select **Create function**.
-4. Select **Author from scratch**.
-5. For **Function name**, enter:
+3. Search for **Lambda**.
+4. Open **Lambda**.
+5. Select **Create function**.
+6. Select **Author from scratch**.
+7. For **Function name**, enter:
 
 ```text
 sly-director-github-mcp
 ```
 
-6. For **Runtime**, select:
+8. For **Runtime**, choose **Python 3.13**.
+9. For **Architecture**, choose **x86_64**.
+10. Use the option that creates a new basic Lambda execution role.
+11. Select **Create function**.
 
-```text
-Python 3.13
-```
+If the function already exists from the earlier Cognito build, keep it and continue to Step 3.
 
-7. For **Architecture**, select:
+## Step 3 — Set the Lambda runtime configuration
 
-```text
-x86_64
-```
-
-8. Under permissions, use the option that creates a new basic Lambda execution role.
-9. Select **Create function**.
-
-## Step 8 — Set the Lambda runtime configuration
-
-1. Open the new `sly-director-github-mcp` function.
-2. Open **Configuration → General configuration**.
-3. Select **Edit**.
-4. Set **Memory** to:
+1. Open `sly-director-github-mcp`.
+2. Open **Configuration → General configuration → Edit**.
+3. Set **Memory** to:
 
 ```text
 512 MB
 ```
 
-5. Set **Timeout** to:
+4. Set **Timeout** to:
 
 ```text
 30 seconds
 ```
 
-6. Save.
-7. Open **Code → Runtime settings**.
-8. Select **Edit**.
-9. Set **Handler** to:
+5. Save.
+6. Open **Code → Runtime settings → Edit**.
+7. Set **Handler** to:
 
 ```text
 src.app.handler
 ```
 
-10. Save.
+8. Save.
 
-## Step 9 — Add the Lambda environment variables
+## Step 4 — Add the initial Lambda environment variables
 
-1. Open **Configuration → Environment variables**.
-2. Select **Edit**.
-3. Add these values:
+Open **Configuration → Environment variables → Edit** and configure:
 
 ```text
 GITHUB_OWNER = your GitHub username
-GITHUB_TOKEN = the fine-grained token from Step 1
-COGNITO_REGION = us-east-2
-COGNITO_USER_POOL_ID = your Cognito User pool ID
-COGNITO_APP_CLIENT_ID = your Cognito Client ID
+GITHUB_TOKEN = your fine-grained GitHub token
 PUBLIC_MCP_URL = https://placeholder.invalid/mcp
+AUTHKIT_ISSUER = https://placeholder.invalid
 DEFAULT_BASE_BRANCH = main
 BRANCH_PREFIX = sly/
 ```
 
-4. Select **Save**.
+Save the variables.
 
-The placeholder URL is temporary. You replace it after AWS creates the real Function URL.
+If you are converting the earlier Cognito build, the old `COGNITO_*` variables are no longer used by the new package.
 
-## Step 10 — Build the deployment zip in CloudShell
+## Step 5 — Build and deploy the Lambda package
 
-1. Select the **CloudShell** icon in the AWS top navigation.
-2. Wait until the terminal prompt appears.
-3. Copy and paste this entire block:
+1. Open AWS **CloudShell**.
+2. Wait for the `~ $` prompt.
+3. Run:
 
 ```bash
+cd ~
 rm -rf eirepolitic.github.io
 git clone https://github.com/eirepolitic/eirepolitic.github.io.git
 cd eirepolitic.github.io/assets/sly-director/github-mcp-source
@@ -439,14 +159,13 @@ chmod +x build-package.sh
 ./build-package.sh
 ```
 
-4. Press **Enter**.
-5. Wait until the last lines show:
+4. Wait for:
 
 ```text
 Created: function.zip
 ```
 
-6. Then paste:
+5. Deploy it:
 
 ```bash
 aws lambda update-function-code \
@@ -455,103 +174,225 @@ aws lambda update-function-code \
   --region us-east-2
 ```
 
-7. Press **Enter**.
-8. The command should return JSON describing the updated Lambda function.
+## Step 6 — Create or confirm the Lambda Function URL
 
-## Step 11 — Create the Function URL
-
-1. Return to the Lambda browser tab.
-2. Open `sly-director-github-mcp`.
-3. Open **Configuration → Function URL**.
-4. Select **Create function URL**.
-5. For **Auth type**, select:
+1. Return to **Lambda → sly-director-github-mcp**.
+2. Open **Configuration → Function URL**.
+3. If no Function URL exists, select **Create function URL**.
+4. Set **Auth type** to:
 
 ```text
 NONE
 ```
 
-6. Leave CORS disabled/unconfigured.
-7. Select **Save**.
-8. Copy the generated **Function URL**.
+5. Leave CORS unconfigured.
+6. Save.
+7. Copy the Function URL.
 
 It looks similar to:
 
 ```text
-https://abc123example.lambda-url.us-east-2.on.aws/
+https://abc123.lambda-url.us-east-2.on.aws/
 ```
 
-9. Add `mcp` to the end and record the complete MCP URL:
+Your MCP URL is the Function URL plus `/mcp`:
 
 ```text
-https://abc123example.lambda-url.us-east-2.on.aws/mcp
+https://abc123.lambda-url.us-east-2.on.aws/mcp
 ```
 
-The Function URL itself is public so Claude can reach the OAuth discovery and MCP endpoints. The MCP tools remain protected by Cognito OAuth inside the application.
+Record both values.
 
-## Step 12 — Replace the placeholder MCP URL
+## Step 7 — Set the real MCP URL in Lambda
 
-1. In the Lambda function, open **Configuration → Environment variables**.
-2. Select **Edit**.
-3. Replace `PUBLIC_MCP_URL` with the complete URL from Step 11, including `/mcp`.
-4. Select **Save**.
-5. Wait until Lambda shows the configuration update as complete.
+1. Open **Configuration → Environment variables → Edit**.
+2. Replace `PUBLIC_MCP_URL` with the exact Lambda URL ending in `/mcp`.
+3. Save.
 
-## Step 13 — Check the Lambda health page
+Do not change `AUTHKIT_ISSUER` yet. WorkOS supplies that in a later step.
 
-1. Copy the Function URL without `/mcp`.
-2. Add:
+## Step 8 — Create the WorkOS account and activate Production
+
+1. Open the WorkOS Dashboard.
+2. Create an account or sign in.
+3. Open **Settings → Billing**.
+4. In **Payment information**, add a payment method.
+5. Return to the project/environment area.
+6. Select the environment labeled:
 
 ```text
-health
+Production
+```
+
+7. Keep **Production** selected for every remaining WorkOS step in this chapter.
+
+A payment method is required to activate WorkOS Production. AuthKit username/password authentication is free below WorkOS's current free MAU threshold, but Production still requires billing information.
+
+## Step 9 — Record the Production AuthKit domain
+
+1. With **Production** selected, open the WorkOS **Overview**.
+2. Find the **AuthKit domain**.
+3. Copy the complete HTTPS URL.
+
+It looks similar to:
+
+```text
+https://your-workspace.authkit.app
+```
+
+Use the WorkOS-provided domain. A custom domain is not required for Sly Director.
+
+Record this value as:
+
+```text
+AUTHKIT_ISSUER
+```
+
+## Step 10 — Configure WorkOS for MCP clients
+
+1. In the WorkOS Production environment, open:
+
+```text
+Connect → Configuration
+```
+
+2. Enable:
+
+```text
+Client ID Metadata Document (CIMD)
+```
+
+3. Also enable:
+
+```text
+Dynamic Client Registration (DCR)
+```
+
+CIMD is the current MCP client-registration mechanism. DCR remains enabled for compatibility with clients that still use the older registration path.
+
+## Step 11 — Add the MCP Resource Indicator
+
+Stay on **Connect → Configuration**.
+
+1. Find **Resource Indicators**.
+2. Add the exact `PUBLIC_MCP_URL` from Step 7.
+
+Example:
+
+```text
+https://abc123.lambda-url.us-east-2.on.aws/mcp
+```
+
+3. Save it.
+4. Open the `...` menu for that Resource Indicator.
+5. Select:
+
+```text
+Set as default
+```
+
+The Resource Indicator must exactly match the MCP server's `resource` URL. WorkOS uses it as the access token's `aud` claim.
+
+## Step 12 — Point Lambda at AuthKit Production
+
+1. Return to AWS Lambda.
+2. Open `sly-director-github-mcp`.
+3. Open **Configuration → Environment variables → Edit**.
+4. Set:
+
+```text
+AUTHKIT_ISSUER = the Production AuthKit domain from Step 9
 ```
 
 Example:
 
 ```text
-https://abc123example.lambda-url.us-east-2.on.aws/health
+AUTHKIT_ISSUER = https://your-workspace.authkit.app
 ```
 
-3. Open it in a browser tab.
+5. Confirm `PUBLIC_MCP_URL` still exactly matches the Resource Indicator from Step 11.
+6. Save.
 
-You should see JSON similar to:
+If old Cognito variables are still present, you may remove them now:
 
-```json
-{
-  "ok": true,
-  "service": "sly-director-github-mcp",
-  "owner": "your-github-username"
-}
+```text
+COGNITO_REGION
+COGNITO_USER_POOL_ID
+COGNITO_APP_CLIENT_ID
 ```
 
-## Step 14 — Add the custom connector to Claude
+## Step 13 — Verify the production endpoints before Claude
 
-1. Open [Claude](https://claude.ai/).
+In CloudShell, run:
+
+```bash
+FUNCTION_URL=$(aws lambda get-function-url-config \
+  --function-name sly-director-github-mcp \
+  --region us-east-2 \
+  --query FunctionUrl \
+  --output text)
+
+PUBLIC_MCP_URL=$(aws lambda get-function-configuration \
+  --function-name sly-director-github-mcp \
+  --region us-east-2 \
+  --query 'Environment.Variables.PUBLIC_MCP_URL' \
+  --output text)
+
+AUTHKIT_ISSUER=$(aws lambda get-function-configuration \
+  --function-name sly-director-github-mcp \
+  --region us-east-2 \
+  --query 'Environment.Variables.AUTHKIT_ISSUER' \
+  --output text)
+
+curl -i "${FUNCTION_URL}health"
+echo
+curl -i "${FUNCTION_URL}.well-known/oauth-protected-resource/mcp"
+echo
+curl -s "${AUTHKIT_ISSUER}/.well-known/oauth-authorization-server"
+```
+
+Check for all of these:
+
+```text
+health → HTTP 200
+protected-resource metadata → HTTP 200 JSON
+resource → exact PUBLIC_MCP_URL
+authorization_servers → Production AUTHKIT_ISSUER
+code_challenge_methods_supported → S256
+grant_types_supported → authorization_code and refresh_token
+```
+
+Do not continue to Claude until these checks are correct.
+
+## Step 14 — Add Sly Director GitHub to Claude
+
+1. Open Claude.
 2. Open **Customize → Connectors**.
 3. Select **+ → Add custom connector**.
-4. For the connector name, enter:
+4. For the name, enter:
 
 ```text
 Sly Director GitHub
 ```
 
-5. For the remote MCP URL, enter the complete URL ending in `/mcp`.
-6. On the authentication screen, select:
+5. Enter the exact remote MCP URL ending in `/mcp`.
+6. Leave the optional **OAuth Client ID** and **OAuth Client Secret** advanced fields blank.
+7. Select **Add**.
+8. Select **Connect**.
 
-```text
-Authentication type: OAuth
-OAuth client: Use your own OAuth client
-```
+Claude should discover the WorkOS AuthKit authorization server through the MCP metadata and register itself through CIMD/DCR.
 
-7. Enter the **Cognito Client ID** from Step 4.
-8. Enter the **Cognito Client secret** from Step 4.
-9. Select **Add** or **Save**.
-10. Select **Connect** when Claude offers the connection.
-11. Cognito should open in the browser.
-12. Sign in with the Cognito user from Step 6.
-13. If Cognito asks you to replace the temporary password, create your permanent password.
-14. Complete the authorization flow and return to Claude.
+## Step 15 — Complete the Production AuthKit login
 
-## Step 15 — Enable the connector in Sly Director
+1. Claude opens the WorkOS AuthKit hosted authentication page.
+2. If this is the first user in the Production environment, use the available sign-up flow.
+3. Create/sign in with your email and password.
+4. Complete the WorkOS authorization/consent screen if it appears.
+5. Return to Claude.
+
+Email + Password authentication is enabled by default in AuthKit.
+
+## Step 16 — Enable the connector in Sly Director
 
 1. Open **Projects → Sly Director**.
 2. Start a new chat.
@@ -562,7 +403,7 @@ OAuth client: Use your own OAuth client
 Sly Director GitHub
 ```
 
-## Step 16 — Test repository reading
+## Step 17 — Test repository reading
 
 Send:
 
@@ -570,9 +411,9 @@ Send:
 Using the Sly Director GitHub connector, inspect the repository claude-director-test. List its files and read README.md and claude-test.txt. Tell me which GitHub tools you used.
 ```
 
-Claude should return the repository contents without asking you to open Claude Code.
+Claude should return the repository contents through the custom connector.
 
-## Step 17 — Test branch, file, pull request, Actions, and merge
+## Step 18 — Test branch, file, pull request, Actions, and merge
 
 Send this as one task:
 
@@ -606,123 +447,63 @@ jobs:
 8. Report the final repository state.
 ```
 
-Sly Director should perform the repository workflow itself through the connector.
+## Step 19 — Verify the connector in Cowork
 
-## What you should see
+After the normal Claude test succeeds:
 
-At the end of this chapter:
-
-```text
-Cognito user pool: working
-Cognito managed-login domain: working
-Cognito user: created
-Lambda: sly-director-github-mcp
-Function URL: working
-Claude connector: Sly Director GitHub
-Repository read: working
-Repository write: working
-Branch: working
-Pull request: working
-GitHub Actions inspection: working
-Merge: working
-```
+1. Open the **Sly Director** Project in Cowork.
+2. Confirm **Sly Director GitHub** is enabled.
+3. Ask Cowork to read `claude-director-test` and report the default branch and README contents.
+4. Confirm the connector works without asking you to reconnect.
 
 Continue to [Chapter 6 — Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }}).
 
 <details>
-<summary>What did Cognito just create?</summary>
-
-For this guide, Cognito has three important pieces:
-
-```text
-User pool
-→ stores the person allowed to sign in
-
-App client: SlyDirectorClaude
-→ identifies Claude as the OAuth client
-
-Managed-login domain
-→ provides the web sign-in page
-```
-
-You do not need to understand Cognito programming to continue with the guide.
-
-</details>
-
-<details>
-<summary>What the Lambda source contains</summary>
-
-The published source is under:
-
-```text
-assets/sly-director/github-mcp-source/
-```
-
-Important files:
-
-```text
-requirements.txt
-build-package.sh
-src/settings.py
-src/auth.py
-src/github_client.py
-src/app.py
-```
-
-The MCP server uses the current Streamable HTTP transport. It validates Cognito access tokens, including the Cognito issuer, app-client ID, `openid` scope, and OAuth resource audience matching the exact MCP URL.
-
-</details>
-
-<details>
 <summary>Why Function URL authentication is NONE</summary>
 
-AWS Function URL authentication and Sly Director authentication are two different layers.
+The Lambda Function URL must be publicly reachable so Claude can discover OAuth metadata and reach the MCP transport.
 
-Claude must be able to reach the public MCP endpoint and its OAuth discovery information. The MCP application then requires and validates the Cognito bearer token before any GitHub tool executes.
+The GitHub tools themselves remain protected by WorkOS AuthKit bearer-token validation inside the MCP application.
 
 </details>
 
 <details>
-<summary>Why the Function URL hostname is stored in PUBLIC_MCP_URL</summary>
+<summary>Why PUBLIC_MCP_URL must match the WorkOS Resource Indicator</summary>
 
-The MCP SDK protects remote HTTP servers against DNS-rebinding attacks. It must know the exact public hostname it is serving.
+WorkOS stamps the requested Resource Indicator into the access token's `aud` claim. The Lambda verifier requires that audience to equal `PUBLIC_MCP_URL` exactly.
 
-`PUBLIC_MCP_URL` is used both as the OAuth resource audience and to allow the generated Lambda Function URL hostname.
+A mismatch causes the MCP bearer token to be rejected.
 
-If it is wrong, the connection can fail with an HTTP `421 Misdirected Request` or token-audience error.
+</details>
+
+<details>
+<summary>Why CIMD and DCR are both enabled</summary>
+
+Client ID Metadata Document is the current MCP mechanism for clients that have no pre-existing registration with the authorization server.
+
+Dynamic Client Registration is retained for compatibility with MCP clients that still use the older registration flow.
+
+</details>
+
+<details>
+<summary>Why Claude gets no manually entered OAuth client secret</summary>
+
+AuthKit's MCP flow supports client discovery/registration. Claude's custom-connector OAuth Client ID and Client Secret fields are optional, so this guide leaves them blank and lets the MCP OAuth flow establish the client relationship.
+
+</details>
+
+<details>
+<summary>Migrating from the earlier Cognito build</summary>
+
+Keep the existing Lambda Function URL, GitHub token, Lambda role, and GitHub MCP tools.
+
+After WorkOS AuthKit has passed both the normal Claude and Cowork tests, the old Cognito user pool is no longer part of Sly Director and can be removed separately.
 
 </details>
 
 <details>
 <summary>GitHub token permissions</summary>
 
-The permissions in Step 1 support the tool families used by Sly Director: repository contents/branches, pull requests, workflow operations, Actions runs/logs/artifacts, repository Actions variables, and repository Actions secrets.
-
 Start with access only to `claude-director-test`. After the full test succeeds, edit or replace the fine-grained token to add the real repositories Sly Director should operate.
-
-</details>
-
-<details>
-<summary>Troubleshooting</summary>
-
-**Cognito first-run screen looks different:** look for **User pools**, **Create user pool**, or **Get started**. AWS changes the landing-page wording periodically, but the target is a new user pool with a **Traditional web application** app client.
-
-**Can't find the callback URL:** open **Applications → App clients → SlyDirectorClaude → Login pages**. The callback URL is listed there as **Allowed callback URLs**. Select **Edit** on that tab if you need to add or change it.
-
-**No Client secret appears:** confirm the app client was created as **Traditional web application**. Cognito creates a client secret for this application type.
-
-**No login page exists:** open **Branding → Domain** and create a Cognito domain, then return to **Applications → App clients → SlyDirectorClaude → Login pages**.
-
-**Health page fails:** open **Lambda → Monitor → View CloudWatch logs** and inspect the newest error.
-
-**Claude cannot authenticate:** confirm the Cognito app client's **Login pages** tab contains `https://claude.ai/api/mcp/auth_callback`, authorization-code grant, `openid`, and the same Client ID/secret entered in Claude.
-
-**Claude gets HTTP 421:** confirm `PUBLIC_MCP_URL` exactly matches the Function URL plus `/mcp`.
-
-**GitHub returns 403:** check the fine-grained token's selected repositories and repository permissions.
-
-**GitHub returns 404 for a private repository:** first confirm that repository is included in the fine-grained token's repository access.
-
-**Workflow-file changes fail:** confirm **Workflows: Read and write** is enabled on the GitHub token.
 
 </details>
