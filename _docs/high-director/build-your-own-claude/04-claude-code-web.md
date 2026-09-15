@@ -1,12 +1,12 @@
 ---
 title: Build Your Own Sly Director — 04 — Prepare AWS
-summary: Prepare the AWS account before building the Sly Director GitHub MCP service and connecting AWS MCP.
+summary: Create the dedicated AWS administrator identity Sly Director will use and confirm the working region.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-11
-last_verified: 2026-09-11
+updated: 2026-09-15
+last_verified: 2026-09-15
 order: 84
 permalink: /docs/high-director/build-your-own-claude/04-claude-code-web/
 ---
@@ -15,69 +15,69 @@ permalink: /docs/high-director/build-your-own-claude/04-claude-code-web/
 
 ## Goal
 
-Prepare the AWS account that will host the small GitHub MCP service and that Sly Director will later operate through AWS MCP.
+Create a dedicated AWS administrator user for Sly Director and choose the AWS region used by this guide.
 
-## Complete this step
+The AWS root user owns the account. Sly Director should use a separate administrator identity so its activity is easy to identify and its access can be disabled independently if needed.
 
-1. Open the [AWS Management Console](https://console.aws.amazon.com/).
-2. Sign in to the AWS account you want Sly Director to use.
-3. For the simplest version of this guide, sign in as the **root user**.
-4. In the region selector in the upper-right corner, choose:
+## Step 1 — Select the AWS region
+
+1. Sign in to the AWS Management Console as the account owner/root user.
+2. In the top-right region menu, select:
 
 ```text
 US East (Ohio) — us-east-2
 ```
 
-5. In the AWS search box, enter:
+The GitHub connector Lambda will run in this region.
+
+## Step 2 — Create the Sly Director IAM user
+
+1. In the AWS search bar, enter **IAM**.
+2. Open **IAM**.
+3. Select **Users**.
+4. Select **Create user**.
+5. For **User name**, enter:
 
 ```text
-Billing and Cost Management
+sly-director-admin
 ```
 
-6. Open **Billing and Cost Management**.
-7. In the left navigation, select **Budgets**.
-8. Select **Create budget**.
-9. Choose a simple monthly-cost or zero-spend template.
-10. Name the budget:
+6. Select **Provide user access to the AWS Management Console**.
+7. Select **I want to create an IAM user**.
+8. Create or generate a password and store it privately.
+9. Select **Next**.
+10. Choose **Attach policies directly**.
+11. Search for and select both:
 
 ```text
-sly-director-budget
+AdministratorAccess
+AWSMCPSignInOAuthAccessPolicy
 ```
 
-11. Enter an email address you monitor for alerts.
-12. Create the budget.
-13. Return to the AWS console home page.
-14. In the top navigation, select the **CloudShell** icon.
-15. Confirm a CloudShell terminal opens successfully.
-16. Leave the AWS console open.
+12. Select **Next**.
+13. Review the settings.
+14. Select **Create user**.
+15. Save the IAM sign-in URL, username, and password somewhere private.
 
-## What you should see
+`AdministratorAccess` gives Sly Director broad AWS administration capability. `AWSMCPSignInOAuthAccessPolicy` allows the browser sign-in flow used by AWS MCP.
+
+## Step 3 — Sign in as Sly Director
+
+1. Sign out of the root AWS session.
+2. Open the IAM sign-in URL you saved.
+3. Sign in as:
 
 ```text
-AWS account: signed in
-Region: us-east-2
-Budget: sly-director-budget
-CloudShell: opens successfully
+sly-director-admin
 ```
 
-Continue to [Chapter 5 — Build the Sly Director GitHub MCP service]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }}).
+4. Confirm the AWS Console opens.
+5. Confirm the region is still:
 
-<details>
-<summary>Additional information</summary>
+```text
+US East (Ohio) — us-east-2
+```
 
-The guide uses AWS Lambda because it has no always-running server. The GitHub MCP service runs only when Claude/Cowork calls it.
+Use this IAM user for the remaining AWS steps in the guide.
 
-CloudShell is an AWS-hosted terminal inside your browser. The guide uses it only to build the Lambda deployment zip from the published source files. You do not need to install Python or AWS tools on your own computer.
-
-A budget sends alerts; it does not automatically stop AWS spending.
-
-</details>
-
-<details>
-<summary>Optional: use a dedicated IAM identity instead of root</summary>
-
-The main guide uses root because it is the shortest setup path for a personal installation.
-
-If you prefer a separate IAM or IAM Identity Center administrator identity, use one that can create and configure Lambda, Cognito, IAM execution roles, Function URLs, CloudWatch Logs, and budgets. The rest of the guide is unchanged.
-
-</details>
+Continue to [Chapter 5 — Build the Sly Director GitHub Connector]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }}).
