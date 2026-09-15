@@ -42,5 +42,15 @@ jobs:
       - name: Import-check Sly Director GitHub MCP dependencies
         run: python -c "import mcp, mangum, httpx, jwt, nacl, pydantic"
 
+      - name: Import-check Sly Director GitHub MCP application
+        env:
+          GITHUB_OWNER: example-owner
+          GITHUB_TOKEN: github_pat_example
+          PUBLIC_MCP_URL: https://example.lambda-url.us-east-2.on.aws/mcp
+          AUTHKIT_ISSUER: https://example.authkit.app
+          DEFAULT_BASE_BRANCH: main
+          BRANCH_PREFIX: sly/
+        run: python -c "from assets.sly_director.github_mcp_source.src import app" 2>/dev/null || PYTHONPATH=assets/sly-director/github-mcp-source python -c "from src import app"
+
       - name: Syntax-check Sly Director GitHub MCP source
         run: python -m compileall -q assets/sly-director/github-mcp-source/src

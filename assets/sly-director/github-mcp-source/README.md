@@ -10,12 +10,14 @@ This directory contains the reference source used by the Sly Director build guid
 - handler: `src.app.handler`
 - MCP Python SDK 2.0
 - Streamable HTTP endpoint: `/mcp`
-- Cognito OAuth bearer-token validation
+- WorkOS AuthKit OAuth bearer-token validation
 - GitHub REST API backend
 
 ## Build the Lambda zip in AWS CloudShell
 
 ```bash
+cd ~
+rm -rf eirepolitic.github.io
 git clone https://github.com/eirepolitic/eirepolitic.github.io.git
 cd eirepolitic.github.io/assets/sly-director/github-mcp-source
 chmod +x build-package.sh
@@ -41,10 +43,8 @@ src.app.handler
 ```text
 GITHUB_OWNER
 GITHUB_TOKEN
-COGNITO_REGION
-COGNITO_USER_POOL_ID
-COGNITO_APP_CLIENT_ID
 PUBLIC_MCP_URL
+AUTHKIT_ISSUER
 DEFAULT_BASE_BRANCH
 BRANCH_PREFIX
 ```
@@ -52,7 +52,6 @@ BRANCH_PREFIX
 Recommended defaults:
 
 ```text
-COGNITO_REGION=us-east-2
 DEFAULT_BASE_BRANCH=main
 BRANCH_PREFIX=sly/
 ```
@@ -63,18 +62,25 @@ BRANCH_PREFIX=sly/
 https://abc123.lambda-url.us-east-2.on.aws/mcp
 ```
 
+`AUTHKIT_ISSUER` must be the WorkOS **Production** AuthKit domain, including `https://` and without a trailing slash, for example:
+
+```text
+https://example.authkit.app
+```
+
 ## Authentication
 
-The MCP endpoint accepts Cognito **access tokens** issued to the configured app client. The verifier checks:
+The MCP endpoint accepts WorkOS AuthKit access tokens. The verifier checks:
 
-- Cognito issuer/signature;
+- AuthKit issuer;
+- RS256 signature using `AUTHKIT_ISSUER/oauth2/jwks`;
 - token expiry;
-- `token_use=access`;
-- configured Cognito app-client ID;
-- `openid` scope;
+- token subject;
 - `aud` equal to `PUBLIC_MCP_URL`.
 
-The audience is supplied through Cognito OAuth resource binding (RFC 8707).
+In WorkOS Production, register the exact `PUBLIC_MCP_URL` as a **Resource Indicator** and set it as the default Resource Indicator. Enable both **Client ID Metadata Document (CIMD)** and **Dynamic Client Registration (DCR)** under Connect configuration for broad MCP-client compatibility.
+
+No WorkOS API key is required by the Lambda for access-token verification.
 
 ## GitHub tools
 
