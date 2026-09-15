@@ -1,6 +1,6 @@
 ---
 title: Build Your Own Sly Director — 06 — Connect AWS MCP
-summary: Connect Sly Director to the managed AWS MCP Server using browser OAuth.
+summary: Connect Sly Director to the managed AWS MCP Server using a dedicated administrator IAM identity and browser OAuth.
 section: high-director
 doc_type: runbook
 status: active
@@ -17,7 +17,9 @@ permalink: /docs/high-director/build-your-own-claude/06-aws-mcp-server/
 
 Give the **Sly Director Project** direct AWS tools in addition to the **Sly Director GitHub** connector built in Chapter 5.
 
-## Step 1 — Check which AWS identity will authorize the connector
+This guide uses a dedicated IAM user with administrator permissions rather than authorizing Cowork as the AWS account root user.
+
+## Step 1 — Check which AWS identity you are using now
 
 Open AWS CloudShell and run:
 
@@ -28,19 +30,39 @@ aws sts get-caller-identity \
   --no-cli-pager
 ```
 
-If the result is an IAM user or role, that identity must be allowed to perform the AWS Sign-In OAuth actions used by AWS MCP. The simplest supported setup is to attach the AWS managed policy:
+If this reports the AWS account root user, continue to Step 2 and create the dedicated Sly Director administrator identity.
+
+## Step 2 — Create the Sly Director administrator IAM user
+
+1. In the AWS console, search for **IAM** and open it.
+2. Select **Users**.
+3. Select **Create user**.
+4. For **User name**, enter:
 
 ```text
+sly-director-admin
+```
+
+5. Select **Provide user access to the AWS Management Console — optional**.
+6. Select **I want to create an IAM user**.
+7. Create or generate a console password and store it privately. Do not paste the password into Claude, ChatGPT, GitHub, or the documentation.
+8. On **Set permissions**, choose **Attach policies directly**.
+9. Select:
+
+```text
+AdministratorAccess
 AWSMCPSignInOAuthAccessPolicy
 ```
 
-That policy grants the OAuth authorization/token permissions required by AWS MCP. It does **not** give the identity extra permissions to AWS services; AWS MCP continues to use the identity's existing IAM permissions for AWS API calls.
+10. Continue to **Review and create**.
+11. Select **Create user**.
+12. Save the IAM user's sign-in URL, username, and password privately.
 
-If the result is the AWS account **root user**, AWS documents that no additional IAM permission is required for the OAuth flow.
+`AdministratorAccess` grants full IAM-authorized access to AWS services and resources. Some account actions remain root-only by AWS design, so this identity is not literally the root user.
 
-Do not use root for normal autonomous Sly Director operation. AWS MCP uses the permissions of the signed-in AWS identity, so a root connection would give the agent root-level AWS authority. Create or use a scoped IAM identity before substantial Cowork automation.
+`AWSMCPSignInOAuthAccessPolicy` grants the OAuth authorization/token actions used by AWS MCP. No access keys are required for this browser OAuth setup.
 
-## Step 2 — Add the AWS MCP connector
+## Step 3 — Add the AWS MCP connector
 
 1. Open Claude.
 2. Open **Customize → Connectors**.
@@ -76,8 +98,16 @@ Register automatically
 Using the AWS connector, identify the AWS account and AWS identity available to you.
 ```
 
-14. Complete the AWS authorization flow when it opens.
-15. Return to Claude and ask:
+14. When AWS authorization opens, sign in as the IAM user:
+
+```text
+sly-director-admin
+```
+
+Do not authorize the connector using the root user.
+
+15. Complete the AWS authorization flow.
+16. Return to Claude and ask:
 
 ```text
 Using AWS MCP, list the S3 buckets visible to this AWS identity and tell me which AWS identity you are using.
@@ -85,7 +115,13 @@ Using AWS MCP, list the S3 buckets visible to this AWS identity and tell me whic
 
 ## What you should see
 
-Sly Director should identify the AWS account/identity and return the visible S3 buckets. An empty list is still a successful connection.
+Sly Director should identify an IAM user similar to:
+
+```text
+arn:aws:iam::<account-id>:user/sly-director-admin
+```
+
+It should also be able to query AWS resources allowed by `AdministratorAccess`.
 
 At this point Sly Director has both primary tool connections:
 
@@ -124,10 +160,10 @@ OAuth client: Register automatically
 </details>
 
 <details>
-<summary>Why not use the root user for Cowork</summary>
+<summary>Why use an administrator IAM user instead of root</summary>
 
-AWS MCP forwards operations using the permissions of the AWS identity that authorized the connection. Root therefore has effectively unrestricted account authority.
+`AdministratorAccess` grants all IAM-authorized actions on all AWS services and resources. AWS still reserves a small set of account-level actions for the root user.
 
-Use root only, if necessary, for a short connector verification. Before allowing Cowork to perform substantial AWS work, reconnect AWS MCP using a dedicated IAM identity with only the permissions Sly Director actually needs.
+Using a dedicated IAM identity prevents the connector from authenticating as root while still providing the broad AWS API authority required by this Sly Director configuration.
 
 </details>
