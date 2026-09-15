@@ -1,12 +1,12 @@
 ---
-title: Build Your Own Sly Director — 02 — GitHub Test Repository
-summary: Create the GitHub test repository used to verify the Sly Director GitHub connector.
+title: Build Your Own Sly Director — 02 — Create a GitHub Test Repository
+summary: Create a small private repository used to prove the Sly Director GitHub connector works.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-11
-last_verified: 2026-09-11
+updated: 2026-09-15
+last_verified: 2026-09-15
 order: 82
 permalink: /docs/high-director/build-your-own-claude/02-github-and-first-repository/
 ---
@@ -15,56 +15,58 @@ permalink: /docs/high-director/build-your-own-claude/02-github-and-first-reposit
 
 ## Goal
 
-Create one private repository Sly Director can use to test its GitHub connector safely.
+Create a harmless repository where you can test Sly Director before using it on real work.
 
-## Complete this step
+A repository is simply a GitHub folder that keeps files and their change history.
 
-If you already created `claude-director-test`, keep using it and continue to Chapter 3.
+## Step 1 — Create the repository
 
-Otherwise:
-
-1. Open [GitHub](https://github.com/).
-2. Select the **+** menu in the upper-right corner.
-3. Select **New repository**.
-4. Under **Owner**, select your personal GitHub account.
-5. Set **Repository name** to:
+1. Open GitHub.
+2. In the top-right corner, select **+ → New repository**.
+3. For **Repository name**, enter:
 
 ```text
 claude-director-test
 ```
 
-6. Select **Private**.
-7. Turn on **Add a README file**.
-8. Select **Create repository**.
-9. Select **Add file → Create new file**.
-10. Set the filename to:
+4. Select **Private**.
+5. Turn on **Add a README file**.
+6. Select **Create repository**.
+
+## Step 2 — Add one test file
+
+1. Inside the new repository, select **Add file → Create new file**.
+2. For the filename, enter:
 
 ```text
 claude-test.txt
 ```
 
-11. Enter:
+3. Enter:
 
 ```text
 Sly Director connection test.
 ```
 
-12. Commit the file to `main`.
+4. Select **Commit changes**.
+5. Keep the default option to commit directly to `main`.
+6. Select **Commit changes** again.
 
-## What you should see
+## Step 3 — Check the result
+
+You should now see at least:
 
 ```text
 README.md
 claude-test.txt
 ```
 
+The default branch should be:
+
+```text
+main
+```
+
+You will use this repository later to test reading files, creating branches, opening pull requests, running GitHub Actions, and merging changes.
+
 Continue to [Chapter 3 — Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }}).
-
-<details>
-<summary>Additional information</summary>
-
-The test repository keeps its existing technical name so anyone already following the guide does not need to recreate it because the product was renamed.
-
-Chapter 5 will create the **Sly Director GitHub** custom connector and initially give its GitHub token access only to this test repository.
-
-</details>

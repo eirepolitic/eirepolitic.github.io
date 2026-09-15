@@ -1,156 +1,113 @@
 ---
 title: Build Your Own Sly Director — 09 — Troubleshooting
-summary: Troubleshoot Sly Director one connector, authentication, permission, or execution layer at a time.
+summary: Fix the small set of problems seen during the live-verified Sly Director build.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-11
-last_verified: 2026-09-11
+updated: 2026-09-15
+last_verified: 2026-09-15
 order: 89
 permalink: /docs/high-director/build-your-own-claude/09-troubleshooting/
 ---
 
 # Chapter 9 — Troubleshooting
 
-## Goal
+Use this page only when the main guide does not behave as expected.
 
-Fix the failing layer without redesigning the whole system.
+## GitHub connector briefly says `not_connected`
 
-## Complete this step
+This can happen while Claude or Cowork is loading the remote connector.
 
-1. Copy the exact non-secret error.
-2. Identify the failing layer:
+1. Wait about 30 seconds.
+2. Refresh/retry the connector tools.
+3. Run the same request again.
 
-```text
-Sly Director Project instructions
-Cowork
-Sly Director GitHub connector
-Cognito OAuth/login
-Lambda / MCP service
-GitHub token permissions
-GitHub repository rules
-GitHub Actions
-AWS MCP
-AWS OAuth
-AWS service permission
-```
+If it still fails, open **Claude → Customize → Connectors** and confirm **Sly Director GitHub** shows connected.
 
-3. Fix only that layer.
-4. Retry the same operation.
-5. Confirm the result before changing anything else.
+## Claude says `No approval received.`
 
-## Quick fixes
-
-### Sly Director GitHub is missing from the chat
-
-1. Open **Customize → Connectors**.
-2. Confirm **Sly Director GitHub** exists and is connected.
-3. Return to the Sly Director chat or Cowork task.
-4. Select **+ → Connectors**.
-5. Enable **Sly Director GitHub**.
-
-### The GitHub connector does not open or respond
-
-Open the Lambda health URL from Chapter 5:
+A tool call may occasionally return:
 
 ```text
-https://YOUR-FUNCTION-URL/health
+No approval received.
 ```
 
-If the health page fails, open:
+If the previous connector calls worked, retry the same call once. During live testing, an immediate retry succeeded.
+
+## WorkOS login only offers SSO
+
+1. Open WorkOS **Production**.
+2. Press **Ctrl+K** and search for **Authentication**.
+3. Confirm **Email + Password** is enabled.
+4. Confirm **Sign up** is enabled.
+5. Save changes.
+6. Return to Claude and select **Connect** again.
+
+Your WorkOS Dashboard login is separate from the AuthKit user used by the connector.
+
+## Claude authorizes successfully but the GitHub connector fails immediately afterward
+
+First confirm the Lambda is using the current handler:
+
+1. AWS → **Lambda → sly-director-github-mcp**.
+2. Open **Code → Runtime settings**.
+3. Confirm:
 
 ```text
-AWS → Lambda → sly-director-github-mcp → Monitor → View CloudWatch logs
+src.lambda_entry.handler
 ```
 
-Inspect the newest error.
+If the handler is different, return to Chapter 5 and redeploy the current connector package.
 
-### Claude authentication fails
+## AWS MCP signs in with the wrong identity
 
-Check the Cognito app client:
+1. Delete/disconnect the AWS MCP connector in Claude.
+2. Sign out of the AWS root account.
+3. Sign in to AWS as:
 
 ```text
-Callback URL: https://claude.ai/api/mcp/auth_callback
-OAuth flow: Authorization code grant
-Scope: openid
+sly-director-admin
 ```
 
-Then confirm Claude's custom connector contains the same Cognito Client ID and Client secret.
+4. Re-add/reconnect AWS MCP.
+5. Ask Claude to report its AWS identity ARN.
+6. Confirm it contains `user/sly-director-admin`.
 
-### The connector returns HTTP 421
+## AWS MCP authorization does not start
 
-Open:
-
-```text
-AWS → Lambda → sly-director-github-mcp → Configuration → Environment variables
-```
-
-Confirm `PUBLIC_MCP_URL` exactly equals the Function URL plus `/mcp`.
-
-Example:
-
-```text
-https://abc123.lambda-url.us-east-2.on.aws/mcp
-```
-
-### GitHub returns 403
-
-Open GitHub's fine-grained token settings and check:
-
-1. `claude-director-test` is one of the selected repositories.
-2. The token has the repository permissions from Chapter 5.
-3. The token has not expired.
-
-### GitHub returns 404 for a private repository
-
-A private repository that is missing from the fine-grained token's repository list can appear unavailable. Add the repository to the token's allowed repositories and retry.
-
-### Workflow-file changes fail
-
-Confirm the GitHub token has:
-
-```text
-Workflows: Read and write
-Contents: Read and write
-```
-
-### Cowork stops unnecessarily
-
-Check whether Cowork actually needs a decision. If it is only reporting progress, remind it:
-
-```text
-Progress updates are informational. Continue through the approved plan until the requested outcome is complete or a genuine blocker requires me.
-```
-
-If the same interruption keeps recurring, improve the Sly Director Project instructions rather than accepting the interruption as normal.
-
-### AWS MCP will not authenticate
-
-Confirm:
-
-```text
-Authentication type: OAuth
-OAuth client: Register automatically
-```
-
-If the AWS authorization window still does not open, retry using:
+Edit/re-add the connector using:
 
 ```text
 https://aws-mcp.us-east-1.api.aws/mcp?oauth=initialize
 ```
 
-## What you should see
+Then connect again while signed in as `sly-director-admin`.
 
-You should be able to name one failing layer and correct it without changing Sly Director's basic architecture.
+## GitHub token stops working
+
+Fine-grained GitHub tokens can expire.
+
+1. Create a replacement token with the same repository and permissions from Chapter 5.
+2. Open AWS → **Lambda → sly-director-github-mcp → Configuration → Environment variables → Edit**.
+3. Replace only `GITHUB_TOKEN`.
+4. Save.
+5. Re-test the GitHub connector in Claude.
+
+Do not print or paste the token into chat.
+
+## Need the Lambda error log
+
+Open AWS CloudShell and run:
+
+```bash
+aws logs tail /aws/lambda/sly-director-github-mcp \
+  --since 10m \
+  --region us-east-2 \
+  --format short \
+  --no-cli-pager
+```
+
+Copy only the error text you need for troubleshooting. Do not share secrets if any appear.
 
 Continue to [Chapter 10 — Maintenance]({{ '/docs/high-director/build-your-own-claude/10-maintenance/' | relative_url }}).
-
-<details>
-<summary>Claude Code fallback</summary>
-
-Use Claude Code only when a task genuinely requires a repository-development capability unavailable through Cowork plus the connected tools, such as a specific repository-local development workflow.
-
-A Cognito, Lambda, connector, or GitHub-token problem should be fixed at that layer rather than bypassed with Claude Code.
-
-</details>

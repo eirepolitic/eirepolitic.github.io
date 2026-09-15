@@ -1,119 +1,81 @@
 ---
 title: Build Your Own Sly Director
-summary: Browser-only setup guide for Sly Director using one Claude Project, a custom GitHub MCP service, AWS MCP, WorkOS AuthKit Production, and Cowork for long-running autonomous execution.
+summary: Beginner-friendly, browser-based guide to building the live-verified Sly Director setup with Claude, GitHub, AWS, WorkOS AuthKit, and Cowork.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-14
-last_verified: 2026-09-14
+updated: 2026-09-15
+last_verified: 2026-09-15
 order: 80
 permalink: /docs/high-director/build-your-own-claude/
 ---
 
 # Build Your Own Sly Director
 
-Sly Director is the Claude-based counterpart to the OpenAI High Director.
+This guide shows you how to build the same Sly Director setup that has been tested end to end.
 
-## The whole plan
+You do **not** need to be a programmer. Every chapter tells you what to click, what to enter, and what result to expect.
 
-Build **one Claude Project called Sly Director**.
+## What you are building
 
-Use it in two ways:
-
-```text
-Sly Director
-├─ Normal chat → quick questions, planning, small changes
-└─ Cowork → substantial jobs that should keep working without you
-
-Both can use:
-├─ Sly Director GitHub → repositories, files, branches, PRs, Actions
-└─ AWS MCP → AWS resources and operations
-```
-
-That is the entire operating model.
-
-For a small job, talk to **Sly Director** normally.
-
-For a large job, open **Sly Director in Cowork**, give it the final objective, select **Automatically approve**, and let it continue through planning, implementation, validation, corrections, and final verification until the work is finished or it genuinely needs you.
-
-## What you will build
-
-The GitHub connector is a small serverless service because Claude's normal GitHub integration does not provide the full write/branch/PR/Actions toolset this design requires.
+Sly Director is one Claude Project that can work in two modes:
 
 ```text
-Claude / Cowork
-     ↓
-Sly Director GitHub custom connector
-     ↓
-WorkOS AuthKit Production OAuth
-     ↓
-AWS Lambda Function URL
-     ↓
-sly-director-github-mcp
-     ↓
-GitHub API
+Normal Claude chat
+→ quick questions and smaller tasks
+
+Cowork
+→ longer jobs that should keep working without repeated “continue” prompts
 ```
 
-AWS access uses the managed AWS MCP Server separately.
+Sly Director gets two important connections:
 
-The earlier direct Cognito authorization design is no longer the active architecture because Claude.ai web failed during its post-login OAuth token exchange. AuthKit Production replaces Cognito for the custom GitHub connector.
+```text
+Sly Director GitHub
+→ reads and changes GitHub repositories
+→ creates branches and pull requests
+→ checks GitHub Actions
+→ merges validated work
+
+AWS MCP
+→ inspects and manages AWS resources
+```
+
+The GitHub connection is protected by WorkOS AuthKit and runs from a small AWS Lambda function.
+
+## Accounts you will need
+
+You will create or use:
+
+- a Claude account with Cowork access;
+- a GitHub account;
+- an AWS account;
+- a WorkOS account.
+
+The guide starts from zero and walks through each one.
 
 ## Build it in this order
 
-1. [Confirm Claude, Cowork, GitHub, and AWS access]({{ '/docs/high-director/build-your-own-claude/01-accounts-and-prerequisites/' | relative_url }})
-2. [Create a GitHub test repository]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }})
-3. [Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
-4. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
-5. [Build and connect Sly Director GitHub with WorkOS AuthKit Production]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
-   - [Configure the first AuthKit Production user]({{ '/docs/high-director/build-your-own-claude/authkit-first-user-production/' | relative_url }})
+1. [Create the required accounts and check access]({{ '/docs/high-director/build-your-own-claude/01-accounts-and-prerequisites/' | relative_url }})
+2. [Create the GitHub test repository]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }})
+3. [Create the Sly Director Claude Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
+4. [Prepare AWS and create the Sly Director AWS administrator user]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
+5. [Build the Sly Director GitHub connector]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
 6. [Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
-7. [Configure Cowork for autonomous Sly Director work]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
+7. [Test the full setup in Cowork]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
 8. [Use Sly Director day to day]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }})
-9. [Troubleshoot]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }})
+9. [Troubleshoot common problems]({{ '/docs/high-director/build-your-own-claude/09-troubleshooting/' | relative_url }})
 10. [Maintain the setup]({{ '/docs/high-director/build-your-own-claude/10-maintenance/' | relative_url }})
-
-Optional later:
-
-- [Skills, Plugins, scheduling, and specialist tools]({{ '/docs/high-director/build-your-own-claude/addendum-enhancements/' | relative_url }})
-- [Google Workspace and other connectors]({{ '/docs/high-director/build-your-own-claude/addendum-connectors/' | relative_url }})
-- [Custom MCP servers]({{ '/docs/high-director/build-your-own-claude/addendum-custom-mcp/' | relative_url }})
 
 ## What success looks like
 
-For a substantial job, you should be able to give Sly Director one objective such as:
+At the end, you can give Cowork one outcome such as:
 
 ```text
-Investigate this repository and the related AWS infrastructure. Find the cause of the problem, implement the best practical fix, validate it, correct recoverable failures, finish the repository workflow, verify the final state, and return to me when the job is complete or you genuinely need a decision from me.
+Inspect this repository and the related AWS resources. Find the problem, implement the best practical fix, validate it, correct recoverable failures, complete the repository workflow, and return when the requested outcome is finished or you genuinely need a decision from me.
 ```
 
-Sly Director should then continue working in Cowork instead of repeatedly stopping just to make you type `continue`.
+Sly Director can then use GitHub and AWS directly and continue through multiple steps without handing the task back to you after every action.
 
-<details>
-<summary>Historical Cognito issue</summary>
-
-The previous direct **Amazon Cognito → Claude.ai web** OAuth design reached successful Cognito login but failed inside Claude's post-login OAuth exchange before the MCP server received a bearer token.
-
-The current guide uses WorkOS AuthKit Production instead. The historical diagnostic remains documented at [Direct Cognito OAuth — Claude.ai Web Known Issue]({{ '/docs/high-director/build-your-own-claude/cognito-claude-web-known-issue/' | relative_url }}).
-
-</details>
-
-<details>
-<summary>How this relates to Overlord</summary>
-
-Overlord was designed to preserve state, split plans into dependent tasks, resume after interruption, retry failed work, validate results, and only return to the owner for genuine decisions.
-
-Cowork now provides much of that execution layer directly. Sly Director keeps the useful Overlord operating principles while relying on Cowork for long-running execution and sub-agent coordination.
-
-</details>
-
-<details>
-<summary>Optional later upgrades</summary>
-
-After the core setup works, a **Sly Director Operator Skill** can hold the detailed execution procedure so it loads when needed rather than living entirely in Project instructions.
-
-A future **Sly Director Plugin** can package Skills, connectors, and Cowork specialists together.
-
-Claude Code remains a specialist fallback when a task genuinely requires its repository-oriented development environment.
-
-</details>
+> This guide intentionally contains only the working setup. Historical Cognito experiments and development-only debugging notes have been removed from the main build path.
