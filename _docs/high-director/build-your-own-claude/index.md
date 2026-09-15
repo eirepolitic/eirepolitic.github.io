@@ -66,6 +66,7 @@ The earlier direct Cognito authorization design is no longer the active architec
 3. [Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
 4. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
 5. [Build and connect Sly Director GitHub with WorkOS AuthKit Production]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
+   - [Configure the first AuthKit Production user]({{ '/docs/high-director/build-your-own-claude/authkit-first-user-production/' | relative_url }})
 6. [Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
 7. [Configure Cowork for autonomous Sly Director work]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
 8. [Use Sly Director day to day]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }})
