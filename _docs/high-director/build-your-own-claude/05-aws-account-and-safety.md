@@ -226,9 +226,17 @@ The Function URL must be publicly reachable so Claude can discover the OAuth sig
 
 ## Step 9 — Find the AuthKit domain
 
-1. In WorkOS Production, open the AuthKit/domain area shown in your Dashboard.
-2. Copy the Production AuthKit HTTPS domain.
-3. Record it without a trailing slash, for example:
+1. In WorkOS Production, press **Ctrl+K** (or **Command+K** on macOS).
+2. Type:
+
+```text
+Domains
+```
+
+3. Open the **Domains** result.
+4. Find the AuthKit domain for the Production environment.
+5. Copy the complete HTTPS domain.
+6. Record it without a trailing slash, for example:
 
 ```text
 https://example.authkit.app
