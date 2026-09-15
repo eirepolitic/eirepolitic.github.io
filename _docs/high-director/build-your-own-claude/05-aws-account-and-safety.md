@@ -5,8 +5,8 @@ section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-14
-last_verified: 2026-09-14
+updated: 2026-09-15
+last_verified: 2026-09-15
 order: 85
 permalink: /docs/high-director/build-your-own-claude/05-aws-account-and-safety/
 ---
@@ -122,10 +122,12 @@ If the function already exists from the earlier Cognito build, keep it and conti
 7. Set **Handler** to:
 
 ```text
-src.app.handler
+src.lambda_entry.handler
 ```
 
 8. Save.
+
+The separate Lambda entrypoint creates a fresh stateless MCP Streamable HTTP app/session manager for each Lambda invocation so the MCP lifecycle starts correctly without attempting to reuse a single-use manager across warm invocations.
 
 ## Step 4 — Add the initial Lambda environment variables
 
@@ -165,12 +167,43 @@ chmod +x build-package.sh
 Created: function.zip
 ```
 
-5. Deploy it:
+5. Confirm the lifecycle-safe handler:
 
 ```bash
-aws lambda update-function-code \
+AWS_PAGER="" aws lambda update-function-configuration \
+  --function-name sly-director-github-mcp \
+  --handler src.lambda_entry.handler \
+  --region us-east-2 \
+  --query '{FunctionName:FunctionName,Handler:Handler,LastUpdateStatus:LastUpdateStatus}' \
+  --output table \
+  --no-cli-pager
+```
+
+6. Wait for the configuration update:
+
+```bash
+aws lambda wait function-updated \
+  --function-name sly-director-github-mcp \
+  --region us-east-2
+```
+
+7. Deploy the package without printing Lambda environment-variable secrets:
+
+```bash
+AWS_PAGER="" aws lambda update-function-code \
   --function-name sly-director-github-mcp \
   --zip-file fileb://function.zip \
+  --region us-east-2 \
+  --query '{FunctionName:FunctionName,LastUpdateStatus:LastUpdateStatus,LastModified:LastModified}' \
+  --output table \
+  --no-cli-pager
+```
+
+8. Wait for the code update:
+
+```bash
+aws lambda wait function-updated \
+  --function-name sly-director-github-mcp \
   --region us-east-2
 ```
 
@@ -215,84 +248,29 @@ Do not change `AUTHKIT_ISSUER` yet. WorkOS supplies that in a later step.
 
 If you are on the WorkOS **Get started** screen and there is no **Settings** item in the left sidebar, use Dashboard Search instead.
 
-1. Stay on the WorkOS Dashboard for your `Overlord` team.
-2. Press:
-
-```text
-Ctrl+K
-```
-
-On macOS, press:
-
-```text
-Command+K
-```
-
-3. In the command palette, type:
-
-```text
-Billing
-```
-
+1. Stay on the WorkOS Dashboard for your team.
+2. Press **Ctrl+K** (or **Command+K** on macOS).
+3. Type `Billing`.
 4. Open the **Billing** result.
-5. Find the **Payment information** card.
+5. Find **Payment information**.
 6. Add your payment method and billing information.
 7. Save it.
 8. Return to the main WorkOS Dashboard.
-9. Use the environment selector near the top of the dashboard to switch to:
-
-```text
-Production
-```
-
+9. Use the environment selector near the top of the dashboard to switch to **Production**.
 10. Keep **Production** selected for every remaining WorkOS step in this chapter.
-
-A payment method is required to activate WorkOS Production. AuthKit username/password authentication is free below WorkOS's current free MAU threshold, but Production still requires billing information.
-
-<details>
-<summary>If Billing does not appear in Dashboard Search</summary>
-
-Confirm you are signed into the `Overlord` team with an **Admin**, **Developer**, or **Sandbox Developer** role. WorkOS hides Billing from Support roles.
-
-If you created the team yourself, you should normally be its Admin.
-
-</details>
 
 ## Step 9 — Record the Production AuthKit domain
 
 1. With **Production** selected, open the WorkOS **Overview**.
 2. Find the **AuthKit domain**.
 3. Copy the complete HTTPS URL.
-
-It looks similar to:
-
-```text
-https://your-workspace.authkit.app
-```
-
-Use the WorkOS-provided domain. A custom domain is not required for Sly Director.
-
-Record this value as:
-
-```text
-AUTHKIT_ISSUER
-```
+4. Record it as `AUTHKIT_ISSUER` without a trailing slash.
 
 ## Step 10 — Configure WorkOS for MCP clients
 
-1. In the WorkOS Production environment, open:
-
-```text
-Connect → Configuration
-```
-
-2. In the **MCP Auth** card, click:
-
-```text
-Enable
-```
-
-3. In the **MCP Auth** dialog, select both registration mechanisms:
+1. In WorkOS Production, open **Connect → Configuration**.
+2. In the **MCP Auth** card, click **Enable**.
+3. Select both:
 
 ```text
 Dynamic Client Registration
@@ -300,149 +278,88 @@ Client ID Metadata Document
 ```
 
 4. Click **Save changes**.
-5. Confirm the **MCP Auth** card now shows both mechanisms enabled.
-
-Client ID Metadata Document is the current preferred MCP client-registration mechanism. Dynamic Client Registration remains enabled for compatibility with clients that still use the older registration path.
-
-Leave **External Sign-in URI** unconfigured. Sly Director uses AuthKit's hosted sign-in rather than an external authentication application.
+5. Leave **External Sign-in URI** unconfigured.
 
 ## Step 11 — Add the MCP Resource Indicator
 
-Stay on **Connect → Configuration**.
-
-1. In **MCP resource indicators**, click:
-
-```text
-Edit MCP resources
-```
-
-2. Add the exact `PUBLIC_MCP_URL` from Step 7.
-
-Example:
-
-```text
-https://abc123.lambda-url.us-east-2.on.aws/mcp
-```
-
+1. In **MCP resource indicators**, click **Edit MCP resources**.
+2. Add the exact `PUBLIC_MCP_URL` ending in `/mcp`.
 3. Save it.
-4. Open the `...` menu for that Resource Indicator.
-5. Select:
+4. Use its `...` menu and choose **Set as default**.
 
-```text
-Set as default
-```
+## Step 12 — Configure the first Production AuthKit user
 
-The Resource Indicator must exactly match the MCP server's `resource` URL. WorkOS uses it as the access token's `aud` claim.
+1. Press **Ctrl+K** in WorkOS Production.
+2. Search for **Authentication**.
+3. Open the **Authentication** page.
+4. Confirm **Email + Password** is enabled.
+5. Confirm **Sign up** is enabled.
+6. Save any changes.
 
-## Step 12 — Point Lambda at AuthKit Production
+The WorkOS dashboard account used to administer the project is separate from the AuthKit application user that signs into the MCP OAuth flow.
+
+## Step 13 — Point Lambda at AuthKit Production
 
 1. Return to AWS Lambda.
 2. Open `sly-director-github-mcp`.
 3. Open **Configuration → Environment variables → Edit**.
-4. Set:
-
-```text
-AUTHKIT_ISSUER = the Production AuthKit domain from Step 9
-```
-
-Example:
-
-```text
-AUTHKIT_ISSUER = https://your-workspace.authkit.app
-```
-
-5. Confirm `PUBLIC_MCP_URL` still exactly matches the Resource Indicator from Step 11.
+4. Set `AUTHKIT_ISSUER` to the Production AuthKit domain.
+5. Confirm `PUBLIC_MCP_URL` exactly matches the WorkOS Resource Indicator.
 6. Save.
 
-If old Cognito variables are still present, you may remove them now:
+## Step 14 — Verify the production endpoints before Claude
 
-```text
-COGNITO_REGION
-COGNITO_USER_POOL_ID
-COGNITO_APP_CLIENT_ID
-```
-
-## Step 13 — Verify the production endpoints before Claude
-
-In CloudShell, run:
+In CloudShell, retrieve only the non-secret values and test the endpoints. Avoid commands that print the full Lambda configuration/environment.
 
 ```bash
 FUNCTION_URL=$(aws lambda get-function-url-config \
   --function-name sly-director-github-mcp \
   --region us-east-2 \
   --query FunctionUrl \
-  --output text)
+  --output text \
+  --no-cli-pager)
 
 PUBLIC_MCP_URL=$(aws lambda get-function-configuration \
   --function-name sly-director-github-mcp \
   --region us-east-2 \
   --query 'Environment.Variables.PUBLIC_MCP_URL' \
-  --output text)
+  --output text \
+  --no-cli-pager)
 
 AUTHKIT_ISSUER=$(aws lambda get-function-configuration \
   --function-name sly-director-github-mcp \
   --region us-east-2 \
   --query 'Environment.Variables.AUTHKIT_ISSUER' \
-  --output text)
+  --output text \
+  --no-cli-pager)
 
-curl -i "${FUNCTION_URL}health"
-echo
-curl -i "${FUNCTION_URL}.well-known/oauth-protected-resource/mcp"
-echo
-curl -s "${AUTHKIT_ISSUER}/.well-known/oauth-authorization-server"
+curl -sS "${FUNCTION_URL}health" | jq
+curl -sS "${FUNCTION_URL}.well-known/oauth-protected-resource/mcp" | jq
+curl -sS "${AUTHKIT_ISSUER}/.well-known/oauth-authorization-server" | jq
+curl -sS "${AUTHKIT_ISSUER}/oauth2/jwks" | jq '{key_count:(.keys | length)}'
 ```
 
-Check for all of these:
+Confirm health is OK, MCP metadata points to the exact resource/issuer, AuthKit supports `S256`, `authorization_code`, and `refresh_token`, and JWKS contains at least one key.
 
-```text
-health → HTTP 200
-protected-resource metadata → HTTP 200 JSON
-resource → exact PUBLIC_MCP_URL
-authorization_servers → Production AUTHKIT_ISSUER
-code_challenge_methods_supported → S256
-grant_types_supported → authorization_code and refresh_token
-```
+## Step 15 — Add Sly Director GitHub to Claude
 
-Do not continue to Claude until these checks are correct.
+1. Open **Claude → Customize → Connectors**.
+2. Add a custom connector named **Sly Director GitHub**.
+3. Enter the exact remote MCP URL ending in `/mcp`.
+4. Under **Authentication**, use **Sign in now** when Claude detects OAuth.
+5. Under **OAuth client**, use **Use Claude's published identity** when Claude detects CIMD.
+6. Leave **Request headers** empty.
+7. Leave **Advanced** unchanged.
+8. Save/add the connector and complete the WorkOS AuthKit sign-in flow.
 
-## Step 14 — Add Sly Director GitHub to Claude
-
-1. Open Claude.
-2. Open **Customize → Connectors**.
-3. Select **+ → Add custom connector**.
-4. For the name, enter:
-
-```text
-Sly Director GitHub
-```
-
-5. Enter the exact remote MCP URL ending in `/mcp`.
-6. Leave the optional **OAuth Client ID** and **OAuth Client Secret** advanced fields blank.
-7. Select **Add**.
-8. Select **Connect**.
-
-Claude should discover the WorkOS AuthKit authorization server through the MCP metadata and register itself through CIMD/DCR.
-
-## Step 15 — Complete the Production AuthKit login
-
-1. Claude opens the WorkOS AuthKit hosted authentication page.
-2. If this is the first user in the Production environment, use the available sign-up flow.
-3. Create/sign in with your email and password.
-4. Complete the WorkOS authorization/consent screen if it appears.
-5. Return to Claude.
-
-Email + Password authentication is enabled by default in AuthKit.
+Use **Register automatically** only as the DCR fallback if the detected CIMD path fails.
 
 ## Step 16 — Enable the connector in Sly Director
 
 1. Open **Projects → Sly Director**.
 2. Start a new chat.
 3. Select **+ → Connectors**.
-4. Enable:
-
-```text
-Sly Director GitHub
-```
+4. Enable **Sly Director GitHub**.
 
 ## Step 17 — Test repository reading
 
@@ -452,45 +369,34 @@ Send:
 Using the Sly Director GitHub connector, inspect the repository claude-director-test. List its files and read README.md and claude-test.txt. Tell me which GitHub tools you used.
 ```
 
-Claude should return the repository contents through the custom connector.
+Claude may report that connector tools are deferred and that it first ran a tool search to load the GitHub tool definitions. That is normal. The read test passes when Claude can list the repository tree and read both files through the connector.
 
 ## Step 18 — Test branch, file, pull request, Actions, and merge
 
 Send this as one task:
 
 ```text
-Using the Sly Director GitHub connector, perform this connection test on the repository claude-director-test.
+Using the Sly Director GitHub connector, perform this end-to-end write test on the repository claude-director-test.
 
 1. Create a working branch named connection-test.
-2. Create a file named sly-director-test.md containing:
+2. Create sly-director-test.md containing:
 
 # Sly Director GitHub MCP test
 The Sly Director GitHub MCP connection is working.
 
-3. Create .github/workflows/sly-director-connection-test.yml with this workflow:
-
-name: Sly Director connection test
-
-on:
-  pull_request:
-  workflow_dispatch:
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Sly Director GitHub MCP is working"
-
+3. Create .github/workflows/sly-director-connection-test.yml with a pull_request/workflow_dispatch workflow that echoes "Sly Director GitHub MCP is working".
 4. Create a non-draft pull request into main.
 5. Inspect the resulting GitHub Actions workflow run and jobs.
-6. If validation succeeds, merge the pull request using squash merge.
+6. If validation succeeds, squash-merge the pull request.
 7. Verify sly-director-test.md exists on main.
-8. Report the final repository state.
+8. Report the branch, files, PR number, workflow result, merge result, final verification, and GitHub tools used.
+
+Do not stop for approval between these steps unless a genuine permission or validation failure requires my decision.
 ```
 
 ## Step 19 — Verify the connector in Cowork
 
-After the normal Claude test succeeds:
+After the normal Claude write test succeeds:
 
 1. Open the **Sly Director** Project in Cowork.
 2. Confirm **Sly Director GitHub** is enabled.
@@ -502,9 +408,14 @@ Continue to [Chapter 6 — Connect AWS MCP]({{ '/docs/high-director/build-your-o
 <details>
 <summary>Why Function URL authentication is NONE</summary>
 
-The Lambda Function URL must be publicly reachable so Claude can discover OAuth metadata and reach the MCP transport.
+The Lambda Function URL must be publicly reachable so Claude can discover OAuth metadata and reach the MCP transport. The GitHub tools themselves remain protected by WorkOS AuthKit bearer-token validation inside the MCP application.
 
-The GitHub tools themselves remain protected by WorkOS AuthKit bearer-token validation inside the MCP application.
+</details>
+
+<details>
+<summary>Why the Lambda handler is src.lambda_entry.handler</summary>
+
+The MCP Streamable HTTP session manager must run inside ASGI lifespan and is single-use. AWS Lambda can reuse a Python execution environment across invocations. The separate entrypoint creates a fresh stateless MCP app/session manager for each invocation, which avoids both an uninitialized task group and attempts to restart a previously used manager.
 
 </details>
 
@@ -513,38 +424,11 @@ The GitHub tools themselves remain protected by WorkOS AuthKit bearer-token vali
 
 WorkOS stamps the requested Resource Indicator into the access token's `aud` claim. The Lambda verifier requires that audience to equal `PUBLIC_MCP_URL` exactly.
 
-A mismatch causes the MCP bearer token to be rejected.
-
 </details>
 
 <details>
 <summary>Why CIMD and DCR are both enabled</summary>
 
-Client ID Metadata Document is the current MCP mechanism for clients that have no pre-existing registration with the authorization server.
-
-Dynamic Client Registration is retained for compatibility with MCP clients that still use the older registration flow.
-
-</details>
-
-<details>
-<summary>Why Claude gets no manually entered OAuth client secret</summary>
-
-AuthKit's MCP flow supports client discovery/registration. Claude's custom-connector OAuth Client ID and Client Secret fields are optional, so this guide leaves them blank and lets the MCP OAuth flow establish the client relationship.
-
-</details>
-
-<details>
-<summary>Migrating from the earlier Cognito build</summary>
-
-Keep the existing Lambda Function URL, GitHub token, Lambda role, and GitHub MCP tools.
-
-After WorkOS AuthKit has passed both the normal Claude and Cowork tests, the old Cognito user pool is no longer part of Sly Director and can be removed separately.
-
-</details>
-
-<details>
-<summary>GitHub token permissions</summary>
-
-Start with access only to `claude-director-test`. After the full test succeeds, edit or replace the fine-grained token to add the real repositories Sly Director should operate.
+CIMD is the preferred current MCP registration mechanism. DCR remains enabled as a compatibility fallback.
 
 </details>
