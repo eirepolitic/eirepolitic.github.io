@@ -286,25 +286,36 @@ AUTHKIT_ISSUER
 Connect → Configuration
 ```
 
-2. Enable:
+2. In the **MCP Auth** card, click:
 
 ```text
-Client ID Metadata Document (CIMD)
+Enable
 ```
 
-3. Also enable:
+3. In the **MCP Auth** dialog, select both registration mechanisms:
 
 ```text
-Dynamic Client Registration (DCR)
+Dynamic Client Registration
+Client ID Metadata Document
 ```
 
-CIMD is the current MCP client-registration mechanism. DCR remains enabled for compatibility with clients that still use the older registration path.
+4. Click **Save changes**.
+5. Confirm the **MCP Auth** card now shows both mechanisms enabled.
+
+Client ID Metadata Document is the current preferred MCP client-registration mechanism. Dynamic Client Registration remains enabled for compatibility with clients that still use the older registration path.
+
+Leave **External Sign-in URI** unconfigured. Sly Director uses AuthKit's hosted sign-in rather than an external authentication application.
 
 ## Step 11 — Add the MCP Resource Indicator
 
 Stay on **Connect → Configuration**.
 
-1. Find **Resource Indicators**.
+1. In **MCP resource indicators**, click:
+
+```text
+Edit MCP resources
+```
+
 2. Add the exact `PUBLIC_MCP_URL` from Step 7.
 
 Example:
