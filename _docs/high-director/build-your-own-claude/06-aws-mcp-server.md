@@ -107,21 +107,77 @@ sly-director-admin
 Do not authorize the connector using the root user.
 
 15. Complete the AWS authorization flow.
-16. Return to Claude and ask:
+
+## Step 4 — Verify the AWS identity and read access
+
+Ask Sly Director:
 
 ```text
-Using AWS MCP, list the S3 buckets visible to this AWS identity and tell me which AWS identity you are using.
+Using AWS MCP, inspect the AWS account without making any changes.
+
+Report:
+- the AWS account ID
+- the AWS identity ARN you are using
+- available AWS regions
+- S3 buckets
+- Lambda functions in us-east-2
+- details for sly-director-github-mcp if present
+
+Do not create, update, or delete anything.
 ```
+
+Confirm the identity ARN contains:
+
+```text
+user/sly-director-admin
+```
+
+and not `root`.
+
+A successful read test should also confirm the existing Sly Director Lambda is active and uses:
+
+```text
+src.lambda_entry.handler
+```
+
+## Step 5 — Clean up the old Cognito variables
+
+After the WorkOS AuthKit connector is fully working, remove the obsolete Lambda environment variables left over from the abandoned Cognito design:
+
+```text
+COGNITO_REGION
+COGNITO_USER_POOL_ID
+COGNITO_APP_CLIENT_ID
+```
+
+Keep:
+
+```text
+AUTHKIT_ISSUER
+PUBLIC_MCP_URL
+GITHUB_OWNER
+GITHUB_TOKEN
+DEFAULT_BASE_BRANCH
+BRANCH_PREFIX
+```
+
+## Step 6 — Confirm unauthenticated MCP calls are rejected
+
+The Lambda Function URL intentionally uses AWS Function URL auth type `NONE` so Claude can reach OAuth metadata. The application itself must protect `/mcp` with AuthKit bearer-token validation.
+
+From CloudShell, run:
+
+```bash
+curl -i \
+  -X POST \
+  -H 'content-type: application/json' \
+  --data '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"unauthenticated-check","version":"1"}}}' \
+  'https://YOUR-FUNCTION-URL/mcp'
+```
+
+An unauthenticated request should be rejected rather than returning a successful MCP initialize response.
 
 ## What you should see
-
-Sly Director should identify an IAM user similar to:
-
-```text
-arn:aws:iam::<account-id>:user/sly-director-admin
-```
-
-It should also be able to query AWS resources allowed by `AdministratorAccess`.
 
 At this point Sly Director has both primary tool connections:
 
