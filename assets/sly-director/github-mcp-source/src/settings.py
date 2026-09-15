@@ -27,3 +27,6 @@ BRANCH_PREFIX = os.environ.get("BRANCH_PREFIX", "sly/").strip()
 PUBLIC_MCP_HOST = urlparse(PUBLIC_MCP_URL).netloc
 AUTHKIT_JWKS_URL = f"{AUTHKIT_ISSUER}/oauth2/jwks"
 AUTHKIT_METADATA_URL = f"{AUTHKIT_ISSUER}/.well-known/oauth-authorization-server"
+
+# Compatibility alias while app.py is kept otherwise unchanged.
+COGNITO_ISSUER = AUTHKIT_ISSUER
