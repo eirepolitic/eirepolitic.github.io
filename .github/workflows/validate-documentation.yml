@@ -11,6 +11,7 @@ on:
       - "_data/**"
       - "_templates/**"
       - "scripts/validate_docs.py"
+      - "scripts/test_sly_lambda_lifecycle.py"
       - ".github/workflows/validate-documentation.yml"
       - "DOCUMENTATION_STANDARD.md"
   workflow_dispatch:
@@ -50,7 +51,17 @@ jobs:
           AUTHKIT_ISSUER: https://example.authkit.app
           DEFAULT_BASE_BRANCH: main
           BRANCH_PREFIX: sly/
-        run: python -c "from assets.sly_director.github_mcp_source.src import app" 2>/dev/null || PYTHONPATH=assets/sly-director/github-mcp-source python -c "from src import app"
+        run: PYTHONPATH=assets/sly-director/github-mcp-source python -c "from src import app; from src import lambda_entry"
+
+      - name: Test Sly Director Lambda MCP lifecycle
+        env:
+          GITHUB_OWNER: example-owner
+          GITHUB_TOKEN: github_pat_example
+          PUBLIC_MCP_URL: https://example.lambda-url.us-east-2.on.aws/mcp
+          AUTHKIT_ISSUER: https://example.authkit.app
+          DEFAULT_BASE_BRANCH: main
+          BRANCH_PREFIX: sly/
+        run: PYTHONPATH=assets/sly-director/github-mcp-source python scripts/test_sly_lambda_lifecycle.py
 
       - name: Syntax-check Sly Director GitHub MCP source
         run: python -m compileall -q assets/sly-director/github-mcp-source/src
