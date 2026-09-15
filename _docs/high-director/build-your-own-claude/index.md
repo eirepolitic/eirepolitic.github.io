@@ -1,12 +1,12 @@
 ---
 title: Build Your Own Sly Director
-summary: Browser-only setup guide for Sly Director using one Claude Project, a custom GitHub MCP service, AWS MCP, and Cowork for long-running autonomous execution.
+summary: Browser-only setup guide for Sly Director using one Claude Project, a custom GitHub MCP service, AWS MCP, WorkOS AuthKit Production, and Cowork for long-running autonomous execution.
 section: high-director
 doc_type: runbook
 status: active
 created: 2026-09-10
-updated: 2026-09-12
-last_verified: 2026-09-12
+updated: 2026-09-14
+last_verified: 2026-09-14
 order: 80
 permalink: /docs/high-director/build-your-own-claude/
 ---
@@ -14,14 +14,6 @@ permalink: /docs/high-director/build-your-own-claude/
 # Build Your Own Sly Director
 
 Sly Director is the Claude-based counterpart to the OpenAI High Director.
-
-## Current authorization warning
-
-The direct **Amazon Cognito → Claude.ai web custom connector** OAuth path is currently blocked by a known post-login token-exchange failure pattern. If Cognito login succeeds but Claude reports **Authorization with the MCP server failed**, stop at the connector authorization step and read:
-
-[Direct Cognito OAuth — Claude.ai Web Known Issue]({{ '/docs/high-director/build-your-own-claude/cognito-claude-web-known-issue/' | relative_url }})
-
-Do not keep changing passwords, callback URLs, GitHub permissions, or the Lambda once that failure pattern is confirmed. The replacement MCP-compatible authorization design is being selected before this guide continues past that point.
 
 ## The whole plan
 
@@ -49,7 +41,23 @@ For a large job, open **Sly Director in Cowork**, give it the final objective, s
 
 The GitHub connector is a small serverless service because Claude's normal GitHub integration does not provide the full write/branch/PR/Actions toolset this design requires.
 
-The GitHub MCP remains hosted in AWS Lambda. The authorization layer is being revised because direct Cognito authorization is not currently reliable with Claude.ai web.
+```text
+Claude / Cowork
+     ↓
+Sly Director GitHub custom connector
+     ↓
+WorkOS AuthKit Production OAuth
+     ↓
+AWS Lambda Function URL
+     ↓
+sly-director-github-mcp
+     ↓
+GitHub API
+```
+
+AWS access uses the managed AWS MCP Server separately.
+
+The earlier direct Cognito authorization design is no longer the active architecture because Claude.ai web failed during its post-login OAuth token exchange. AuthKit Production replaces Cognito for the custom GitHub connector.
 
 ## Build it in this order
 
@@ -57,8 +65,7 @@ The GitHub MCP remains hosted in AWS Lambda. The authorization layer is being re
 2. [Create a GitHub test repository]({{ '/docs/high-director/build-your-own-claude/02-github-and-first-repository/' | relative_url }})
 3. [Create the Sly Director Project]({{ '/docs/high-director/build-your-own-claude/03-create-high-director-project/' | relative_url }})
 4. [Prepare AWS]({{ '/docs/high-director/build-your-own-claude/04-claude-code-web/' | relative_url }})
-5. [Build and connect Sly Director GitHub]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
-   - [Direct Cognito OAuth known issue]({{ '/docs/high-director/build-your-own-claude/cognito-claude-web-known-issue/' | relative_url }})
+5. [Build and connect Sly Director GitHub with WorkOS AuthKit Production]({{ '/docs/high-director/build-your-own-claude/05-aws-account-and-safety/' | relative_url }})
 6. [Connect AWS MCP]({{ '/docs/high-director/build-your-own-claude/06-aws-mcp-server/' | relative_url }})
 7. [Configure Cowork for autonomous Sly Director work]({{ '/docs/high-director/build-your-own-claude/07-end-to-end-testing/' | relative_url }})
 8. [Use Sly Director day to day]({{ '/docs/high-director/build-your-own-claude/08-daily-operation/' | relative_url }})
@@ -80,6 +87,15 @@ Investigate this repository and the related AWS infrastructure. Find the cause o
 ```
 
 Sly Director should then continue working in Cowork instead of repeatedly stopping just to make you type `continue`.
+
+<details>
+<summary>Historical Cognito issue</summary>
+
+The previous direct **Amazon Cognito → Claude.ai web** OAuth design reached successful Cognito login but failed inside Claude's post-login OAuth exchange before the MCP server received a bearer token.
+
+The current guide uses WorkOS AuthKit Production instead. The historical diagnostic remains documented at [Direct Cognito OAuth — Claude.ai Web Known Issue]({{ '/docs/high-director/build-your-own-claude/cognito-claude-web-known-issue/' | relative_url }}).
+
+</details>
 
 <details>
 <summary>How this relates to Overlord</summary>
