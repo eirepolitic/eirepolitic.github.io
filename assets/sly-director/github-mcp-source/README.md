@@ -30,7 +30,30 @@ The script creates:
 function.zip
 ```
 
-Upload that zip to the Lambda function named `sly-director-github-mcp`.
+Deploy it without printing the Lambda environment variables:
+
+```bash
+AWS_PAGER="" aws lambda update-function-code \
+  --function-name sly-director-github-mcp \
+  --zip-file fileb://function.zip \
+  --region us-east-2 \
+  --query '{FunctionName:FunctionName,LastUpdateStatus:LastUpdateStatus,LastModified:LastModified}' \
+  --output table \
+  --no-cli-pager
+```
+
+Then confirm the update completed:
+
+```bash
+AWS_PAGER="" aws lambda get-function-configuration \
+  --function-name sly-director-github-mcp \
+  --region us-east-2 \
+  --query '{State:State,LastUpdateStatus:LastUpdateStatus,Reason:LastUpdateStatusReason}' \
+  --output table \
+  --no-cli-pager
+```
+
+Avoid running `update-function-code` without a `--query` filter because its full response can include Lambda environment variables such as `GITHUB_TOKEN`.
 
 ## Lambda handler
 
