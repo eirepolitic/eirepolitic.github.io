@@ -28,7 +28,7 @@ Claude
 
 ## Step 1 — Create a GitHub token
 
-The connector needs a GitHub token so it can act on your repository.
+The connector needs a GitHub token so it can act on your repositories.
 
 1. Open GitHub.
 2. Select your profile picture → **Settings**.
@@ -42,14 +42,8 @@ Sly Director GitHub MCP
 ```
 
 7. Choose a 90-day expiration for the first build.
-8. Under **Repository access**, choose **Only select repositories**.
-9. Select:
-
-```text
-claude-director-test
-```
-
-10. Give the token these repository permissions:
+8. Under **Repository access**, choose **All repositories**.
+9. Give the token these repository permissions:
 
 ```text
 Actions: Read and write
@@ -60,8 +54,10 @@ Variables: Read and write
 Workflows: Read and write
 ```
 
-11. Generate the token.
-12. Copy it to a private temporary note. You will paste it into AWS once.
+10. Generate the token.
+11. Copy it to a private temporary note. You will paste it into AWS once.
+
+Using **All repositories** from the start lets Sly Director work on your existing repositories and repositories you create later without editing the token each time.
 
 Do not paste this token into Claude, ChatGPT, GitHub issues, or documentation.
 
