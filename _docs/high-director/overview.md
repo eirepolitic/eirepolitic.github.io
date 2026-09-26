@@ -1,29 +1,32 @@
 ---
 title: High Director Overview
-summary: Entry point for the verified technical documentation of the High Director agent, its integrations, runtime architecture, security boundaries, code, and operating procedures.
+summary: Entry point for the verified technical documentation of the High Director agent, its integrations, AWS operator capability, runtime architecture, security boundaries, code, and operating procedures.
 section: high-director
 doc_type: agent
 status: active
 created: 2026-08-05
-updated: 2026-09-11
-last_verified: 2026-09-11
+updated: 2026-09-26
+last_verified: 2026-09-26
 order: 10
 permalink: /projects/high-director/
 ---
 
 # High Director
-
 ## Overview
 
 High Director is a GPT configured as a concise coding assistant for designing and building data pipelines and related infrastructure. Its authoritative user-authored instructions emphasize Python, GitHub, YAML, Appsmith, Power BI, Power Automate, and AWS, and direct it to help design, troubleshoot, document, and implement pipeline workflows and supporting infrastructure.
 
-The documentation initiative established authoritative records for the GPT configuration, both configured Actions, the GitHub wrapper Lambda implementation, live AWS configuration, runtime architecture, data flows, security/configuration boundaries, code/dependencies, operations, troubleshooting, and handoff procedures. That build initiative is complete; current maintenance belongs on the canonical subject pages and runbooks listed below.
+The original GPT Builder configuration contains two custom Actions: GitHub and Google Workspace. On 2026-09-26, High Director gained an additional **AWS operator capability** without adding a third Builder Action. AWS work is performed indirectly through the existing GitHub integration: High Director edits or dispatches a GitHub Actions workflow, the workflow authenticates with the dedicated GitHub deployer IAM user, assumes `HighDirectorAwsAdmin`, and performs AWS operations using temporary STS credentials.
+
+The documentation initiative established authoritative records for the GPT configuration, both configured Actions, the GitHub wrapper Lambda implementation, live AWS configuration, runtime architecture, data flows, security/configuration boundaries, code/dependencies, operations, troubleshooting, handoff procedures, and the later AWS operator extension. Current maintenance belongs on the canonical subject pages and runbooks listed below.
 
 ## Build your own
 
 For the browser-only ChatGPT/custom-GPT implementation, see [Build Your Own High Director]({{ '/docs/high-director/build-your-own/' | relative_url }}). It walks a personal user from account setup and a first GitHub repository through the existing Lambda-backed GitHub architecture, custom GPT Action configuration, end-to-end testing, troubleshooting, credential rotation, and optional extensions.
 
-For the Claude/Anthropic implementation, see [Build Your Own Sly Director]({{ '/docs/high-director/build-your-own-claude/' | relative_url }}). **Sly Director** is the Claude counterpart to High Director. It uses one persistent Sly Director Project, a custom serverless **Sly Director GitHub** MCP service for repository operations, and the managed AWS MCP Server for AWS access. Normal Project chat handles quick interactive work; Cowork is the primary mode for substantial long-running work so implementation plans can continue independently without repeated `continue` prompts. Skills and Plugins are optional later upgrades, while Claude Code remains a specialist fallback.
+For the Claude/Anthropic implementation, see [Build Your Own Sly Director]({{ '/docs/high-director/build-your-own-claude/' | relative_url }}). **Sly Director** is the Claude counterpart to High Director. It uses one persistent Sly Director Project, a custom serverless **Sly Director GitHub** MCP service for repository operations, and the managed AWS MCP Server for AWS access.
+
+Normal Project chat handles quick interactive work; Cowork is the primary mode for substantial long-running work so implementation plans can continue independently without repeated `continue` prompts. Skills and Plugins are optional later upgrades, while Claude Code remains a specialist fallback.
 
 Both guides are written for zero assumed technical knowledge and browser-first operation where the product supports it. Google Workspace is optional in both versions, and new/custom integrations are kept separate from the proven primary path unless genuinely required.
 
@@ -31,8 +34,9 @@ Both guides are written for zero assumed technical knowledge and browser-first o
 
 The sanitized source of truth for the GPT name, description, complete Instructions field, conversation starters, recommended model, visible Knowledge state, and configured Actions is [High Director GPT Configuration]({{ '/projects/high-director/gpt-configuration/' | relative_url }}).
 
-Verified behavioral rules include:
+That page records the original Builder configuration. The later AWS operator capability is documented separately because it is implemented through GitHub Actions rather than as a GPT Builder Action.
 
+Verified behavioral rules include:
 - keep responses short, direct, practical, and precise;
 - ask a focused question instead of assuming required missing information;
 - provide explicit ordered click-by-click instructions for how-to tasks;
@@ -46,12 +50,14 @@ Verified behavioral rules include:
 ## Verified technical scope
 
 Current authoritative documentation covers:
-
 - GPT configuration and behavioral instructions;
 - GitHub GPT Action OpenAPI contract and API-key authentication;
 - GitHub wrapper FastAPI/Mangum Lambda source, dependencies, and deployment assets;
 - live AWS Lambda runtime, Function URL, environment-key, execution-role, managed-policy, and trust configuration;
 - Google Workspace GPT Action contract, Gmail/Calendar operations, OAuth endpoints, token exchange method, and configured scopes;
+- broad AWS administration through GitHub Actions, `sts:AssumeRole`, and `HighDirectorAwsAdmin`;
+- temporary STS credential handling for AWS jobs;
+- programmatic AWS operation selection using the `HIGH_DIRECTOR_AWS_OPERATION` repository variable;
 - runtime architecture and trust boundaries;
 - GitHub, AWS, Google Workspace, secret, failure, and documentation-control data flows;
 - security/configuration reference;
@@ -60,10 +66,10 @@ Current authoritative documentation covers:
 - persistent sanitized source snapshots and code/dependency reference.
 
 Canonical implementation pages:
-
 - [Runtime Architecture]({{ '/projects/high-director/runtime-architecture/' | relative_url }})
 - [Data Flows]({{ '/projects/high-director/data-flows/' | relative_url }})
 - [Security and Configuration Reference]({{ '/projects/high-director/security-configuration-reference/' | relative_url }})
+- [AWS Operator Capability]({{ '/docs/high-director/aws-operator-capability/' | relative_url }})
 - [Code and Dependency Reference]({{ '/projects/high-director/code-and-dependency-reference/' | relative_url }})
 - [GitHub Integration]({{ '/docs/high-director/github-integration/' | relative_url }})
 - [Google Workspace Action]({{ '/projects/high-director/google-workspace-action/' | relative_url }})
@@ -78,7 +84,6 @@ These runbooks preserve the rule that architecture, security, cost, access-contr
 ## Known unresolved areas
 
 The following remain explicitly unknown, unverified, private, or intentionally unpublished:
-
 - GPT Builder capability-toggle state not shown in the supplied configuration source;
 - API-key and GitHub-token values and their rotation procedures;
 - exact fine-grained GitHub PAT permissions currently granted;
@@ -86,6 +91,8 @@ The following remain explicitly unknown, unverified, private, or intentionally u
 - live Lambda memory/timeout confirmation, although the SAM template declares 512 MB and 30 seconds;
 - Lambda Function URL resource-policy details and monitoring/alerting configuration;
 - Google OAuth client identity/secret, token storage/refresh behavior, connected-account identity, and reconnect/revocation procedure;
+- AWS account ID and credential values, which are intentionally not published;
+- organization-level AWS controls such as SCPs unless separately verified;
 - CloudWatch alarm/log-retention, WAF/rate-limiting, dead-letter/retry, and other monitoring/perimeter controls unless later authoritative evidence verifies them.
 
 These limitations are tracked in the canonical capability, security, runbook, and verification records rather than filled by inference.
