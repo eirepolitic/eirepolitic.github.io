@@ -1,13 +1,21 @@
 ---
-title: High Director AWS operator capability
+title: High Director AWS Operator Capability
+summary: Verified broad AWS administration capability implemented through GitHub Actions, STS role assumption, temporary credentials, and the HighDirectorAwsAdmin role.
+section: high-director
+doc_type: agent
 status: active
+created: 2026-09-26
+updated: 2026-09-26
 last_verified: 2026-09-26
+owner: High Director
+order: 18
+permalink: /docs/high-director/aws-operator-capability/
 source_of_truth:
   - Eirepolitic-data-pipeline/infra/publishing/github_aws_bootstrap.yml
   - Eirepolitic-data-pipeline/.github/workflows/deploy_instagram_publisher_lambda.yml
 ---
 
-# High Director AWS operator capability
+# High Director AWS Operator Capability
 
 High Director has broad AWS administrative capability through GitHub Actions.
 
@@ -125,3 +133,10 @@ The original High Director GPT Builder record documented two Actions:
 That historical record remains correct.
 
 The AWS operator capability is a later runtime extension implemented through the GitHub Action path. Documentation should not rewrite the original Builder configuration as though an AWS Action existed there.
+
+## Related Documents
+
+- [High Director Overview]({{ '/projects/high-director/' | relative_url }})
+- [High Director Capability and Component Inventory]({{ '/projects/high-director/capability-component-inventory/' | relative_url }})
+- [High Director Security and Configuration Reference]({{ '/projects/high-director/security-configuration-reference/' | relative_url }})
+- [Additional AWS Capabilities Addendum]({{ '/docs/high-director/build-your-own/addendum-additional-aws-capabilities/' | relative_url }})
