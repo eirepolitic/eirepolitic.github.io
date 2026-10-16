@@ -1,6 +1,6 @@
 ---
 title: Revenue Investigation — Wave 5 Stage 3 Deep Investigation
-summary: Competitive and operational investigation of five inbound-first finalists.
+summary: Deep investigation of five distribution-first concepts that can be discovered and purchased without continuous outbound prospecting.
 section: notes
 doc_type: note
 status: active
@@ -10,41 +10,143 @@ last_verified: 2026-10-16
 owner: High Director
 order: 228
 permalink: /projects/notes/revenue-investigation-wave-5-stage-3-deep-investigation/
-tags: [revenue-investigation, research, inbound, wave-5, deep-investigation]
+tags: [revenue-investigation, research, inbound, self-serve, automation, wave-5]
 ---
 
-# Wave 5 — Stage 3 Deep Investigation
+# Wave 5 Stage 3 — Deep Investigation
 
-## Important evidence limitation
+## 1. Excel/CSV leading-zero preservation converter
 
-This is a desk-based strategic assessment using the Wave 1–5 research already collected and publicly documented distribution models. It is **not** proof of search volumes, marketplace rankings, competitor prices or customer willingness to pay. Live search-demand validation remains a prerequisite before building. Avoid claiming a distribution channel itself supplies traffic.
+### Problem
+Spreadsheet software can silently reinterpret identifiers such as HS codes, SKUs, account IDs and postal-like fields as numbers, stripping leading zeros. The Government of Canada's 2024 Canadian Importers Database explicitly warns that default Excel import behaviour can remove leading zeros from HS6 and HS10 codes.
 
-## Finalists
+### Product
+A self-serve web utility that accepts CSV/XLSX, detects columns likely to contain identifiers, previews risky transformations, and exports a corrected file with those columns forced to text. Optional batch mode and reusable schemas become paid features.
 
-### 1. Self-serve RFP compliance matrix — ADVANCE
+### Why distribution can be inbound
+The problem is search-shaped: users already search for variants of "Excel removes leading zeros", "CSV leading zero lost", and similar repair queries. Free single-file conversion can acquire search traffic; paid features solve repeat/bulk use.
 
-**Buyer:** occasional Canadian government-contract bidders who want a checklist from a lengthy tender. **Offer:** upload PDF/DOCX; get Excel checklist of requirements, deadlines, forms, and cited source pages. **Price hypothesis:** CA$29 per ordinary file, CA$59 larger. **Why pay:** less manual reading and a reusable checklist, not a promise of bid compliance. **Inbound path:** focused pages targeting searches for RFP compliance matrix, tender requirements checklist, RFP-to-Excel and related vertical-specific queries; demonstrate sample output on public solicitations. **Free alternative:** manually using general-purpose AI and spreadsheets; defensibility rests on page citations, predictable schema, and auditability. **Competition:** proposal automation and general AI document extraction are well established; must not pretend to have a unique algorithm. **Risk:** missed mandatory clauses could harm bids; clearly label human review required, encrypt/delete uploads, do not use customer documents for training. **Gate:** 10 representative public RFPs manually audited; 3 paid one-off transactions from organic/inbound trial or 5 credible self-serve purchase-intent signals; evidence of non-branded discoverability. **Verdict:** advance with accuracy/privacy gate.
+### Monetization hypothesis
+- Free: one file, size cap, manual confirmation.
+- CA$9 one-off: large file or multi-file job.
+- CA$12–19/month: saved schemas, batch conversion, API access.
 
-### 2. Canadian importer lookup reports — ADVANCE CAUTIOUSLY
+### Risks
+- Many users can solve the problem manually once they understand it.
+- Must avoid altering data silently; preview and explicit column typing are essential.
+- Commodity utility economics require low hosting cost and organic acquisition.
 
-**Buyer:** small exporters, overseas manufacturers, trade researchers, brokers. **Offer:** self-serve clean category-specific report built from the official Canadian Importers Database, with dates, source links and limitations. **Price hypothesis:** CA$49/report, optional CA$99 multi-category. **Why pay:** curated category mapping, deduplicated companies, downloadable usable file, clear provenance. **Inbound path:** indexable category landing pages that give genuine free summary data, not thin doorway pages; relevant search queries such as Canadian importers of [product category]. **Free alternative:** official database itself. **Competition:** free official source, import-data directories, trade-intelligence vendors. **Risk:** annual data may be stale; buyer may not value packaging of public data; terms and attribution must be respected. **Gate:** verify 10 high-intent categories, data license/reuse conditions, and 2 paid purchases without direct sales. **Verdict:** advance cautiously; strongest when user can preview a real sample before purchase.
+### Validation test
+Publish a narrow landing/tool page for 3–5 specific search intents. Go if 10+ users complete conversions and at least 2 pay for bulk/large-file handling within the first 100 qualified tool sessions.
 
-### 3. Self-serve sponsor proof-of-delivery reports — ADVANCE CAUTIOUSLY
+## 2. Canadian importer-report self-serve lookup
 
-**Buyer:** newsletter/podcast publishers with paid sponsorships. **Offer:** enter sponsor, issue URL, publisher-owned performance numbers and branding; download polished PDF/share page. **Price hypothesis:** CA$19/report or CA$39/month. **Why pay:** faster professional reporting and sponsor retention. **Inbound path:** creator-tool listings, SEO for newsletter sponsorship report template, free branded sample, publisher communities where self-promotion is allowed. **Free alternative:** Canva, screenshots, spreadsheet exports. **Competition:** creator monetization and sponsorship reporting tools; some platforms provide reports natively. **Risk:** publishers may not pay for presentation; many small creators have few sponsors. **Gate:** 5 users voluntarily generate a second report; 3 paid repeat users; demonstrate non-outbound signups. **Verdict:** advance cautiously because product is simple but willingness to pay is uncertain.
+### Problem
+ISED's Canadian Importers Database is free and useful but oriented around raw lists and search screens. The data is current, downloadable and categorized by product, city and country. A buyer who wants a quick market-entry or prospecting brief still has to choose HS codes, clean names, interpret location concentration and assemble a usable report.
 
-### 4. Shopify product-weight anomaly checker — HOLD / NO STAGE 4
+### Product
+A self-serve lookup where a user enters a product/HS code and receives a preview showing importer count and geography. A paid report provides cleaned importer names, location grouping, source date, HS descriptions, concentration summary and export. It must clearly state that it is repackaged public data, not proprietary shipment intelligence.
 
-**Buyer:** stores with hundreds of physical SKUs. **Offer:** flag missing/implausible weights; recurring scans. **Price hypothesis:** CA$9/month. **Why pay:** fewer shipping-rating errors, but merchants may fix catalog once and cancel. **Inbound:** Shopify App Store search. **Free alternative:** bulk export/filter, built-in product editing, low-cost catalog auditing apps. **Competition:** existing bulk editors, shipping apps and product-data quality apps; differentiation weak. **Economics:** 112 active subscribers needed for CA$1k gross/month, before fees/support. **Risk:** high app approval/maintenance effort relative to price; 'incorrect' weights are not verifiable without actual measurements. **Verdict:** hold, not a recommended first build.
+### Why distribution can be inbound
+Each HS/product category can support a search-indexable landing page. Searches around "Canadian importers of X" map directly to the government dataset and a paid convenience layer.
 
-### 5. API example drift checker — HOLD / NO STAGE 4
+### Monetization hypothesis
+- Free preview.
+- CA$12–25 per category report.
+- CA$49–99 credit pack for repeat researchers/exporters.
 
-**Buyer:** API teams. **Offer:** detect documentation examples inconsistent with OpenAPI schema. **Price hypothesis:** CA$39/month. **Why pay:** CI evidence, historical reporting, multi-repository dashboards. **Inbound:** GitHub Action/Marketplace and developer search. **Free alternative:** open-source OpenAPI lint/test tools, CI scripts, schema validators. **Competition:** mature API testing/docs ecosystem. **Risk:** product requires ongoing maintenance across frameworks and has no clear reason to switch from free tools. **Verdict:** hold until a narrow, proven unmet use case emerges.
+### Risks
+- Raw source is free, so value must come from speed, cleaning and interpretation.
+- Government source structure can change.
+- Avoid implying real-time shipment data; CID is summary data with publication lag.
 
-## Stage 3 ranking
+### Validation test
+Create 10 product-category landing pages using current CID data. Go if pages generate 50 qualified visits and 3 paid report purchases without direct sales outreach.
 
-1. RFP matrix — strongest self-serve purchase intent, but accuracy risk.
-2. Importer lookup — clean search-driven purchase flow, but public data substitution and freshness risk.
-3. Sponsor report — easiest product to build, but weak evidence of willingness to pay.
+## 3. Canadian business-day API
 
-No product development, automated outreach or customer testing has been initiated. All price points and thresholds are hypotheses.
+### Problem
+Canadian software frequently needs to calculate due dates excluding weekends and statutory holidays. The rules differ by province/territory, and some observed/public holidays differ from simple fixed-date rules.
+
+### Product
+A tiny API plus browser utility: `is_business_day`, `add_business_days`, `business_days_between`, with jurisdiction, observed-date logic, provenance, and versioned annual calendars.
+
+### Why distribution can be inbound
+Developers search for holiday/business-day libraries and APIs when implementing deadline, payroll, support or logistics logic. Documentation and code examples can rank in search and developer directories.
+
+### Monetization hypothesis
+- Free: 1,000 requests/month.
+- CA$9/month: 20k requests.
+- CA$29/month: 100k requests + SLA/history.
+
+### Risks
+- Open-source libraries and generic holiday APIs are substitutes.
+- Requires annual verification and careful wording for jurisdiction-specific holidays.
+- Legal/contractual deadlines can have special rules beyond generic business-day arithmetic; documentation must disclaim legal interpretation.
+
+### Validation test
+Ship a static API documentation page and free calculator first. Go if 20 developers create API keys and 3 exceed the free tier or request paid limits within 60 days.
+
+## 4. Environment-variable documentation checker for GitHub
+
+### Problem
+Repositories commonly drift between variables referenced in code, `.env.example`, deployment configuration and human documentation. Missing or obsolete variables cause setup and deployment failures.
+
+### Product
+A GitHub Action that scans configurable file patterns, extracts environment-variable references, compares them with `.env.example` and/or a declared manifest, and posts a pull-request check showing undocumented, unused and newly introduced variables. Paid team tier could add organization policies and historical drift.
+
+### Why distribution can be inbound
+GitHub Actions can be installed directly from Marketplace/search and demonstrated with a copy-paste workflow. The free open-source Action itself is the acquisition channel.
+
+### Monetization hypothesis
+- Free Action for public/small repositories.
+- CA$5–15/month per organization for policy packs, dashboard/history and private-org support.
+
+### Risks
+- Many languages access environment variables differently; scope must start narrow.
+- GitHub Marketplace contains numerous `.env` helpers, even if most create/load variables rather than checking documentation drift.
+- Free open-source users may not convert.
+
+### Validation test
+Release a Python/Node-focused Action. Go if 25 repositories install it and 3 teams request or prepay for organization-level policy/history features.
+
+## 5. Sponsor proof-of-delivery self-serve generator
+
+### Problem
+Small newsletter and podcast publishers often need to show sponsors what was delivered, but assembling screenshots, placement details and publisher-supplied metrics into a presentable report is repetitive.
+
+### Product
+A self-serve page where the publisher enters issue/episode URL, sponsor, campaign dates and their own reach/click metrics. The system captures factual placement evidence and generates a branded PDF/share page. Metrics are always explicitly publisher-supplied and never inferred.
+
+### Why distribution can be inbound
+This can target creator search terms, newsletter communities and template-style discovery. The output is immediately understandable, and the free report can carry a small attribution link that creates product-led discovery.
+
+### Monetization hypothesis
+- Free: one watermarked report.
+- CA$12 per clean report.
+- CA$29–49/month for branding, saved sponsors and history.
+
+### Risks
+- Creator willingness to pay may be low.
+- Screenshot capture can break on paywalled/email-only issues.
+- Must never present estimated metrics as verified delivery data.
+
+### Validation test
+Launch free report creation with paid removal/branding. Go if 30 reports are generated organically and 3 creators pay or create a second report within 30 days.
+
+## Stage 3 rank
+
+1. Excel/CSV leading-zero preservation converter
+2. Canadian importer-report self-serve lookup
+3. Environment-variable documentation checker
+4. Canadian business-day API
+5. Sponsor proof-of-delivery self-serve generator
+
+## Advance to Stage 4
+
+Advance the top three. They have the best combination of low build cost, clear self-serve value and a credible acquisition channel that does not require an owner to keep sending cold outreach.
+
+## Verification record
+
+- Last verified: 2026-10-16
+- Stage 3 status: complete
