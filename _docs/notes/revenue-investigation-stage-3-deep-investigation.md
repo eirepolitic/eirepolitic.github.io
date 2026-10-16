@@ -149,6 +149,26 @@ Plausible low-capital channels:
 - carefully compliant targeted outreach during validation;
 - marketplaces/API channels only after a product proves useful.
 
+### Semi-automated acquisition requirement
+
+Stage 4 must treat customer acquisition as part of the product design. The owner should not be expected to manually research and chase large numbers of prospects.
+
+For every candidate, the implementation plan must specify a semi-automated prospecting funnel covering:
+
+1. **Prospect-source:** where suitable organizations can be identified legally and reliably (for example public company directories, trade associations, partner lists, search results or customer-supplied data).
+2. **Filtering and scoring:** automated rules/AI to remove poor fits and rank the small fraction most likely to benefit.
+3. **Contact-route discovery:** identify an appropriate, permitted business contact route without assuming a scraped email address is automatically usable for unsolicited marketing.
+4. **Personalization:** automatically create a short, evidence-based reason the product may be relevant to that organization, with human-review rules for uncertain claims.
+5. **Controlled batch outreach:** send only through channels and volumes consistent with applicable law and platform rules; maintain suppression/unsubscribe lists and avoid uncontrolled blasting.
+6. **Reply triage:** automatically classify replies such as interested, not now, wrong person, unsubscribe or needs human response.
+7. **Follow-up:** automate reasonable follow-up sequences while immediately stopping when a recipient opts out or the channel's rules require it.
+8. **Owner handoff:** only positive/high-value replies, pricing questions and unusual cases should require the owner's attention.
+9. **Measurement:** track prospects reached, positive replies, demos/sample requests, paid pilots, unsubscribes/complaints and owner minutes spent per acquired customer.
+
+**Design target:** the owner should spend time on qualified conversations rather than list building, message drafting, routine follow-up or inbox sorting.
+
+**Compliance constraint:** the exact outbound approach must be chosen only after the target customer and jurisdiction are known. For Canadian commercial electronic messages, the Stage 3 CASL constraints above remain applicable; other jurisdictions and platforms may impose different rules.
+
 ### Likely failure modes
 
 1. The source is free and customers see too little added value.
@@ -234,6 +254,8 @@ Likely channels:
 - niche associations/directories once proof exists.
 
 The agency route may be particularly attractive because one agency can reuse a licensed tool across multiple clients, reducing the number of relationships needed.
+
+Stage 4 must also apply the **semi-automated acquisition requirement** above to this candidate. A preferred model is to identify one industry or agency niche, automatically score websites for likely fit (for example no existing estimator, clear quote-request workflow, sufficient service value), generate a short personalized outreach reason, automate compliant follow-up and send only interested replies to the owner.
 
 ### Implementation complexity
 
@@ -421,6 +443,14 @@ Across the surviving ideas, the technical MVP is inexpensive. The biggest commer
 
 This is why Stage 4 should avoid “build first” plans. Each plan must begin with a demand test and a clear route to the first 5–10 paying customers.
 
+### Customer acquisition must also be automated
+
+A business does not meet the low-touch objective if its product is automated but the owner must spend hours researching prospects, writing one-off messages and chasing replies.
+
+Stage 4 must therefore evaluate **acquisition automation** alongside product automation. A viable plan should identify how prospect discovery, qualification, personalization, batch outreach, follow-up and reply triage can be automated or semi-automated, while keeping applicable anti-spam, privacy and platform requirements intact.
+
+The success metric is not “maximum messages sent.” It is **qualified customer conversations per hour of owner attention**.
+
 ### AI should reduce labour, not invent facts
 
 Good uses of AI here include:
@@ -479,12 +509,21 @@ Before any significant development, Stage 4 should produce implementation plans 
 - exact proposed customer;
 - exact product/output;
 - first acquisition channel;
+- semi-automated prospect source/list-building method;
+- automated qualification/scoring method;
+- compliant outreach and follow-up workflow;
+- AI personalization approach and human-review rules;
+- reply triage and owner-handoff rules;
+- expected owner effort per week and per qualified prospect;
 - MVP scope;
 - estimated out-of-pocket cost;
 - build steps;
-- automation architecture;
+- product automation architecture;
+- acquisition automation architecture;
 - measurement/kill criteria; and
 - legal/platform checks.
+
+Each plan should explicitly show which steps are **fully automated**, **AI-assisted**, or **require the owner**, with a design objective that routine list building, drafting, follow-up and inbox sorting do not become recurring manual work.
 
 The implementation plans should then be presented for approval before Stage 5 development begins.
 
@@ -494,4 +533,4 @@ The implementation plans should then be presented for approval before Stage 5 de
 - Verified by: High Director
 - Current-source areas checked: Canadian open-data licensing and datasets; Vancouver open data; Canadian permit-data competitors; Canadian procurement/tender competitors; Apify marketplace/monetization; calculator/estimator products; spreadsheet marketplaces; Canadian anti-spam guidance; trade-intelligence pricing.
 - Facts, assumptions and estimates are separated throughout this note.
-- Not yet validated: willingness to pay for the exact importer report, business-opening feed or chosen calculator niche; customer acquisition cost; conversion rate; actual revenue; precise Stage 4 product pricing.
+- Not yet validated: willingness to pay for the exact importer report, business-opening feed or chosen calculator niche; customer acquisition cost; conversion rate; actual revenue; precise Stage 4 product pricing; or the final permissible outreach workflow for any chosen target market/jurisdiction.
